@@ -1,0 +1,5 @@
+GLOBAL: scripts/morrowind_world_randomizer/main.lua
+NPC: scripts/morrowind_world_randomizer/local/npc.lua
+CREATURE: scripts/morrowind_world_randomizer/local/creature.lua
+CONTAINER, CUSTOM: scripts/morrowind_world_randomizer/local/container.lua
+PLAYER: scripts/morrowind_world_randomizer/local/player.lua
