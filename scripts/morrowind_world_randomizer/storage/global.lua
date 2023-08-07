@@ -3,8 +3,8 @@ local core = require('openmw.core')
 
 require("scripts.morrowind_world_randomizer.generator.items")
 require("scripts.morrowind_world_randomizer.generator.statics")
-require("scripts.morrowind_world_randomizer.generator.container")
-require("scripts.morrowind_world_randomizer.generator.creature")
+require("morrowind_world_randomizer_openmw.scripts.morrowind_world_randomizer.generator.containers")
+require("morrowind_world_randomizer_openmw.scripts.morrowind_world_randomizer.generator.creatures")
 
 local tableLib = require("scripts.morrowind_world_randomizer.utils.table")
 
