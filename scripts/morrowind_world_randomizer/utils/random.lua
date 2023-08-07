@@ -19,6 +19,7 @@ function random.getRandom(pos, itemsCount, lower, upper)
 end
 
 function random.getBetween(min, max)
+    if min > max then max, min = min, max end
     return min + math.random() * (max - min)
 end
 

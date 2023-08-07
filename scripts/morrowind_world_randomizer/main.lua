@@ -64,13 +64,15 @@ end
 local function onActorActive(actor)
     async:newUnsavableSimulationTimer(1, function()
         if not actor or not actor:isValid() then return end
-        local readyForRandomization = isReadyForRandomization(actor, true)
-        if actor.type == types.Creature and localConfig.data.creature.randomize and not actor.contentFile and
-                globalStorage.data.creaturesData.objects[actor.recordId] and readyForRandomization and
-                types.Actor.stats.dynamic.health(actor).current > 0 then
-            local config = localConfig.getConfigTableByObjectType(objectType.creature)
-            local actorData = globalStorage.data.creaturesData.objects[actor.recordId]
-            if config then
+        local config = localConfig.getConfigTableByObjectType(actor.type)
+        if not config then return end
+        local firstRandomization = isReadyForRandomization(actor, true)
+        local isAlive = types.Actor.stats.dynamic.health(actor).current > 0
+
+        if firstRandomization then
+            if actor.type == types.Creature and config.randomize and not actor.contentFile and
+                    globalStorage.data.creaturesData.objects[actor.recordId] and isAlive then
+                local actorData = globalStorage.data.creaturesData.objects[actor.recordId]
                 local group
                 if config.byType then
                     group = globalStorage.data.creaturesData.groups[actorData.type]
@@ -87,16 +89,54 @@ local function onActorActive(actor)
                 localStorage.setCreatureParentIdData(new, actor)
                 actor.enabled = false
             end
+
+            if config.stat.attributes and config.stat.attributes.randomize then
+                local attributes = types.Actor.stats.attributes
+                local attrConfig = config.stat.attributes
+                local getVal = function(var)
+                    if attrConfig.additive then
+                        return math.floor(math.max(0, math.min(attrConfig.limit, var.base + random.getBetween(attrConfig.vregion.min, attrConfig.vregion.max))))
+                    else
+                        return math.floor(math.max(0, math.min(attrConfig.limit, var.base * random.getBetween(attrConfig.vregion.min, attrConfig.vregion.max))))
+                    end
+                end
+                local data = {}
+                data.agility = getVal(attributes.agility(actor))
+                data.endurance = getVal(attributes.endurance(actor))
+                data.intelligence = getVal(attributes.intelligence(actor))
+                data.luck = getVal(attributes.luck(actor))
+                data.personality = getVal(attributes.personality(actor))
+                data.speed = getVal(attributes.speed(actor))
+                data.strength = getVal(attributes.strength(actor))
+                data.willpower = getVal(attributes.willpower(actor))
+                actor:sendEvent("mwr_actor_setAttributeBase", data)
+            end
+
+            if config.stat.skills and config.stat.skills.randomize then
+                print("test222")
+                actor:sendEvent("mwr_actor_randomizeSkillBaseValues", config)
+            end
         end
-        if readyForRandomization or isReadyForRandomization(actor) then
-            if actor.type == types.NPC and localConfig.data.npc.item.randomize then
-                local config = localConfig.getConfigTableByObjectType(objectType.npc)
+
+        if firstRandomization or (isAlive and isReadyForRandomization(actor)) then
+            if config.item.randomize then
                 localStorage.setRefRandomizationTimestamp(actor)
-                actor:sendEvent("mwr_npc_randomizeInventory", {itemsData = globalData.itemsData, config = config})
-            elseif actor.type == types.Creature and localConfig.data.creature.item.randomize then
-                local config = localConfig.getConfigTableByObjectType(objectType.creature)
-                localStorage.setRefRandomizationTimestamp(actor)
-                actor:sendEvent("mwr_creature_randomizeInventory", {itemsData = globalData.itemsData, config = config})
+                actor:sendEvent("mwr_actor_randomizeInventory", {itemsData = globalData.itemsData, config = config})
+            end
+            if config.stat.dynamic.randomize and isAlive then
+                local health = types.Actor.stats.dynamic.health(actor).base
+                local magicka = types.Actor.stats.dynamic.magicka(actor).base
+                local fatigue = types.Actor.stats.dynamic.fatigue(actor).base
+                if config.stat.dynamic.additive then
+                    health = math.max(1, health + random.getBetween(config.stat.dynamic.health.vregion.min, config.stat.dynamic.health.vregion.max))
+                    magicka = math.max(1, magicka + random.getBetween(config.stat.dynamic.magicka.vregion.min, config.stat.dynamic.magicka.vregion.max))
+                    fatigue = math.max(1, fatigue + random.getBetween(config.stat.dynamic.fatigue.vregion.min, config.stat.dynamic.fatigue.vregion.max))
+                else
+                    health = math.max(1, health * random.getBetween(config.stat.dynamic.health.vregion.min, config.stat.dynamic.health.vregion.max))
+                    magicka = math.max(1, magicka * random.getBetween(config.stat.dynamic.magicka.vregion.min, config.stat.dynamic.magicka.vregion.max))
+                    fatigue = math.max(1, fatigue * random.getBetween(config.stat.dynamic.fatigue.vregion.min, config.stat.dynamic.fatigue.vregion.max))
+                end
+                actor:sendEvent("mwr_actor_setDynamicStats", {health = health, magicka = magicka, fatigue = fatigue})
             end
         end
     end)
@@ -172,10 +212,8 @@ return {
                     end
                     ::continue::
                 end
-                if data.objectType == objectType.npc then
-                    data.object:sendEvent("mwr_npc_setEquipment", equipment)
-                elseif data.objectType == objectType.creature then
-                    data.object:sendEvent("mwr_creature_setEquipment", equipment)
+                if data.objectType == objectType.npc or data.objectType == objectType.creature then
+                    data.object:sendEvent("mwr_actor_setEquipment", equipment)
                 end
             end
         end),

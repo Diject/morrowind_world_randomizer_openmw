@@ -37,7 +37,8 @@ local actor = require("scripts.morrowind_world_randomizer.local.actor")(objectTy
 
 return {
     eventHandlers = {
-        mwr_creature_setEquipment = actor.setEquipment,
-        mwr_creature_randomizeInventory = actor.randomizeInventory,
+        mwr_actor_setEquipment = actor.setEquipment,
+        mwr_actor_randomizeInventory = actor.randomizeInventory,
+        mwr_actor_setDynamicStats = actor.setDynamicStats,
     },
 }

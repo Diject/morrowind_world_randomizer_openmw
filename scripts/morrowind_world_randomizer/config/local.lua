@@ -1,3 +1,5 @@
+local types = require('openmw.types')
+
 local advTable = require("scripts.morrowind_world_randomizer.utils.table")
 local stringLib = require("scripts.morrowind_world_randomizer.utils.string")
 
@@ -58,6 +60,48 @@ this.default = {
                 max = 1,
             },
         },
+        stat = {
+            dynamic = {
+                randomize = true,
+                additive = false,
+                health = {
+                    vregion = {
+                        min = 0.75,
+                        max = 1.25,
+                    },
+                },
+                fatigue = {
+                    vregion = {
+                        min = 0.75,
+                        max = 1.25,
+                    },
+                },
+                magicka = {
+                    vregion = {
+                        min = 0.75,
+                        max = 1.25,
+                    },
+                },
+            },
+            attributes = {
+                randomize = true,
+                additive = false,
+                vregion = {
+                    min = 0.75,
+                    max = 1.25,
+                },
+                limit = 255,
+            },
+            skills = {
+                randomize = true,
+                additive = true,
+                vregion = {
+                    min = -100,
+                    max = 100,
+                },
+                limit = 100,
+            },
+        },
     },
     creature = {
         randomize = true,
@@ -71,6 +115,30 @@ this.default = {
             rregion = {
                 min = 1,
                 max = 1,
+            },
+        },
+        stat = {
+            dynamic = {
+                randomize = true,
+                additive = false,
+                health = {
+                    vregion = {
+                        min = 0.75,
+                        max = 1.25,
+                    },
+                },
+                fatigue = {
+                    vregion = {
+                        min = 0.75,
+                        max = 1.25,
+                    },
+                },
+                magicka = {
+                    vregion = {
+                        min = 0.75,
+                        max = 1.25,
+                    },
+                },
             },
         },
     },
@@ -93,19 +161,19 @@ function this.loadData(data)
     advTable.applyChanges(this.data, data)
 end
 
----@param objectTypeStr string|nil
-function this.getConfigTableByObjectType(objectTypeStr)
-    if objectTypeStr == nil then
+---@param objectType any
+function this.getConfigTableByObjectType(objectType)
+    if objectType == nil then
         return this.data.world
-    elseif objectTypeStr == objectIds.npc then
+    elseif objectType == objectIds.npc or objectType == types.NPC then
         return this.data.npc
-    elseif objectTypeStr == objectIds.creature then
+    elseif objectType == objectIds.creature or objectType == types.Creature then
         return this.data.creature
-    elseif objectTypeStr == objectIds.container then
+    elseif objectType == objectIds.container or objectType == types.Container then
         return this.data.container
-    elseif objectTypeStr == objectIds.static then
+    elseif objectType == objectIds.static then
         return this.data.world.static
-    elseif objectTypeStr == "HERB" then
+    elseif objectType == "HERB" then
         return this.data.world.herb
     end
     return nil
