@@ -1,5 +1,8 @@
 local objectType = require("scripts.morrowind_world_randomizer.generator.types").objectStrType
 local random = require("scripts.morrowind_world_randomizer.utils.random")
+local log = require("scripts.morrowind_world_randomizer.utils.log")
+
+require("scripts.morrowind_world_randomizer.generator.spells")
 
 local self = require('openmw.self')
 local types = require('openmw.types')
@@ -136,7 +139,6 @@ function this.randomizeSkillBaseValues(config)
     local skills = types.NPC.stats.skills
     local skillConfig = config.stat.skills
     local getVal = function(var)
-        print(var.base)
         if skillConfig.additive then
             return math.floor(math.max(0, math.min(skillConfig.limit, var.base + random.getBetween(skillConfig.vregion.min, skillConfig.vregion.max))))
         else
@@ -174,6 +176,87 @@ function this.randomizeSkillBaseValues(config)
 
     for _, skill in pairs(skillsTable) do
         skill.base = getVal(skill)
+    end
+end
+
+---@param spellsData mwr.spellsData
+local function chooseNewSpellId(spellsData, oldId, config, skipChecks)
+    local id = oldId and oldId:lower()
+    local advSpellData = id and spellsData.objects[id]
+    if advSpellData or skipChecks then
+        local group
+        local pos
+        if config.bySkill then
+            local tb = {}
+            local skills = types.NPC.stats.skills
+            table.insert(tb, {core.magic.SCHOOL.Alteration, skills.alteration(self)})
+            table.insert(tb, {core.magic.SCHOOL.Conjuration, skills.conjuration(self)})
+            table.insert(tb, {core.magic.SCHOOL.Destruction, skills.destruction(self)})
+            table.insert(tb, {core.magic.SCHOOL.Illusion, skills.illusion(self)})
+            table.insert(tb, {core.magic.SCHOOL.Mysticism, skills.mysticism(self)})
+            table.insert(tb, {core.magic.SCHOOL.Restoration, skills.restoration(self)})
+            table.sort(tb, function(a, b) return a[2].modified > b[2].modified end)
+            local school = tb[math.random(1, math.min(6, config.BySkillMax))][1]
+            local level = Actor.stats.level(self).current
+            group = spellsData.groups[core.magic.SPELL_TYPE.Spell][school]
+            pos = math.min(1, level / config.levelReference) * #group
+        elseif config.bySchool then
+            local schoolPos, school = random.getRandomFromTable(advSpellData.schPoss)
+            pos = schoolPos
+            if school then
+                group = spellsData.groups[core.magic.SPELL_TYPE.Spell][school]
+            end
+        else
+            group = spellsData.groups[core.magic.SPELL_TYPE.Spell].all
+            pos = advSpellData and advSpellData.pos or math.min(1, Actor.stats.level(self).current / config.levelReference) * #group
+        end
+        if group then
+            local newSpellPos = random.getRandom(pos, #group, config.rregion.min, config.rregion.max)
+            return group[newSpellPos]
+        end
+    end
+    return nil
+end
+
+function this.randmizeSpells(data)
+    log("Actor spells", self)
+    local spellConfig = data.config.spell
+    ---@type mwr.spellsData
+    local spellsData = data.spellsData
+    local spells = Actor.spells(self)
+    local spellList = {}
+    for _, spell in pairs(spells) do
+        if spell.type == core.magic.SPELL_TYPE.Spell then
+            table.insert(spellList, spell)
+        end
+    end
+    local removeCount = spellConfig.remove.count
+    while removeCount > 0 do
+        if #spellList > 0 then
+            local pos = math.random(1, #spellList)
+            local spell = spellList[pos]
+            log("removing", spell)
+            spells:remove(spell)
+            table.remove(spellList, pos)
+            removeCount = removeCount - 1
+        else
+            break
+        end
+    end
+    if spellConfig.randomize then
+        for _, spell in pairs(spellList) do
+            local id = spell.id:lower()
+            local newSpellId = chooseNewSpellId(spellsData, id, spellConfig)
+            log("new spell", newSpellId)
+            spells:add(newSpellId)
+        end
+    end
+    local addCount = spellConfig.add.count
+    while addCount > 0 do
+        local newSpellId = chooseNewSpellId(spellsData, nil, spellConfig.add, true)
+        log("new spell", newSpellId)
+        spells:add(newSpellId)
+        addCount = addCount - 1
     end
 end
 

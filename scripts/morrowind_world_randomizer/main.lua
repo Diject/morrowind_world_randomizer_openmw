@@ -55,6 +55,7 @@ local function initData()
         globalStorage.data.floraData = statics.generateFloraData()
         globalStorage.data.herbsData = require("scripts.morrowind_world_randomizer.generator.containers").generateHerbData()
         globalStorage.data.creaturesData = require("scripts.morrowind_world_randomizer.generator.creatures").generateCreatureData()
+        globalStorage.data.spellsData = require("scripts.morrowind_world_randomizer.generator.spells").generateSpellData()
         globalStorage.saveGameFilesDataToStorage()
         globalStorage.save()
     end
@@ -113,8 +114,11 @@ local function onActorActive(actor)
             end
 
             if config.stat.skills and config.stat.skills.randomize then
-                print("test222")
                 actor:sendEvent("mwr_actor_randomizeSkillBaseValues", config)
+            end
+
+            if config.spell then
+                actor:sendEvent("mwr_actor_randomizeSpells", {config = config, spellsData = globalData.spellsData})
             end
         end
 

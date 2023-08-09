@@ -5,6 +5,7 @@ require("scripts.morrowind_world_randomizer.generator.items")
 require("scripts.morrowind_world_randomizer.generator.statics")
 require("scripts.morrowind_world_randomizer.generator.containers")
 require("scripts.morrowind_world_randomizer.generator.creatures")
+require("scripts.morrowind_world_randomizer.generator.spells")
 
 local tableLib = require("scripts.morrowind_world_randomizer.utils.table")
 
@@ -22,6 +23,7 @@ this.version = 1
 ---@field rocksData mwr.staticsData
 ---@field herbsData mwr.containersData
 ---@field creaturesData mwr.creaturesData
+---@field spellsData mwr.spellsData
 
 this.storage = nil
 ---@type mwr.globalStorageData

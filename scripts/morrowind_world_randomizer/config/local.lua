@@ -78,8 +78,8 @@ this.default = {
                 },
                 magicka = {
                     vregion = {
-                        min = 0.75,
-                        max = 1.25,
+                        min = 1,
+                        max = 2,
                     },
                 },
             },
@@ -96,10 +96,34 @@ this.default = {
                 randomize = true,
                 additive = true,
                 vregion = {
-                    min = -100,
-                    max = 100,
+                    min = -40,
+                    max = 40,
                 },
                 limit = 100,
+            },
+        },
+        spell = {
+            randomize = true,
+            bySchool = true,
+            bySkill = false,
+            levelReference = 20,
+            BySkillMax = 2,
+            rregion = {
+                min = 1,
+                max = 1,
+            },
+            add = {
+                count = 10,
+                bySkill = true,
+                BySkillMax = 2,
+                levelReference = 20,
+                rregion = {
+                    min = 1,
+                    max = 1,
+                },
+            },
+            remove = {
+                count = 20,
             },
         },
     },
@@ -135,10 +159,29 @@ this.default = {
                 },
                 magicka = {
                     vregion = {
-                        min = 0.75,
-                        max = 1.25,
+                        min = 1,
+                        max = 2,
                     },
                 },
+            },
+        },
+        spell = {
+            randomize = true,
+            bySchool = true,
+            rregion = {
+                min = 1,
+                max = 1,
+            },
+            add = {
+                count = 10,
+                levelReference = 20,
+                rregion = {
+                    min = 1,
+                    max = 1,
+                },
+            },
+            remove = {
+                count = 20,
             },
         },
     },

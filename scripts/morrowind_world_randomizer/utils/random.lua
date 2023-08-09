@@ -56,4 +56,16 @@ function random.getRandomFromGroup(group, exceptTable)
     return effectId
 end
 
+function random.getRandomFromTable(tb)
+    local ntb = {}
+    for name, _ in pairs(tb) do
+        table.insert(ntb, name)
+    end
+    if #ntb > 0 then
+        local index = ntb[math.random(1, #ntb)]
+        return tb[index], index
+    end
+    return nil
+end
+
 return random
