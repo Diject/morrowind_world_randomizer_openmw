@@ -229,5 +229,15 @@ return {
             local object = data.params.object
             object:teleport(data.params.cell, data.res or data.params.pos, {onGround = data.res and false or true, rotation = data.params.rotation})
         end,
+        mwr_deactivateObject = function(data)
+            local object = data.object
+            if localStorage.isIdInDeletionList(object.id) then
+                localStorage.removeIdFromDeletionList(object.id)
+                log("Parent actor removed", object)
+                object:remove()
+            end
+            localStorage.clearRefRandomizationTimestamp(object)
+            log("Deactivated", object)
+        end
     },
 }

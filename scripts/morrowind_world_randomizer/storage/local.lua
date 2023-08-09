@@ -14,6 +14,10 @@ function this.getRefRandomizationTimestamp(reference)
     return this.data.lastRand[reference.id]
 end
 
+function this.clearRefRandomizationTimestamp(reference)
+    this.data.lastRand[reference.id] = nil
+end
+
 function this.setCellRandomizationTimestamp(cellName)
     this.data.cellLastRand[cellName] = world.getSimulationTime()
 end
