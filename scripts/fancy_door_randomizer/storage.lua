@@ -15,7 +15,7 @@ local this = {}
 
 ---@class doorStorageObject
 ---@field pos vector3
----@field rot vector3
+---@field rotAngle number
 ---@field cell cellData
 ---@field timestamp integer
 
@@ -30,9 +30,8 @@ function this.getData(doorId)
     local data = this.data[doorId]
     if data then
         local cell = data.cell.name == "" and world.getExteriorCell(data.cell.gridX, data.cell.gridY) or world.getCellByName(data.cell.name)
-        print(data.pos, data.rot)
         local pos = util.vector3(data.pos.x, data.pos.y, data.pos.z)
-        local rot = util.transform.rotate(0, util.vector3(data.rot.x, data.rot.y, data.rot.z))
+        local rot = util.transform.rotateZ(data.rotAngle)
         return cell, pos, rot
     end
     return nil
@@ -40,20 +39,19 @@ end
 
 ---@param doorId string
 ---@param pos vector3
----@param rot vector3
+---@param rotAngle number
 ---@param cell cellData
 ---@param timestamp integer
-function this.setRawData(doorId, pos, rot, cell, timestamp)
+function this.setRawData(doorId, pos, rotAngle, cell, timestamp)
     ---@type doorStorageObject
-    local data = {cell = cell, pos = pos, rot = rot, timestamp = timestamp}
+    local data = {cell = cell, pos = pos, rotAngle = rotAngle, timestamp = timestamp}
     this.data[doorId] = data
 end
 
 function this.setData(doorId, pos, rot, cell)
     ---@type doorStorageObject
-    local rotX, rotY, rotZ = rot:getAnglesZYX()
     local data = {cell = {name = cell.name, gridX = cell.gridX, gridY = cell.gridY}, pos = {x = pos.x, y = pos.y, z = pos.z},
-        rot = {x = rotX, y = rotY, z = rotZ}, timestamp = world.getSimulationTime()}
+        rotAngle = rot:getYaw(), timestamp = world.getSimulationTime()}
     this.data[doorId] = data
 end
 
