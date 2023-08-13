@@ -2,58 +2,148 @@ local doorLib = require("scripts.fancy_door_randomizer.door")
 local storage = require("scripts.fancy_door_randomizer.storage")
 
 local Door = require('openmw.types').Door
+local Lockable = require('openmw.types').Lockable
 local Activation = require('openmw.interfaces').Activation
 local async = require('openmw.async')
 local core = require('openmw.core')
 local world = require('openmw.world')
 
+local config = require("scripts.fancy_door_randomizer.config")
+local configData = config.data
+
 local doorsData = nil
 
 local function onInit()
+    math.randomseed(os.time())
     doorLib.init(storage)
-
-    doorsData = doorLib.fingDoors()
-
-    Activation.addHandlerForType(Door,
-        async:callback(function(door, actor)
-            if Door.objectIsInstance(door) and Door.isTeleport(door) and not doorLib.forbiddenDoorIds[door.recordId] then
-                local cell, pos, rot = storage.getData(door.id)
-                if cell then
-                    actor:teleport(cell, pos, {onGround = true, rotation = rot})
-                else
-                    local list = doorLib.getDoorList(door, doorsData)
-                    local newDestinationDoor = list[math.random(1, #list)]
-                    local pos = Door.destPosition(newDestinationDoor)
-                    local rot = Door.destRotation(newDestinationDoor)
-                    local cell = Door.destCell(newDestinationDoor)
-                    local toMainDoor = doorLib.getBackDoor(door)
-                    local targetDoor = doorLib.getBackDoor(newDestinationDoor)
-                    print(door.id, toMainDoor.id, doorLib.getBackDoor(door).id, doorLib.getBackDoor(toMainDoor).id)
-                    storage.setData(door.id, pos, rot, cell)
-                    storage.setData(targetDoor.id, Door.destPosition(toMainDoor), Door.destRotation(toMainDoor), Door.destCell(toMainDoor))
-                    actor:teleport(cell, pos, {onGround = true, rotation = rot})
-                end
-                return false
-            end
-        end)
-    )
+    doorsData = doorLib.fingDoors(storage, config)
 end
 
 local function onSave()
-    return {storage = storage.data}
+    return {storage = storage.data, config = config.data}
 end
 
 local function onLoad(data)
     storage.data = data.storage or {}
+    config.loadData(data.config or {})
+    world.players[1]:sendEvent("fdrbd_updateSettings", {configData = config.data})
     doorLib.init(storage)
-    doorsData = doorLib.fingDoors()
+    doorsData = doorLib.fingDoors(storage, config)
+end
+
+local function onNewGame()
+    world.players[1]:sendEvent("fdrbd_updateSettings", {configData = config.data})
+end
+
+local function chooseDoorByConfigData(doorData, doorConfig)
+    local table = {}
+    local number = 0
+    for name, val in pairs(doorConfig) do
+        if val then
+            local varName = name:sub(3)
+            print(varName)
+            if doorData[varName] then
+                number = number + #doorData[varName]
+                table[varName] = number
+            end
+        end
+    end
+    if number > 0 then
+        local rnd = math.random(1, number)
+        for name, num in pairs(table) do
+            if rnd <= num then
+                return doorData[name][1 + num - rnd]
+            end
+        end
+    end
+end
+
+local function chooseNewDoor(door)
+    local doorConfig = config.getDoorConfigTable(doorLib.isExterior(door.cell), doorLib.isExterior(Door.destCell(door)))
+    if not doorConfig then return end
+    if configData.mode == config.modes[1] then
+        ---@type fdr.doorDB|nil
+        local db = doorLib.findDoorsInRange(door.cell, configData.radius, storage, config)
+        if not db then return end
+        return chooseDoorByConfigData(db, doorConfig)
+    elseif configData.mode == config.modes[2] then
+        local newDoor
+        for i = 1, 20 do
+            local dr = chooseDoorByConfigData(doorsData, doorConfig)
+            if not dr then goto continue end
+            local bdr = doorLib.getBackDoor(dr)
+            if not bdr then goto continue end
+            if config.data.allowLockedExit or not Lockable.isLocked(dr) then
+                newDoor = dr
+                break
+            end
+            ::continue::
+        end
+        return newDoor
+    end
+end
+
+local function changeDoorDestinationAndTeleport(old, new, actor)
+    local pos = Door.destPosition(new)
+    local rot = Door.destRotation(new)
+    local cell = Door.destCell(new)
+    storage.setData(old.id, pos, rot, cell)
+    if configData.swap then
+        storage.setData(new.id, Door.destPosition(old), Door.destRotation(old), Door.destCell(old))
+    end
+    if configData.exitDoor then
+        local toMainDoor = doorLib.getBackDoor(old)
+        local targetDoor = doorLib.getBackDoor(new)
+        if config.data.unlockLockedExit then
+            Lockable.unlock(targetDoor)
+        end
+        storage.setData(targetDoor.id, Door.destPosition(toMainDoor), Door.destRotation(toMainDoor), Door.destCell(toMainDoor))
+        if configData.swap then
+            storage.setData(toMainDoor.id, Door.destPosition(targetDoor), Door.destRotation(targetDoor), Door.destCell(targetDoor))
+        end
+    end
+    actor:teleport(cell, pos, {onGround = true, rotation = rot})
+end
+
+Activation.addHandlerForType(Door,
+    async:callback(function(door, actor)
+        if configData.enabled and Door.isTeleport(door) and not Lockable.isLocked(door) and not doorLib.forbiddenDoorIds[door.recordId] then
+            local storageData = storage.getData(door.id)
+            local timeExpired = storageData and storageData.timestamp + configData.interval < world.getSimulationTime()
+            if storageData and not timeExpired then
+                actor:teleport(storageData.cell, storageData.pos, {onGround = true, rotation = storageData.rotAngle})
+                return false
+            else
+                local success = configData.chance * 0.01 >= math.random()
+                if success then
+                    local newDestinationDoor = chooseNewDoor(door)
+                    if not newDestinationDoor then return end
+                    changeDoorDestinationAndTeleport(door, newDestinationDoor, actor)
+                    return false
+                elseif configData.saveOnFailure then
+                    storage.setData(door.id, Door.destPosition(door), Door.destRotation(door), Door.destCell(door))
+                    if configData.exitDoor then
+                        local toMainDoor = doorLib.getBackDoor(door)
+                        storage.setData(toMainDoor.id, Door.destPosition(toMainDoor), Door.destRotation(toMainDoor), Door.destCell(toMainDoor))
+                    end
+                end
+            end
+        end
+    end)
+)
+
+local function loadConfigData(data)
+    config.loadData(data)
 end
 
 return {
     engineHandlers = {
-        onInit = onInit,
-        onSave = onSave,
-        onLoad = onLoad,
+        onInit = async:callback(onInit),
+        onSave = async:callback(onSave),
+        onLoad = async:callback(onLoad),
+        onNewGame = async:callback(onNewGame),
     },
-
+    eventHandlers = {
+        fdrbd_loadConfigData = async:callback(loadConfigData),
+    },
 }

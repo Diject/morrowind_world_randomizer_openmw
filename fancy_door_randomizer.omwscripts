@@ -1,1 +1,2 @@
 GLOBAL: scripts/fancy_door_randomizer/main.lua
+PLAYER: scripts/fancy_door_randomizer/local/player.lua

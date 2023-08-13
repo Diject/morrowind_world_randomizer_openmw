@@ -1,6 +1,7 @@
 local world = require('openmw.world')
 local util = require('openmw.util')
 
+---@class fdr.doorDataStorage
 local this = {}
 
 ---@class vector3
@@ -13,26 +14,28 @@ local this = {}
 ---@field gridX integer
 ---@field gridY integer
 
----@class doorStorageObject
+---@class fdr.doorStorageObject
 ---@field pos vector3
 ---@field rotAngle number
 ---@field cell cellData
 ---@field timestamp integer
 
----@type table<string, doorStorageObject>
+---@type table<string, fdr.doorStorageObject>
 this.data = {}
 
 function this.getRawData(doorId)
     return this.data[doorId]
 end
 
+---@return fdr.doorStorageObject|nil
 function this.getData(doorId)
     local data = this.data[doorId]
     if data then
         local cell = data.cell.name == "" and world.getExteriorCell(data.cell.gridX, data.cell.gridY) or world.getCellByName(data.cell.name)
         local pos = util.vector3(data.pos.x, data.pos.y, data.pos.z)
         local rot = util.transform.rotateZ(data.rotAngle)
-        return cell, pos, rot
+        local timestamp = data.timestamp
+        return {cell = cell, pos = pos, rotAngle = rot, timestamp = timestamp}
     end
     return nil
 end
@@ -43,13 +46,13 @@ end
 ---@param cell cellData
 ---@param timestamp integer
 function this.setRawData(doorId, pos, rotAngle, cell, timestamp)
-    ---@type doorStorageObject
+    ---@type fdr.doorStorageObject
     local data = {cell = cell, pos = pos, rotAngle = rotAngle, timestamp = timestamp}
     this.data[doorId] = data
 end
 
 function this.setData(doorId, pos, rot, cell)
-    ---@type doorStorageObject
+    ---@type fdr.doorStorageObject
     local data = {cell = {name = cell.name, gridX = cell.gridX, gridY = cell.gridY}, pos = {x = pos.x, y = pos.y, z = pos.z},
         rotAngle = rot:getYaw(), timestamp = world.getSimulationTime()}
     this.data[doorId] = data
