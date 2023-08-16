@@ -41,7 +41,6 @@ local function chooseDoorByConfigData(doorData, doorConfig)
     for name, val in pairs(doorConfig) do
         if val then
             local varName = name:sub(3)
-            print(varName)
             if doorData[varName] then
                 number = number + #doorData[varName]
                 table[varName] = number
