@@ -135,47 +135,51 @@ function this.setAttributeBase(data)
     end
 end
 
-function this.randomizeSkillBaseValues(config)
+function this.randomizeSkillBaseValues(data)
+    local config = data.config
+    ---@type mwr.localStorage.actorData
+    local actorData = data.actorData
+    local skillValues = actorData.skills
     local skills = types.NPC.stats.skills
     local skillConfig = config.stat.skills
-    local getVal = function(var)
+    local getVal = function(val)
         if skillConfig.additive then
-            return math.floor(math.max(0, math.min(skillConfig.limit, var.base + random.getBetween(skillConfig.vregion.min, skillConfig.vregion.max))))
+            return math.floor(math.max(0, math.min(skillConfig.limit, val + random.getBetween(skillConfig.vregion.min, skillConfig.vregion.max))))
         else
-            return math.floor(math.max(0, math.min(skillConfig.limit, var.base * random.getBetween(skillConfig.vregion.min, skillConfig.vregion.max))))
+            return math.floor(math.max(0, math.min(skillConfig.limit, val * random.getBetween(skillConfig.vregion.min, skillConfig.vregion.max))))
         end
     end
     local skillsTable = {}
-    table.insert(skillsTable, skills.acrobatics(self))
-    table.insert(skillsTable, skills.alchemy(self))
-    table.insert(skillsTable, skills.alteration(self))
-    table.insert(skillsTable, skills.armorer(self))
-    table.insert(skillsTable, skills.athletics(self))
-    table.insert(skillsTable, skills.axe(self))
     table.insert(skillsTable, skills.block(self))
-    table.insert(skillsTable, skills.bluntweapon(self))
-    table.insert(skillsTable, skills.conjuration(self))
-    table.insert(skillsTable, skills.destruction(self))
-    table.insert(skillsTable, skills.enchant(self))
-    table.insert(skillsTable, skills.handtohand(self))
-    table.insert(skillsTable, skills.heavyarmor(self))
-    table.insert(skillsTable, skills.illusion(self))
-    table.insert(skillsTable, skills.lightarmor(self))
-    table.insert(skillsTable, skills.longblade(self))
-    table.insert(skillsTable, skills.marksman(self))
+    table.insert(skillsTable, skills.armorer(self))
     table.insert(skillsTable, skills.mediumarmor(self))
-    table.insert(skillsTable, skills.mercantile(self))
+    table.insert(skillsTable, skills.heavyarmor(self))
+    table.insert(skillsTable, skills.bluntweapon(self))
+    table.insert(skillsTable, skills.longblade(self))
+    table.insert(skillsTable, skills.axe(self))
+    table.insert(skillsTable, skills.spear(self))
+    table.insert(skillsTable, skills.athletics(self))
+    table.insert(skillsTable, skills.enchant(self))
+    table.insert(skillsTable, skills.destruction(self))
+    table.insert(skillsTable, skills.alteration(self))
+    table.insert(skillsTable, skills.illusion(self))
+    table.insert(skillsTable, skills.conjuration(self))
     table.insert(skillsTable, skills.mysticism(self))
     table.insert(skillsTable, skills.restoration(self))
-    table.insert(skillsTable, skills.security(self))
-    table.insert(skillsTable, skills.shortblade(self))
-    table.insert(skillsTable, skills.sneak(self))
-    table.insert(skillsTable, skills.spear(self))
-    table.insert(skillsTable, skills.speechcraft(self))
+    table.insert(skillsTable, skills.alchemy(self))
     table.insert(skillsTable, skills.unarmored(self))
+    table.insert(skillsTable, skills.security(self))
+    table.insert(skillsTable, skills.sneak(self))
+    table.insert(skillsTable, skills.acrobatics(self))
+    table.insert(skillsTable, skills.lightarmor(self))
+    table.insert(skillsTable, skills.shortblade(self))
+    table.insert(skillsTable, skills.marksman(self))
+    table.insert(skillsTable, skills.mercantile(self))
+    table.insert(skillsTable, skills.speechcraft(self))
+    table.insert(skillsTable, skills.handtohand(self))
 
-    for _, skill in pairs(skillsTable) do
-        skill.base = getVal(skill)
+    for i, skill in ipairs(skillsTable) do
+        skill.base = getVal(skillValues[i])
     end
 end
 
@@ -218,11 +222,30 @@ local function chooseNewSpellId(spellsData, oldId, config, skipChecks)
     return nil
 end
 
+---@param actorData mwr.localStorage.actorData
+local function restoreSpells(actorData)
+    local spells = Actor.spells(self)
+    local spellList = {}
+    for _, spell in pairs(spells) do
+        if spell.type == core.magic.SPELL_TYPE.Spell then
+            table.insert(spellList, spell)
+        end
+    end
+    for _, spell in pairs(spellList) do
+        spells:remove(spell)
+    end
+    for _, spellId in pairs(actorData.spells) do
+        spells:add(spellId)
+    end
+end
+
 function this.randmizeSpells(data)
     log("Actor spells", self)
     local spellConfig = data.config.spell
     ---@type mwr.spellsData
     local spellsData = data.spellsData
+    local actorData = data.actorData
+    restoreSpells(actorData)
     local spells = Actor.spells(self)
     local spellList = {}
     for _, spell in pairs(spells) do

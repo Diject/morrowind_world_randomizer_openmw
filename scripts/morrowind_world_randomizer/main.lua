@@ -64,8 +64,10 @@ end
 
 local function onActorActive(actor)
     if not localConfig.data.enabled then return end
-    async:newUnsavableSimulationTimer(0.1, function()
+    async:newUnsavableSimulationTimer(0.2, function()
         if not actor or not actor:isValid() then return end
+        local actorSavedData = localStorage.saveActorData(actor)
+        if not actorSavedData then return end
         local config = localConfig.getConfigTableByObjectType(actor.type)
         if not config then return end
         local firstRandomization = isReadyForRandomization(actor, true)
@@ -91,36 +93,6 @@ local function onActorActive(actor)
                 localStorage.setCreatureParentIdData(new, actor)
                 actor.enabled = false
             end
-
-            if config.stat.attributes and config.stat.attributes.randomize then
-                local attributes = types.Actor.stats.attributes
-                local attrConfig = config.stat.attributes
-                local getVal = function(var)
-                    if attrConfig.additive then
-                        return math.floor(math.max(0, math.min(attrConfig.limit, var.base + random.getBetween(attrConfig.vregion.min, attrConfig.vregion.max))))
-                    else
-                        return math.floor(math.max(0, math.min(attrConfig.limit, var.base * random.getBetween(attrConfig.vregion.min, attrConfig.vregion.max))))
-                    end
-                end
-                local data = {}
-                data.agility = getVal(attributes.agility(actor))
-                data.endurance = getVal(attributes.endurance(actor))
-                data.intelligence = getVal(attributes.intelligence(actor))
-                data.luck = getVal(attributes.luck(actor))
-                data.personality = getVal(attributes.personality(actor))
-                data.speed = getVal(attributes.speed(actor))
-                data.strength = getVal(attributes.strength(actor))
-                data.willpower = getVal(attributes.willpower(actor))
-                actor:sendEvent("mwr_actor_setAttributeBase", data)
-            end
-
-            if config.stat.skills and config.stat.skills.randomize then
-                actor:sendEvent("mwr_actor_randomizeSkillBaseValues", config)
-            end
-
-            if config.spell then
-                actor:sendEvent("mwr_actor_randomizeSpells", {config = config, spellsData = globalData.spellsData})
-            end
         end
 
         if firstRandomization or (isAlive and isReadyForRandomization(actor)) then
@@ -128,10 +100,11 @@ local function onActorActive(actor)
                 localStorage.setRefRandomizationTimestamp(actor)
                 actor:sendEvent("mwr_actor_randomizeInventory", {itemsData = globalData.itemsData, config = config})
             end
+
             if config.stat.dynamic.randomize and isAlive then
-                local health = types.Actor.stats.dynamic.health(actor).base
-                local magicka = types.Actor.stats.dynamic.magicka(actor).base
-                local fatigue = types.Actor.stats.dynamic.fatigue(actor).base
+                local health = actorSavedData.health
+                local magicka = actorSavedData.magicka
+                local fatigue = actorSavedData.fatigue
                 if config.stat.dynamic.additive then
                     health = math.max(1, health + random.getBetween(config.stat.dynamic.health.vregion.min, config.stat.dynamic.health.vregion.max))
                     magicka = math.max(1, magicka + random.getBetween(config.stat.dynamic.magicka.vregion.min, config.stat.dynamic.magicka.vregion.max))
@@ -142,6 +115,38 @@ local function onActorActive(actor)
                     fatigue = math.max(1, fatigue * random.getBetween(config.stat.dynamic.fatigue.vregion.min, config.stat.dynamic.fatigue.vregion.max))
                 end
                 actor:sendEvent("mwr_actor_setDynamicStats", {health = health, magicka = magicka, fatigue = fatigue})
+            end
+
+            if config.stat.attributes and config.stat.attributes.randomize then
+                local attributes = actorSavedData.attributes
+                local attrConfig = config.stat.attributes
+                local getVal = function(val)
+                    if attrConfig.additive then
+                        return math.floor(math.max(0, math.min(attrConfig.limit, val + random.getBetween(attrConfig.vregion.min, attrConfig.vregion.max))))
+                    else
+                        return math.floor(math.max(0, math.min(attrConfig.limit, val * random.getBetween(attrConfig.vregion.min, attrConfig.vregion.max))))
+                    end
+                end
+                local data = {}
+                data.agility = getVal(attributes.agility)
+                data.endurance = getVal(attributes.endurance)
+                data.intelligence = getVal(attributes.intelligence)
+                data.luck = getVal(attributes.luck)
+                data.personality = getVal(attributes.personality)
+                data.speed = getVal(attributes.speed)
+                data.strength = getVal(attributes.strength)
+                data.willpower = getVal(attributes.willpower)
+                actor:sendEvent("mwr_actor_setAttributeBase", data)
+            end
+
+            if config.stat.skills and config.stat.skills.randomize then
+                actor:sendEvent("mwr_actor_randomizeSkillBaseValues", {config = config, actorData = actorSavedData})
+            end
+
+            if config.spell then
+                async:newUnsavableSimulationTimer(0.2, function()
+                    actor:sendEvent("mwr_actor_randomizeSpells", {config = config, spellsData = globalData.spellsData, actorData = actorSavedData})
+                end)
             end
         end
     end)

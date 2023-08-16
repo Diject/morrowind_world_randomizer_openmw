@@ -43,7 +43,6 @@ function this.generateCreatureData()
                 findCreature(tempData[id].creatures, grp)
             else
                 grp[id] = true
-                print(id)
             end
         end
     end
@@ -69,10 +68,6 @@ function this.generateCreatureData()
             if not out.groups[groupId] then out.groups[groupId] = {} end
             table.insert(out.groups[groupId], data.id)
         end
-    end
-
-    for id, _ in pairs(out.objects) do
-        log("test", id)
     end
 
     return out
