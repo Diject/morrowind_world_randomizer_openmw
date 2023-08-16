@@ -7,10 +7,10 @@ local nearby = require("openmw.nearby")
 local config = require("scripts.morrowind_world_randomizer.config.local")
 require("scripts.morrowind_world_randomizer.settings")
 
-config.loadPlayerSettings(storage.playerSection(config.storageName.."_0"):asTable())
-config.loadPlayerSettings(storage.playerSection(config.storageName.."_1"):asTable())
-config.loadPlayerSettings(storage.playerSection(config.storageName.."_2"):asTable())
-core.sendGlobalEvent("mwr_loadLocalConfigData", config.data)
+-- config.loadPlayerSettings(storage.playerSection(config.storageName.."_0"):asTable())
+-- config.loadPlayerSettings(storage.playerSection(config.storageName.."_1"):asTable())
+-- config.loadPlayerSettings(storage.playerSection(config.storageName.."_2"):asTable())
+-- core.sendGlobalEvent("mwr_loadLocalConfigData", config.data)
 
 ---@class mwr.lowestInCircle.attributes
 ---@field pos any
@@ -60,5 +60,24 @@ end
 return {
     eventHandlers = {
         mwr_lowestPosInCircle = lowestInCircle,
+        mwrbd_updateSettings = async:callback(function(data)
+            local configData = data.configData
+            if not configData then return end
+            config.data = configData
+            local function filStorage(storageSection)
+                for name, val in pairs(storageSection:asTable()) do
+                    local confVal = config.getValueByString(name)
+                    if confVal and confVal ~= val then
+                        storageSection:set(name, confVal)
+                    end
+                end
+            end
+            filStorage(storage.playerSection(config.storageName))
+            filStorage(storage.playerSection(config.storageName.."_0"))
+            filStorage(storage.playerSection(config.storageName.."_1"))
+            filStorage(storage.playerSection(config.storageName.."_2"))
+            filStorage(storage.playerSection(config.storageName.."_3"))
+            filStorage(storage.playerSection(config.storageName.."_4"))
+        end),
     },
 }

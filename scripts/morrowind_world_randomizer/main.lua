@@ -63,7 +63,8 @@ local function initData()
 end
 
 local function onActorActive(actor)
-    async:newUnsavableSimulationTimer(1, function()
+    if not localConfig.data.enabled then return end
+    async:newUnsavableSimulationTimer(0.1, function()
         if not actor or not actor:isValid() then return end
         local config = localConfig.getConfigTableByObjectType(actor.type)
         if not config then return end
@@ -162,6 +163,7 @@ time.runRepeatedly(function()
 end, 30 * time.second, { initialDelay = 10 * time.second })
 
 local function onObjectActive(object)
+    if not localConfig.data.enabled then return end
     cellLib.randomize(object.cell)
     cellsForCheck[object.cell] = true
 end
@@ -176,7 +178,8 @@ local function onSave()
 end
 
 local function onLoad(data)
-    -- localConfig.loadData(data.config)
+    localConfig.loadData(data.config)
+    world.players[1]:sendEvent("mwrbd_updateSettings", {configData = localConfig.data})
     localStorage.loadData(data.storage)
     if not globalData then
         initData()
@@ -184,13 +187,18 @@ local function onLoad(data)
     end
 end
 
+local function onNewGame()
+    world.players[1]:sendEvent("mwrbd_updateSettings", {configData = localConfig.data})
+end
+
 return {
     engineHandlers = {
         onActorActive = async:callback(onActorActive),
-        onObjectActive = onObjectActive,
-        onInit = onInit,
-        onSave = onSave,
-        onLoad = onLoad,
+        onObjectActive = async:callback(onObjectActive),
+        onInit = async:callback(onInit),
+        onSave = async:callback(onSave),
+        onLoad = async:callback(onLoad),
+        onNewGame = async:callback(onNewGame),
     },
     eventHandlers = {
         mwr_updateInventory = async:callback(function(data)

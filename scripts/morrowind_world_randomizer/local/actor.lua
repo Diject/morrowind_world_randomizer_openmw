@@ -196,7 +196,7 @@ local function chooseNewSpellId(spellsData, oldId, config, skipChecks)
             table.insert(tb, {core.magic.SCHOOL.Mysticism, skills.mysticism(self)})
             table.insert(tb, {core.magic.SCHOOL.Restoration, skills.restoration(self)})
             table.sort(tb, function(a, b) return a[2].modified > b[2].modified end)
-            local school = tb[math.random(1, math.min(6, config.BySkillMax))][1]
+            local school = tb[math.random(1, math.min(6, config.bySkillMax))][1]
             local level = Actor.stats.level(self).current
             group = spellsData.groups[core.magic.SPELL_TYPE.Spell][school]
             pos = math.min(1, level / config.levelReference) * #group
