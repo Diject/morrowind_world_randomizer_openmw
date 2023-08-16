@@ -71,7 +71,7 @@ function this.setDynamicBaseStats(data)
         var.current = data.magicka * mul
     end
     if data.fatigue then
-        local var = Actor.stats.dynamic.health(self)
+        local var = Actor.stats.dynamic.fatigue(self)
         local mul = math.min(var.current / var.base, 1)
         var.base = data.fatigue
         var.current = data.fatigue * mul
