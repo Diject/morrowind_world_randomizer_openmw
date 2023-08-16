@@ -1,5 +1,7 @@
 local log = require("scripts.morrowind_world_randomizer.utils.log")
 
+local generatorData = require("scripts.morrowind_world_randomizer.generator.data")
+
 local localConfig = require("scripts.morrowind_world_randomizer.config.local")
 local localStorage = require("scripts.morrowind_world_randomizer.storage.local")
 local globalStorage = require("scripts.morrowind_world_randomizer.storage.global")
@@ -211,11 +213,25 @@ return {
             if config then
                 local equipment = (data.objectType == objectType.npc or data.objectType == objectType.creature) and types.Actor.getEquipment(data.object) or {}
                 for _, itemData in pairs(data.items) do
-                    ---@type mwr.itemPosData
-                    local advData = itemData.advData or globalData.itemsData.items[itemData.item.recordId]
-                    if not advData then goto continue end
-                    local grp = globalData.itemsData.groups[advData.type][advData.subType]
-                    local newId = grp[random.getRandom(advData.pos, #grp, config.item.rregion.min, config.item.rregion.max)]
+                    local isArtifact = generatorData.obtainableArtifacts[itemData.item.recordId]
+                    local newId
+                    if isArtifact then
+                        if not localStorage.data.other.artifacts or #localStorage.data.other.artifacts == 0 then
+                            localStorage.data.other.artifacts = {}
+                            for id, _ in pairs(generatorData.obtainableArtifacts) do
+                                table.insert(localStorage.data.other.artifacts, id)
+                            end
+                        end
+                        local pos = math.random(1, #localStorage.data.other.artifacts)
+                        newId = localStorage.data.other.artifacts[pos]
+                        table.remove(localStorage.data.other.artifacts, pos)
+                    else
+                        ---@type mwr.itemPosData
+                        local advData = itemData.advData or globalData.itemsData.items[itemData.item.recordId]
+                        if not advData then goto continue end
+                        local grp = globalData.itemsData.groups[advData.type][advData.subType]
+                        newId = grp[random.getRandom(advData.pos, #grp, config.item.rregion.min, config.item.rregion.max)]
+                    end
                     local obj = createItem(newId, itemData.item, itemData, data.objectType == objectType.creature)
                     log("object ", data.object, "new item ", obj, "old item ", itemData.item, "count ", obj.count)
                     localStorage.setRefRandomizationTimestamp(obj)

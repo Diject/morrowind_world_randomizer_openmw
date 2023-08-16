@@ -1,5 +1,7 @@
 local this = {}
 
+local generatorData = require("scripts.morrowind_world_randomizer.generator.data")
+
 local log = require("scripts.morrowind_world_randomizer.utils.log")
 local random = require("scripts.morrowind_world_randomizer.utils.random")
 local advString = require("scripts.morrowind_world_randomizer.utils.string")
@@ -101,9 +103,24 @@ this.randomize = async:callback(function(cell)
         for _, item in pairs(items or {}) do
             ---@type mwr.itemPosData
             local advItemData = this.itemsData.items[item.recordId]
-            if advItemData and config then
+            local isArtifact = generatorData.obtainableArtifacts[item.recordId]
+            local newId
+            if isArtifact then
+                if not this.storage.data.other.artifacts or #this.storage.data.other.artifacts == 0 then
+                    this.storage.data.other.artifacts = {}
+                    for id, _ in pairs(generatorData.obtainableArtifacts) do
+                        table.insert(this.storage.data.other.artifacts, id)
+                    end
+                end
+                local pos = math.random(1, #this.storage.data.other.artifacts)
+                newId = this.storage.data.other.artifacts[pos]
+                table.remove(this.storage.data.other.artifacts, pos)
+            elseif advItemData and config then
                 local grp = this.itemsData.groups[advItemData.type][advItemData.subType]
-                local newId = grp[random.getRandom(advItemData.pos, #grp, config.item.rregion.min, config.item.rregion.max)]
+                newId = grp[random.getRandom(advItemData.pos, #grp, config.item.rregion.min, config.item.rregion.max)]
+            end
+
+            if newId then
                 local new = this.createItem(newId, item)
                 local pos = item.position
                 local rot = item.rotation

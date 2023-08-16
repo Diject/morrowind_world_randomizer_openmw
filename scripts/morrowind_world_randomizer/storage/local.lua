@@ -5,7 +5,7 @@ local Actor = types.Actor
 ---@class mwr.localStorage
 local this = {}
 
-this.data = {lastRand = {}, cellLastRand = {}, creatureParent = {}, deletionList = {}, actorBase = {}}
+this.data = {lastRand = {}, cellLastRand = {}, creatureParent = {}, deletionList = {}, actorBase = {}, other = {}}
 
 function this.setRefRandomizationTimestamp(reference)
     this.data.lastRand[reference.id] = world.getSimulationTime()
