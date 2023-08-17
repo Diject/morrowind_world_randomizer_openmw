@@ -60,31 +60,50 @@ function this.init(globalStorage, config, storage)
     this.storage = storage
 end
 
-local function createNewStatic(oldObj, group)
+local function get2DDistance(vector1, vector2)
+    if not vector1 or not vector2 then return 0 end
+    return math.sqrt((vector2.x - vector1.x) ^ 2 + (vector2.y - vector1.y) ^ 2)
+end
+
+local function minDistanceBetweenVectors(vector, vectorArray)
+    local distance = math.huge
+    for i, vector2 in pairs(vectorArray) do
+        distance = math.min(distance, get2DDistance(vector, vector2))
+    end
+    return distance
+end
+
+local function createNewStatic(oldObj, group, nearestObjects)
     local newObj = world.createObject(group[math.random(1, #group)], 1)
     local box1 = oldObj:getBoundingBox()
     local box2 = newObj:getBoundingBox()
     local scale = math.huge
-    local radius = 0
+    local radius1 = 0
+    local radius2 = 0
     for i, vert in pairs(box1.vertices) do
-        scale = math.min(math.abs(vert.x) / math.abs(box2.vertices[i].x), scale)
-        scale = math.min(math.abs(vert.y) / math.abs(box2.vertices[i].y), scale)
-        radius = math.max(math.abs(vert.x), radius)
-        radius = math.max(math.abs(vert.y), radius)
+        radius1 = math.max(math.abs(vert.x), radius1)
+        radius1 = math.max(math.abs(vert.y), radius1)
+        radius2 = math.max(math.abs(box2.vertices[i].x), radius2)
+        radius2 = math.max(math.abs(box2.vertices[i].y), radius2)
     end
-    -- local pos = util.vector3(oldObj.position.x, oldObj.position.y, oldObj.position.z + box1.vertices[1].z - box2.vertices[1].z * scale)
-    -- local pos = util.vector3(oldObj.position.x, oldObj.position.y, oldObj.position.z + box1.vertices[1].z / oldObj.scale - box2.vertices[1].z * scale)
+    scale = radius1 / radius2
+    if nearestObjects then
+        local distanceToNearest = minDistanceBetweenVectors(oldObj.position, nearestObjects)
+        local safeRadius = radius1 * 1.3
+        if safeRadius > distanceToNearest then
+            scale = distanceToNearest / (safeRadius * radius2)
+        end
+    end
     local offset = (box2.vertices[1].z + math.abs(box2.vertices[8].z - box2.vertices[1].z) * 0.15) * scale
     world.players[1]:sendEvent("mwr_lowestPosInCircle", {
         object = newObj,
         cell = oldObj.cell.name,
         pos = util.vector3(oldObj.position.x, oldObj.position.y, oldObj.position.z + 1000),
         rotation = oldObj.rotation,
-        radius = radius,
+        radius = radius1,
         offset = -offset,
         callbackName = "mwr_moveToPoint",
     })
-    -- newObj:teleport(oldObj.cell, pos, {onGround = true, rotation = oldObj.rotation})
     newObj:setScale(scale)
     oldObj:remove()
 end
@@ -92,10 +111,11 @@ end
 this.randomize = async:callback(function(cell)
     if not cell then return end
     local cellName = advString.getCellName(cell)
+    local firstTime = not this.storage.getCellRandomizationTimestamp(cellName)
     if this.isReadyForRandomization(cellName) then
         log("cell randomization", cellName)
 
-        this.randomizeStatics(cell)
+        this.randomizeStatics(cell, firstTime)
 
         this.storage.setCellRandomizationTimestamp(cellName)
         local config = this.config.getConfigTableByObjectType(nil)
@@ -159,71 +179,62 @@ this.randomize = async:callback(function(cell)
     end
 end)
 
-local function get2DDistance(vector1, vector2)
-    if not vector1 or not vector2 then return 0 end
-    return math.sqrt((vector2.x - vector1.x) ^ 2 + (vector2.y - vector1.y) ^ 2)
-end
-
-local function minDistanceBetweenVectors(vector, vectorArray)
-    local distance = math.huge
-    for i, vector2 in pairs(vectorArray) do
-        distance = math.min(distance, get2DDistance(vector, vector2))
-    end
-    return distance
-end
-
-this.randomizeStatics = async:callback(function(cell)
+this.randomizeStatics = async:callback(function(cell, isFirstTime)
     if not cell.isExterior then return end
-    if this.config.data.world.static.tree.randomize then
+    local config = this.config.data.world.static
+    if config.tree.randomize or config.rock.randomize or config.rock.randomize then
         local statics = cell:getAll(types.Static)
+
+        local importantObjPositions
+        if isFirstTime then
+            importantObjPositions = {}
+            for i = cell.gridX - 1, cell.gridX + 1 do
+                for j = cell.gridY - 1, cell.gridY + 1 do
+                    local objCell = world.getExteriorCell(i, j)
+                    if objCell then
+                        local objects = {}
+                        tableLib.addTableValuesToTable(objects, cell:getAll(types.Door))
+                        tableLib.addTableValuesToTable(objects, cell:getAll(types.NPC))
+                        tableLib.addTableValuesToTable(objects, cell:getAll(types.Creature))
+                        tableLib.addTableValuesToTable(objects, cell:getAll(types.Activator))
+                        for _, obj in pairs(objects) do
+                            table.insert(importantObjPositions, util.vector2(obj.position.x, obj.position.y))
+                        end
+                    end
+                end
+            end
+        end
+
         local groupTrees = {}
-        if this.config.data.world.static.tree.randomize then
-            for i = 1, this.config.data.world.static.tree.typesPerCell do
+        if config.tree.randomize then
+            for i = 1, config.tree.typesPerCell do
                 tableLib.addTableValuesToTable(groupTrees, this.treesData.groups[math.random(1, #this.treesData.groups)])
             end
         end
         local groupRocks = {}
-        if this.config.data.world.static.rock.randomize then
-            for i = 1, this.config.data.world.static.rock.typesPerCell do
+        if config.rock.randomize then
+            for i = 1, config.rock.typesPerCell do
                 tableLib.addTableValuesToTable(groupRocks, this.rocksData.groups[math.random(1, #this.rocksData.groups)])
             end
         end
         local groupFlora = {}
-        if this.config.data.world.static.rock.randomize then
-            for i = 1, this.config.data.world.static.flora.typesPerCell do
+        if config.rock.randomize then
+            for i = 1, config.flora.typesPerCell do
                 tableLib.addTableValuesToTable(groupFlora, this.floraData.groups[math.random(1, #this.floraData.groups)])
             end
         end
         for i, obj in pairs(statics) do
             if obj.enabled then
-                if this.config.data.world.static.tree.randomize and this.treesData.objects[obj.recordId] then
-                    createNewStatic(obj, groupTrees)
-                elseif this.config.data.world.static.rock.randomize and this.rocksData.objects[obj.recordId] then
-                    createNewStatic(obj, groupRocks)
-                elseif this.config.data.world.static.flora.randomize and this.floraData.objects[obj.recordId] then
-                    createNewStatic(obj, groupFlora)
+                if config.tree.randomize and this.treesData.objects[obj.recordId] then
+                    createNewStatic(obj, groupTrees, importantObjPositions)
+                elseif config.rock.randomize and this.rocksData.objects[obj.recordId] then
+                    createNewStatic(obj, groupRocks, importantObjPositions)
+                elseif config.flora.randomize and this.floraData.objects[obj.recordId] then
+                    createNewStatic(obj, groupFlora, importantObjPositions)
                 end
             end
         end
     end
-    -- if this.config.data.world.static.rock.randomize then
-    --     local statics = cell:getAll(types.Static)
-    --     local group = this.rocksData.groups[math.random(1, #this.rocksData.groups)]
-    --     for i, obj in pairs(statics) do
-    --         if this.rocksData.objects[obj.recordId] and obj.enabled then
-    --             createNewStatic(obj, group)
-    --         end
-    --     end
-    -- end
-    -- if this.config.data.world.static.flora.randomize then
-    --     local statics = cell:getAll(types.Static)
-    --     local group = this.floraData.groups[math.random(1, #this.floraData.groups)]
-    --     for i, obj in pairs(statics) do
-    --         if this.floraData.objects[obj.recordId] and obj.enabled then
-    --             createNewStatic(obj, group)
-    --         end
-    --     end
-    -- end
 end)
 
 return this
