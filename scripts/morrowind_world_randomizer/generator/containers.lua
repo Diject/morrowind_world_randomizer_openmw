@@ -21,7 +21,7 @@ function this.generateHerbData()
         local id = object.id:lower()
         local name = object.name:lower()
         if not generatorData.forbiddenIds[id] and object.mwscript == "" and object.weight == 0 and not name:find("chest") and
-                not id:find("test") and not id:find("bag") then
+                not id:find("test") and not id:find("bag") and not id:find("rock") then
             out.objects[id] = {}
             table.insert(out.list, id)
         end

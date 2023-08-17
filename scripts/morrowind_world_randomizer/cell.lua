@@ -133,7 +133,7 @@ this.randomize = async:callback(function(cell)
         local containers = cell:getAll(types.Container)
         config = this.config.getConfigTableByObjectType(objectType.container)
         for _, container in pairs(containers or {}) do
-            if types.Container.record(container).weight == 0 then -- for herbs
+            if this.herbsData.objects[container.recordId] then -- for herbs
                 if this.config.data.world.herb.item.randomize then
                     local inventory = types.Container.content(container)
                     if not inventory:isResolved() then
