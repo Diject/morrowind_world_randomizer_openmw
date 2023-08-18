@@ -193,6 +193,56 @@ this.default = {
                 max = 1,
             },
         },
+        lock = {
+            chance = 100,
+            rregion = {
+                min = 1,
+                max = 1,
+            },
+            add = {
+                chance = 15,
+                levelReference = 1,
+            },
+            remove = {
+                chance = 25,
+            },
+        },
+        trap = {
+            chance = 100,
+            add = {
+                chance = 25,
+                levelReference = 1,
+            },
+            remove = {
+                chance = 25,
+            },
+        },
+    },
+    door = {
+        lock = {
+            chance = 100,
+            rregion = {
+                min = 1,
+                max = 1,
+            },
+            add = {
+                chance = 15,
+                levelReference = 1,
+            },
+            remove = {
+                chance = 25,
+            },
+        },
+        trap = {
+            chance = 100,
+            add = {
+                chance = 25,
+                levelReference = 1,
+            },
+            remove = {
+                chance = 25,
+            },
+        },
     },
 }
 
@@ -214,6 +264,8 @@ function this.getConfigTableByObjectType(objectType)
         return this.data.creature
     elseif objectType == objectIds.container or objectType == types.Container then
         return this.data.container
+    elseif objectType == objectIds.door or objectType == types.Door then
+        return this.data.door
     elseif objectType == objectIds.static then
         return this.data.world.static
     elseif objectType == "HERB" then

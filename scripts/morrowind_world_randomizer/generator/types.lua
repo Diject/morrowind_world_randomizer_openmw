@@ -16,6 +16,7 @@ this.objectStrType = {
     npc = "NPC_",
     creature = "CREA",
     container = "CONT",
+    door = "DOOR",
 }
 
 return this

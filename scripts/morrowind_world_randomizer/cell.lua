@@ -10,6 +10,7 @@ local tableLib = require("scripts.morrowind_world_randomizer.utils.table")
 local types = require('openmw.types')
 local world = require("openmw.world")
 local util = require("openmw.util")
+local core = require('openmw.core')
 local async = require('openmw.async')
 
 local objectType = require("scripts.morrowind_world_randomizer.generator.types").objectStrType
@@ -26,6 +27,8 @@ this.rocksData = nil
 this.floraData = nil
 ---@type mwr.containersData
 this.herbsData = nil
+---@type mwr.spellsData
+this.spellsData = nil
 ---@type mwr.config
 this.config = nil
 ---@type mwr.localStorage
@@ -56,6 +59,7 @@ function this.init(globalStorage, config, storage)
     this.rocksData = globalStorage.rocksData
     this.floraData = globalStorage.floraData
     this.herbsData = globalStorage.herbsData
+    this.spellsData = globalStorage.spellsData
     this.config = config
     this.storage = storage
 end
@@ -106,6 +110,37 @@ local function createNewStatic(oldObj, group, nearestObjects)
     })
     newObj:setScale(scale)
     oldObj:remove()
+end
+
+local function lockTrap(object, config)
+    if types.Lockable.isLocked(object) then
+        if config.lock.remove.chance * 0.01 > math.random() then
+            types.Lockable.unlock(object)
+        elseif config.lock.chance * 0.01 > math.random() then
+            local lockLevel = types.Lockable.getLockLevel(object)
+            types.Lockable.lock(object, random.getRandom(lockLevel, 100, config.lock.rregion.min, config.lock.rregion.max))
+        end
+    elseif config.lock.add.chance * 0.01 > math.random() then
+        local playerLevel = types.Actor.stats.level(world.players[1]).current
+        local val = math.floor(math.random() * 100 * playerLevel / config.lock.add.levelReference)
+        types.Lockable.lock(object, val)
+    end
+    local trap = types.Lockable.getTrapSpell(object)
+    if trap then
+        if config.trap.remove.chance * 0.01 > math.random() then
+            types.Lockable.setTrapSpell(object, "")
+        elseif config.trap.chance * 0.01 > math.random() then
+            local group = this.spellsData.groups[core.magic.SPELL_TYPE.Spell].trapHarm
+            local playerLevel = types.Actor.stats.level(world.players[1]).current
+            local pos = random.getRandom(math.floor(#group * playerLevel / config.trap.levelReference), #group, 1, 0)
+            types.Lockable.setTrapSpell(object, group[pos])
+        end
+    elseif config.trap.add.chance * 0.01 > math.random() then
+        local group = this.spellsData.groups[core.magic.SPELL_TYPE.Spell].trapHarm
+        local playerLevel = types.Actor.stats.level(world.players[1]).current
+        local pos = random.getRandom(math.floor(#group * playerLevel / config.trap.add.levelReference), #group, 1, 0)
+        types.Lockable.setTrapSpell(object, group[pos])
+    end
 end
 
 this.randomize = async:callback(function(cell)
@@ -168,13 +203,22 @@ this.randomize = async:callback(function(cell)
                     end
                     createNewStatic(container, group)
                 end
-            else
-                local inventory = types.Container.content(container)
-                if not inventory:isResolved() then
-                    inventory:resolve()
+            elseif config then
+                if config.item.randomize then
+                    local inventory = types.Container.content(container)
+                    if not inventory:isResolved() then
+                        inventory:resolve()
+                    end
+                    container:sendEvent("mwr_container_randomizeInventory", {itemsData = this.itemsData, config = config})
                 end
-                container:sendEvent("mwr_container_randomizeInventory", {itemsData = this.itemsData, config = config})
+                lockTrap(container, config)
             end
+        end
+
+        local doors = cell:getAll(types.Door)
+        config = this.config.getConfigTableByObjectType(objectType.door)
+        for _, door in pairs(doors or {}) do
+            lockTrap(door, config)
         end
     end
 end)

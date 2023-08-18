@@ -27,13 +27,22 @@ function this.generateSpellData()
         if not generatorData.forbiddenIds[id] then
             local cost = 0
             local effectSchools = {}
+            local isTargetHarm = false
+            local forTrap = true
             for _, eff in pairs(spell.effects) do
                 if eff.effect.school then
                     effectSchools[eff.effect.school] = true
                 end
                 cost = cost + spellLib.calculateEffectCost(eff)
+                if eff.effect.harmful and (eff.range == 1 or eff.range == 2) then
+                    isTargetHarm = true
+                end
+                if forTrap and eff.range ~= 1 then
+                    forTrap = false
+                end
             end
-            table.insert(temp, {id = id, cost = cost, type = spell.type, effectSchools = effectSchools})
+            table.insert(temp, {id = id, cost = cost, type = spell.type, effectSchools = effectSchools, isTargetHarm = isTargetHarm,
+                forTrap = forTrap})
         end
     end
 
@@ -46,7 +55,7 @@ function this.generateSpellData()
         if not curPos[data.type] then curPos[data.type] = {["all"] = 0} end
         local posArr = curPos[data.type]
         posArr.all = posArr.all + 1
-        if not out.groups[data.type] then out.groups[data.type] = {["all"] = {}} end
+        if not out.groups[data.type] then out.groups[data.type] = {["all"] = {}, ["trapHarm"] = {}} end
         local group = out.groups[data.type]
         local schoolData = {}
         for school, _ in pairs(data.effectSchools) do
@@ -60,6 +69,7 @@ function this.generateSpellData()
         end
         out.objects[id] = {type = data.type, pos = posArr.all, schPoss = schoolData}
         table.insert(group.all, id)
+        if data.forTrap and data.isTargetHarm then table.insert(out.groups[data.type]["trapHarm"], id) end
     end
 
     return out
