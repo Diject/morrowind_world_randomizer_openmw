@@ -1,4 +1,22 @@
+local core = require('openmw.core')
+
 local this = {}
+
+this.forbiddenEffectsIds = { -- for abilities and diseases
+    [core.magic.EFFECT_TYPE.FireDamage] = true,
+    [core.magic.EFFECT_TYPE.ShockDamage] = true,
+    [core.magic.EFFECT_TYPE.FrostDamage] = true,
+    [core.magic.EFFECT_TYPE.DrainHealth] = true,
+    [core.magic.EFFECT_TYPE.DamageAttribute] = true,
+    [core.magic.EFFECT_TYPE.DamageHealth] = true,
+    [core.magic.EFFECT_TYPE.DamageMagicka] = true,
+    [core.magic.EFFECT_TYPE.DamageFatigue] = true,
+    [core.magic.EFFECT_TYPE.DamageSkill] = true,
+    [core.magic.EFFECT_TYPE.Poison] = true,
+    [core.magic.EFFECT_TYPE.Corprus] = true,
+    [core.magic.EFFECT_TYPE.Vampirism] = true,
+    [core.magic.EFFECT_TYPE.SunDamage] = true,
+}
 
 this.forbiddenIds = {
     ["war_axe_airan_ammu"] = true,

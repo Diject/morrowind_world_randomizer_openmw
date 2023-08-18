@@ -167,7 +167,7 @@ time.runRepeatedly(function()
         end
         cellsForCheck[cell] = nil
     end
-end, 30 * time.second, { initialDelay = 10 * time.second })
+end, 30 * time.second, { initialDelay = math.random() * 10 * time.second })
 
 local function onObjectActive(object)
     if not localConfig.data.enabled then return end
@@ -176,6 +176,7 @@ local function onObjectActive(object)
 end
 
 local function onInit()
+    math.randomseed(os.time())
     initData()
     cellLib.init(globalData, localConfig, localStorage)
 end
@@ -231,6 +232,13 @@ return {
                         if not advData then goto continue end
                         local grp = globalData.itemsData.groups[advData.type][advData.subType]
                         newId = grp[random.getRandom(advData.pos, #grp, config.item.rregion.min, config.item.rregion.max)]
+                        local i = 10
+                        while (data.objectType == objectType.npc or data.objectType == objectType.creature) and
+                                i > 0 and globalData.itemsData.items[newId] and globalData.itemsData.items[newId].isDangerous do
+                            newId = grp[random.getRandom(advData.pos, #grp, config.item.rregion.min, config.item.rregion.max)]
+                            i = i - 1
+                        end
+                        if i == 0 then goto continue end
                     end
                     local obj = createItem(newId, itemData.item, itemData, data.objectType == objectType.creature)
                     log("object ", data.object, "new item ", obj, "old item ", itemData.item, "count ", obj.count)

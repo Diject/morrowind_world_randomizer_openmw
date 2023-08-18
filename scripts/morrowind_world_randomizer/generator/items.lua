@@ -1,5 +1,6 @@
 local types = require('openmw.types')
 local world = require('openmw.world')
+local core = require('openmw.core')
 local log = require("scripts.morrowind_world_randomizer.utils.log")
 local generatorData = require("scripts.morrowind_world_randomizer.generator.data")
 local tableLib = require("scripts.morrowind_world_randomizer.utils.table")
@@ -10,12 +11,26 @@ local objectIds = require("scripts.morrowind_world_randomizer.generator.types").
 ---@field type string
 ---@field subType string
 ---@field isArtifact boolean|nil
+---@field isDangerous boolean|nil
 
 ---@class mwr.itemsData
----@field items table<mwr.itemPosData>
+---@field items table<string, mwr.itemPosData>
 ---@field groups table<string, table<string>>
 
 local this = {}
+
+local dangerousEnchantIds = {}
+
+for _, enchant in pairs(core.magic.enchantments) do
+    if enchant.type == core.magic.ENCHANTMENT_TYPE.ConstantEffect then
+        for _, eff in pairs(enchant.effects) do
+            if generatorData.forbiddenEffectsIds[eff.effect.id] then
+                dangerousEnchantIds[enchant.id:lower()] = true
+                break
+            end
+        end
+    end
+end
 
 local function checkMajorRequirements(id, scriptId)
     if (scriptId == "" or generatorData.scriptWhiteList[scriptId]) and not generatorData.forbiddenIds[id] then
@@ -50,6 +65,8 @@ function this.generateData(smart)
         [objectIds.book] = {types.Book, "value"},
         -- [objectIds.miscItem] = {types.Miscellaneous, "value"},
     }
+
+    local dangerousItems = {}
 
     if smart then
         local itemCount = {}
@@ -91,6 +108,9 @@ function this.generateData(smart)
                     local type = tostring(item.type or "0")
                     if not data[type] then data[type] = {} end
                     table.insert(data[type], itemId)
+                    if item.enchant and item.enchant ~= "" and dangerousEnchantIds[item.enchant:lower()] then
+                        dangerousItems[itemId] = true
+                    end
                 end
             end
             table.sort(data, function(a, b) return a[records[2]] < b[records[2]] end)
@@ -106,6 +126,9 @@ function this.generateData(smart)
                     local type = tostring(item.type or "0")
                     if not data[type] then data[type] = {} end
                     table.insert(data[type], itemId)
+                    if item.enchant and item.enchant ~= "" and dangerousEnchantIds[item.enchant:lower()] then
+                        dangerousItems[itemId] = true
+                    end
                 end
             end
             table.sort(data, function(a, b) return a[records[2]] < b[records[2]] end)
@@ -120,6 +143,7 @@ function this.generateData(smart)
                 ---@type mwr.itemPosData
                 local data = {pos = pos, type = groupId, subType = subType}
                 if generatorData.obtainableArtifacts[id] then data.isArtifact = true end
+                if dangerousItems[id] then data.isDangerous = true end
                 out.items[id] = data
             end
         end
