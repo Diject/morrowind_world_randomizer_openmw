@@ -111,14 +111,14 @@ Activation.addHandlerForType(Door,
             local timeExpired = storageData and storageData.timestamp + configData.interval < world.getSimulationTime()
             if storageData and not timeExpired then
                 actor:teleport(storageData.cell, storageData.pos, {onGround = true, rotation = storageData.rotAngle})
-                return false
+                -- return false
             else
                 local success = configData.chance * 0.01 >= math.random()
                 if success then
                     local newDestinationDoor = chooseNewDoor(door)
                     if not newDestinationDoor then return end
                     changeDoorDestinationAndTeleport(door, newDestinationDoor, actor)
-                    return false
+                    -- return false
                 elseif configData.saveOnFailure then
                     storage.setData(door.id, Door.destPosition(door), Door.destRotation(door), Door.destCell(door))
                     if configData.exitDoor then
