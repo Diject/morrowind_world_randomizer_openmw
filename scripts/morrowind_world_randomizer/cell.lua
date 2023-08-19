@@ -77,6 +77,8 @@ local function minDistanceBetweenVectors(vector, vectorArray)
     return distance
 end
 
+local lightsData = require("scripts.morrowind_world_randomizer.generator.lights").generateData()
+
 local function createNewStatic(oldObj, group, nearestObjects)
     local newObj = world.createObject(group[math.random(1, #group)], 1)
     local box1 = oldObj:getBoundingBox()
@@ -128,7 +130,7 @@ local function lockTrap(object, config)
     local trap = types.Lockable.getTrapSpell(object)
     if trap then
         if config.trap.remove.chance * 0.01 > math.random() then
-            types.Lockable.setTrapSpell(object, "")
+            types.Lockable.setTrapSpell(object, nil)
         elseif config.trap.chance * 0.01 > math.random() then
             local group = this.spellsData.groups[core.magic.SPELL_TYPE.Spell].trapHarm
             local playerLevel = types.Actor.stats.level(world.players[1]).current
@@ -151,6 +153,23 @@ this.randomize = async:callback(function(cell)
         log("cell randomization", cellName)
 
         this.randomizeStatics(cell, firstTime)
+
+        if this.config.data.world.light.randomize then
+            local lightPos = {["0"] = math.random(), ["1"] = math.random(), ["2"] = math.random()}
+            for _, light in pairs(cell:getAll(types.Light)) do
+                local advData = lightsData.objects[light.recordId]
+                if advData then
+                    local group = lightsData.groups[advData.group]
+                    local newObj = world.createObject(group[random.getRandom(math.floor(lightPos[advData.group] * #group), #group, 0.1, 0.1)], 1)
+                    local box1 = light:getBoundingBox()
+                    local box2 = newObj:getBoundingBox()
+                    local offset = (box1.vertices[1].z - box2.vertices[1].z)
+                    local pos = util.vector3(light.position.x, light.position.y, light.position.z + offset)
+                    light:remove()
+                    newObj:teleport(light.cell, pos, {rotation = light.rotation})
+                end
+            end
+        end
 
         this.storage.setCellRandomizationTimestamp(cellName)
         local config = this.config.getConfigTableByObjectType(nil)

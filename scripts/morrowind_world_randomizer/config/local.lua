@@ -51,6 +51,9 @@ this.default = {
             },
             typesPerCell = 4,
         },
+        light = {
+            randomize = true,
+        },
     },
     npc = {
         item = {
@@ -209,6 +212,7 @@ this.default = {
         },
         trap = {
             chance = 100,
+            levelReference = 1,
             add = {
                 chance = 25,
                 levelReference = 1,
@@ -235,8 +239,9 @@ this.default = {
         },
         trap = {
             chance = 100,
+            levelReference = 1,
             add = {
-                chance = 25,
+                chance = 100,
                 levelReference = 1,
             },
             remove = {
