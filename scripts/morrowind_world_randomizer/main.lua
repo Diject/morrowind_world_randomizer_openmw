@@ -48,20 +48,19 @@ local function createItem(id, oldItem, advData, skipOwner)
     end
     return new
 end
-require("scripts.morrowind_world_randomizer.generator.lights").generateData()
+
 local function initData()
     if globalStorage.init() then
         globalStorage.data.version = globalStorage.version
         local statics = require("scripts.morrowind_world_randomizer.generator.statics")
         globalStorage.data.treesData = statics.rebuildRocksTreesData(require("scripts.morrowind_world_randomizer.data.TreesData_TR"))
         globalStorage.data.rocksData = statics.rebuildRocksTreesData(require("scripts.morrowind_world_randomizer.data.RocksData_TR"))
-        -- globalStorage.data.treesData = require("scripts.morrowind_world_randomizer.generator.statics").generateTreeData()
-        -- globalStorage.data.rocksData = require("scripts.morrowind_world_randomizer.generator.statics").generateRockData()
         globalStorage.data.itemsData = require("scripts.morrowind_world_randomizer.generator.items").generateData(false)
         globalStorage.data.floraData = statics.generateFloraData()
         globalStorage.data.herbsData = require("scripts.morrowind_world_randomizer.generator.containers").generateHerbData()
         globalStorage.data.creaturesData = require("scripts.morrowind_world_randomizer.generator.creatures").generateCreatureData()
         globalStorage.data.spellsData = require("scripts.morrowind_world_randomizer.generator.spells").generateSpellData()
+        globalStorage.data.lightsData = require("scripts.morrowind_world_randomizer.generator.lights").generateData()
         globalStorage.saveGameFilesDataToStorage()
         globalStorage.save()
     end

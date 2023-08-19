@@ -29,6 +29,8 @@ this.floraData = nil
 this.herbsData = nil
 ---@type mwr.spellsData
 this.spellsData = nil
+---@type mwr.lightsData
+this.lightsData = nil
 ---@type mwr.config
 this.config = nil
 ---@type mwr.localStorage
@@ -70,6 +72,7 @@ function this.init(globalStorage, config, storage)
     this.floraData = globalStorage.floraData
     this.herbsData = globalStorage.herbsData
     this.spellsData = globalStorage.spellsData
+    this.lightsData = globalStorage.lightsData
     this.config = config
     this.storage = storage
 end
@@ -86,8 +89,6 @@ local function minDistanceBetweenVectors(vector, vectorArray)
     end
     return distance
 end
-
-local lightsData = require("scripts.morrowind_world_randomizer.generator.lights").generateData()
 
 local function createNewStatic(oldObj, group, nearestObjects)
     local newObj = world.createObject(group[math.random(1, #group)], 1)
@@ -167,9 +168,9 @@ this.randomize = async:callback(function(cell)
         if this.config.data.world.light.randomize then
             local lightPos = {["0"] = math.random(), ["1"] = math.random(), ["2"] = math.random()}
             for _, light in pairs(cell:getAll(types.Light)) do
-                local advData = lightsData.objects[light.recordId]
+                local advData = this.lightsData.objects[light.recordId]
                 if advData then
-                    local group = lightsData.groups[advData.group]
+                    local group = this.lightsData.groups[advData.group]
                     local newObj = world.createObject(group[random.getRandom(math.floor(lightPos[advData.group] * #group), #group, 0.1, 0.1)], 1)
                     local box1 = light:getBoundingBox()
                     local box2 = newObj:getBoundingBox()
