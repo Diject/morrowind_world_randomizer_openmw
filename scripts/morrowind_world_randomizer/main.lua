@@ -20,6 +20,7 @@ local types = require('openmw.types')
 local world = require("openmw.world")
 local util = require("openmw.util")
 local time = require('openmw_aux.time')
+local storage = require('openmw.storage')
 local Activation = require('openmw.interfaces').Activation
 
 local objectType = require("scripts.morrowind_world_randomizer.generator.types").objectStrType
@@ -49,20 +50,26 @@ local function createItem(id, oldItem, advData, skipOwner)
     return new
 end
 
+local function rebuildStorageData()
+    globalStorage.data.version = globalStorage.version
+    local statics = require("scripts.morrowind_world_randomizer.generator.statics")
+    globalStorage.data.treesData = statics.rebuildRocksTreesData(require("scripts.morrowind_world_randomizer.data.TreesData_TR"))
+    globalStorage.data.rocksData = statics.rebuildRocksTreesData(require("scripts.morrowind_world_randomizer.data.RocksData_TR"))
+    local itemSafeMode = storage.globalSection(globalStorage.storageName):get("itemSafeMode")
+    globalStorage.data.itemsData = require("scripts.morrowind_world_randomizer.generator.items").generateData(itemSafeMode)
+    globalStorage.data.floraData = statics.generateFloraData()
+    globalStorage.data.herbsData = require("scripts.morrowind_world_randomizer.generator.containers").generateHerbData()
+    local creatureSafeMode = storage.globalSection(globalStorage.storageName):get("creatureSafeMode")
+    globalStorage.data.creaturesData = require("scripts.morrowind_world_randomizer.generator.creatures").generateCreatureData(creatureSafeMode)
+    globalStorage.data.spellsData = require("scripts.morrowind_world_randomizer.generator.spells").generateSpellData()
+    globalStorage.data.lightsData = require("scripts.morrowind_world_randomizer.generator.lights").generateData()
+    globalStorage.saveGameFilesDataToStorage()
+    globalStorage.save()
+end
+
 local function initData()
     if globalStorage.init() then
-        globalStorage.data.version = globalStorage.version
-        local statics = require("scripts.morrowind_world_randomizer.generator.statics")
-        globalStorage.data.treesData = statics.rebuildRocksTreesData(require("scripts.morrowind_world_randomizer.data.TreesData_TR"))
-        globalStorage.data.rocksData = statics.rebuildRocksTreesData(require("scripts.morrowind_world_randomizer.data.RocksData_TR"))
-        globalStorage.data.itemsData = require("scripts.morrowind_world_randomizer.generator.items").generateData(false)
-        globalStorage.data.floraData = statics.generateFloraData()
-        globalStorage.data.herbsData = require("scripts.morrowind_world_randomizer.generator.containers").generateHerbData()
-        globalStorage.data.creaturesData = require("scripts.morrowind_world_randomizer.generator.creatures").generateCreatureData()
-        globalStorage.data.spellsData = require("scripts.morrowind_world_randomizer.generator.spells").generateSpellData()
-        globalStorage.data.lightsData = require("scripts.morrowind_world_randomizer.generator.lights").generateData()
-        globalStorage.saveGameFilesDataToStorage()
-        globalStorage.save()
+        rebuildStorageData()
     end
     globalData = globalStorage.data
 end
@@ -280,6 +287,14 @@ local function mwr_loadLocalConfigData(data)
     localConfig.loadData(data)
 end
 
+local function mwr_updateGeneratorSettings(data)
+    local global = storage.globalSection(globalStorage.storageName)
+    for name, val in pairs(data) do
+        global:set(name, val)
+    end
+    rebuildStorageData()
+end
+
 return {
     engineHandlers = {
         onActorActive = async:callback(onActorActive),
@@ -295,5 +310,6 @@ return {
         mwr_loadLocalConfigData = mwr_loadLocalConfigData,
         mwr_moveToPoint = async:callback(mwr_moveToPoint),
         mwr_deactivateObject = async:callback(mwr_deactivateObject),
+        mwr_updateGeneratorSettings = async:callback(mwr_updateGeneratorSettings),
     },
 }

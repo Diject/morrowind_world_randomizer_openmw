@@ -47,7 +47,7 @@ local function checkMinorRequirements(item, objectType)
     return false
 end
 
----@param smart boolean
+---@param smart boolean|nil
 ---@return mwr.itemsData
 function this.generateData(smart)
     ---@type mwr.itemsData

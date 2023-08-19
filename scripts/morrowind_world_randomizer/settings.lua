@@ -111,7 +111,7 @@ I.Settings.registerGroup({
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "mainSettings",
-    permanentStorage = true,
+    permanentStorage = false,
     order = 0,
     settings = {
         boolSetting({key = "enabled", name = "enableRandomizer", default = config.default.enabled}),
@@ -129,12 +129,25 @@ lableId = 0
 arguments = {}
 
 I.Settings.registerGroup({
+    key = config.storageName.."_generator",
+    page = "MorrowindWorldRandomizer",
+    l10n = "morrowind_world_randomizer",
+    name = "dataGeneration",
+    permanentStorage = true,
+    order = 1,
+    settings = {
+        boolSetting({key = "itemSafeMode", name = "itemSafeMode", default = false}),
+        boolSetting({key = "creatureSafeMode", name = "creatureSafeMode", default = false}),
+    },
+})
+
+I.Settings.registerGroup({
     key = config.storageName.."_1",
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "npc",
-    permanentStorage = true,
-    order = 1,
+    permanentStorage = false,
+    order = 2,
     settings = {
         textLabel{name = "empty", description = "items"},
         boolSetting{key = "npc.item.randomize", name = "randomizeItemsInInventory", default = config.default.npc.item.randomize},
@@ -185,8 +198,8 @@ I.Settings.registerGroup({
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "creature",
-    permanentStorage = true,
-    order = 2,
+    permanentStorage = false,
+    order = 3,
     settings = {
         textLabel{name = "empty", description = "items"},
         boolSetting{key = "creature.item.randomize", name = "randomizeItemsInInventory", default = config.default.creature.item.randomize},
@@ -227,8 +240,8 @@ I.Settings.registerGroup({
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "container",
-    permanentStorage = true,
-    order = 3,
+    permanentStorage = false,
+    order = 4,
     settings = {
         textLabel{name = "empty", description = "items"},
         boolSetting({key = "container.item.randomize", name = "randomizeItemsInContainer", default = config.default.container.item.randomize}),
@@ -267,8 +280,8 @@ I.Settings.registerGroup({
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "door",
-    permanentStorage = true,
-    order = 4,
+    permanentStorage = false,
+    order = 5,
     settings = {
         textLabel{name = "empty", description = "lock"},
         numberSetting({key = "door.lock.maxValue", name = "maxLock", default = config.default.door.lock.maxValue, min = 1, max = 10000}),
@@ -304,8 +317,8 @@ I.Settings.registerGroup({
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "world",
-    permanentStorage = true,
-    order = 5,
+    permanentStorage = false,
+    order = 6,
     settings = {
         boolSetting({key = "world.item.randomize", name = "randomizeItemsWithoutContainer", default = config.default.world.item.randomize}),
         minmaxSetting{key = "world.item.rregion", name = "rregion", default = config.default.world.item.rregion, independent = true, min = -100, max = 100},
@@ -340,8 +353,12 @@ lableId = 0
 arguments = {}
 
 for i = 0, 5 do
-    storage.playerSection(config.storageName.."_"..tostring(i)):subscribe(async:callback(function()
-        local sotrageName = config.storageName.."_"..tostring(i)
+    local sotrageName = config.storageName.."_"..tostring(i)
+    storage.playerSection(sotrageName):subscribe(async:callback(function()
         core.sendGlobalEvent("mwr_loadLocalConfigData", storage.playerSection(sotrageName):asTable())
     end))
 end
+
+storage.playerSection(config.storageName.."_generator"):subscribe(async:callback(function()
+    core.sendGlobalEvent("mwr_updateGeneratorSettings", storage.playerSection(config.storageName.."_generator"):asTable())
+end))

@@ -10,9 +10,9 @@ require("scripts.morrowind_world_randomizer.generator.lights")
 
 local tableLib = require("scripts.morrowind_world_randomizer.utils.table")
 
-local storageName = "MWR_By_Diject"
-
 local this = {}
+
+this.storageName = "MWR_By_Diject"
 
 this.version = 1
 
@@ -33,7 +33,7 @@ this.data = nil
 
 ---@return boolean #have the game files been modified
 function this.init()
-    this.storage = storage.globalSection(storageName)
+    this.storage = storage.globalSection(this.storageName)
     this.data = this.storage:asTable()
     if not this.data or this.version ~= this.data.version then
         return true
