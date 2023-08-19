@@ -106,7 +106,8 @@ end
 
 Activation.addHandlerForType(Door,
     async:callback(function(door, actor)
-        if configData.enabled and Door.isTeleport(door) and not Lockable.isLocked(door) and not doorLib.forbiddenDoorIds[door.recordId] then
+        if configData.enabled and Door.isTeleport(door) and not Lockable.isLocked(door) and not Lockable.getTrapSpell(door) and
+                not doorLib.forbiddenDoorIds[door.recordId] then
             local storageData = storage.getData(door.id)
             local timeExpired = storageData and storageData.timestamp + configData.interval < world.getSimulationTime()
             if storageData and not timeExpired then
