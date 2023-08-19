@@ -1,3 +1,8 @@
+local core = require("openmw.core")
+if not core.contentFiles.has(require("scripts.morrowind_world_randomizer.scriptName")) then
+    return
+end
+
 local log = require("scripts.morrowind_world_randomizer.utils.log")
 
 local generatorData = require("scripts.morrowind_world_randomizer.generator.data")
@@ -14,7 +19,6 @@ local async = require('openmw.async')
 local types = require('openmw.types')
 local world = require("openmw.world")
 local util = require("openmw.util")
-local core = require("openmw.core")
 local time = require('openmw_aux.time')
 local Activation = require('openmw.interfaces').Activation
 
@@ -44,7 +48,7 @@ local function createItem(id, oldItem, advData, skipOwner)
     end
     return new
 end
-
+require("scripts.morrowind_world_randomizer.generator.lights").generateData()
 local function initData()
     if globalStorage.init() then
         globalStorage.data.version = globalStorage.version

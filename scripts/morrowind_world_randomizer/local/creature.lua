@@ -1,3 +1,8 @@
+local core = require("openmw.core")
+if not core.contentFiles.has(require("scripts.morrowind_world_randomizer.scriptName")) then
+    return
+end
+
 local objectType = require("scripts.morrowind_world_randomizer.generator.types").objectStrType
 
 local actor = require("scripts.morrowind_world_randomizer.local.actor")(objectType.creature)
