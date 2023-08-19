@@ -78,6 +78,7 @@ return {
             filStorage(storage.playerSection(config.storageName.."_2"))
             filStorage(storage.playerSection(config.storageName.."_3"))
             filStorage(storage.playerSection(config.storageName.."_4"))
+            filStorage(storage.playerSection(config.storageName.."_5"))
         end),
     },
 }

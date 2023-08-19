@@ -121,42 +121,20 @@ I.Settings.registerGroup({
     },
 })
 
+local storageName = config.storageName.."_0"
 for _, arg in pairs(arguments) do
-    I.Settings.updateRendererArgument(config.storageName.."_0", arg.key, arg)
+    I.Settings.updateRendererArgument(storageName, arg.key, arg)
 end
+lableId = 0
 arguments = {}
 
 I.Settings.registerGroup({
     key = config.storageName.."_1",
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
-    name = "items",
-    permanentStorage = false,
-    order = 1,
-    settings = {
-        boolSetting({key = "npc.item.randomize", name = "randomizeItemsInNPC", default = config.default.npc.item.randomize}),
-        minmaxSetting{key = "npc.item.rregion", name = "rregion", default = config.default.npc.item.rregion, independent = true, min = -1, max = 1},
-        boolSetting({key = "creature.item.randomize", name = "randomizeItemsInNPC", default = config.default.creature.item.randomize}),
-        minmaxSetting{key = "creature.item.rregion", name = "rregion", default = config.default.creature.item.rregion, independent = true, min = -1, max = 1},
-        boolSetting({key = "container.item.randomize", name = "randomizeItemsInContainer", default = config.default.container.item.randomize}),
-        minmaxSetting{key = "container.item.rregion", name = "rregion", default = config.default.container.item.rregion, independent = true, min = -1, max = 1},
-        boolSetting({key = "world.item.randomize", name = "randomizeItemsWithoutContainer", default = config.default.world.item.randomize}),
-        minmaxSetting{key = "world.item.rregion", name = "rregion", default = config.default.world.item.rregion, independent = true, min = -1, max = 1},
-    },
-})
-
-for _, arg in pairs(arguments) do
-    I.Settings.updateRendererArgument(config.storageName.."_1", arg.key, arg)
-end
-arguments = {}
-
-I.Settings.registerGroup({
-    key = config.storageName.."_2",
-    page = "MorrowindWorldRandomizer",
-    l10n = "morrowind_world_randomizer",
     name = "npc",
     permanentStorage = false,
-    order = 2,
+    order = 1,
     settings = {
         textLabel{name = "empty", description = "items"},
         boolSetting{key = "npc.item.randomize", name = "randomizeItemsInInventory", default = config.default.npc.item.randomize},
@@ -183,30 +161,32 @@ I.Settings.registerGroup({
         minmaxSetting{key = "npc.spell.rregion", name = "rregion", default = config.default.npc.spell.rregion, independent = true, min = -1, max = 1},
         boolSetting{key = "npc.spell.bySkill", name = "spellsBySkill", default = config.default.npc.spell.bySkill},
         numberSetting{key = "npc.spell.bySkillMax", name = "bySkillMax", default = config.default.npc.spell.levelReference, integer = true, min = 1, max = 5},
-        numberSetting{key = "npc.spell.levelReference", name = "levelReference", default = config.default.npc.spell.levelReference, integer = true, min = 1},
+        numberSetting{key = "npc.spell.levelReference", name = "levelReferenceSpells", default = config.default.npc.spell.levelReference, integer = true, min = 1},
         textLabel{name = "empty", description = "removeSpell"},
         numberSetting{key = "npc.spell.remove.count", name = "count", default = config.default.npc.spell.remove.count, integer = true, min = 0},
         textLabel{name = "empty", description = "addSpell"},
         numberSetting{key = "npc.spell.add.count", name = "count", default = config.default.npc.spell.add.count, integer = true, min = 0},
         boolSetting{key = "npc.spell.add.bySkill", name = "spellsBySkill", default = config.default.npc.spell.add.bySkill},
         numberSetting{key = "npc.spell.add.bySkillMax", name = "bySkillMax", default = config.default.npc.spell.add.levelReference, integer = true, min = 1, max = 5},
-        numberSetting{key = "npc.spell.add.levelReference", name = "levelReference", default = config.default.npc.spell.add.levelReference, integer = true, min = 1},
+        numberSetting{key = "npc.spell.add.levelReference", name = "levelReferenceSpells", default = config.default.npc.spell.add.levelReference, integer = true, min = 1},
         minmaxSetting{key = "npc.spell.add.rregion", name = "rregion", default = config.default.npc.spell.add.rregion, independent = true, min = -1, max = 1},
     },
 })
 
+storageName = config.storageName.."_1"
 for _, arg in pairs(arguments) do
-    I.Settings.updateRendererArgument(config.storageName.."_2", arg.key, arg)
+    I.Settings.updateRendererArgument(storageName, arg.key, arg)
 end
+lableId = 0
 arguments = {}
 
 I.Settings.registerGroup({
-    key = config.storageName.."_3",
+    key = config.storageName.."_2",
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "creature",
     permanentStorage = false,
-    order = 3,
+    order = 2,
     settings = {
         textLabel{name = "empty", description = "items"},
         boolSetting{key = "creature.item.randomize", name = "randomizeItemsInInventory", default = config.default.creature.item.randomize},
@@ -223,53 +203,145 @@ I.Settings.registerGroup({
         minmaxSetting{key = "creature.spell.rregion", name = "rregion", default = config.default.creature.spell.rregion, independent = true, min = -1, max = 1},
         boolSetting{key = "creature.spell.bySkill", name = "spellsBySkill", default = config.default.creature.spell.bySkill},
         numberSetting{key = "creature.spell.bySkillMax", name = "bySkillMax", default = config.default.creature.spell.levelReference, integer = true, min = 1, max = 5},
-        numberSetting{key = "creature.spell.levelReference", name = "levelReference", default = config.default.creature.spell.levelReference, integer = true, min = 1},
+        numberSetting{key = "creature.spell.levelReference", name = "levelReferenceSpells", default = config.default.creature.spell.levelReference, integer = true, min = 1},
         textLabel{name = "empty", description = "removeSpell"},
         numberSetting{key = "creature.spell.remove.count", name = "count", default = config.default.creature.spell.remove.count, integer = true, min = 0},
         textLabel{name = "empty", description = "addSpell"},
         numberSetting{key = "creature.spell.add.count", name = "count", default = config.default.creature.spell.add.count, integer = true, min = 0},
         boolSetting{key = "creature.spell.add.bySkill", name = "spellsBySkill", default = config.default.creature.spell.add.bySkill},
         numberSetting{key = "creature.spell.add.bySkillMax", name = "bySkillMax", default = config.default.creature.spell.add.levelReference, integer = true, min = 1, max = 5},
-        numberSetting{key = "creature.spell.add.levelReference", name = "levelReference", default = config.default.creature.spell.add.levelReference, integer = true, min = 1},
+        numberSetting{key = "creature.spell.add.levelReference", name = "levelReferenceSpells", default = config.default.creature.spell.add.levelReference, integer = true, min = 1},
         minmaxSetting{key = "creature.spell.add.rregion", name = "rregion", default = config.default.creature.spell.add.rregion, independent = true, min = -1, max = 1},
     },
 })
 
+storageName = config.storageName.."_2"
 for _, arg in pairs(arguments) do
-    I.Settings.updateRendererArgument(config.storageName.."_3", arg.key, arg)
+    I.Settings.updateRendererArgument(storageName, arg.key, arg)
 end
+lableId = 0
+arguments = {}
+
+I.Settings.registerGroup({
+    key = config.storageName.."_3",
+    page = "MorrowindWorldRandomizer",
+    l10n = "morrowind_world_randomizer",
+    name = "container",
+    permanentStorage = false,
+    order = 3,
+    settings = {
+        textLabel{name = "empty", description = "items"},
+        boolSetting({key = "container.item.randomize", name = "randomizeItemsInContainer", default = config.default.container.item.randomize}),
+        minmaxSetting{key = "container.item.rregion", name = "rregion", default = config.default.container.item.rregion, independent = true, min = -1, max = 1},
+        textLabel{name = "empty", description = "lock"},
+        numberSetting({key = "container.lock.maxValue", name = "maxLock", default = config.default.container.lock.maxValue, min = 1, max = 10000}),
+        textLabel{name = "empty", description = "existing"},
+        numberSetting({key = "container.lock.chance", name = "chanceToChange", default = config.default.container.lock.chance, min = 0, max = 100}),
+        minmaxSetting{key = "container.lock.rregion", name = "rregion", default = config.default.container.lock.rregion, independent = true, min = -1, max = 1},
+        textLabel{name = "empty", description = "addNew"},
+        numberSetting({key = "container.lock.add.chance", name = "chanceToAdd", default = config.default.container.lock.add.chance, min = 0, max = 100}),
+        numberSetting{key = "container.lock.add.levelReference", name = "levelReferenceLock", default = config.default.container.lock.add.levelReference, integer = true, min = 1},
+        textLabel{name = "empty", description = "removeLock"},
+        numberSetting({key = "container.lock.remove.chance", name = "chanceToUnlock", default = config.default.container.lock.remove.chance, min = 0, max = 100}),
+        textLabel{name = "empty", description = "trap"},
+        textLabel{name = "empty", description = "existing"},
+        numberSetting({key = "container.trap.chance", name = "chanceToChange", default = config.default.container.trap.chance, min = 0, max = 100}),
+        numberSetting{key = "container.trap.levelReference", name = "levelReferenceTrap", default = config.default.container.trap.levelReference, integer = true, min = 1},
+        textLabel{name = "empty", description = "addNew"},
+        numberSetting({key = "container.trap.add.chance", name = "chanceToAdd", default = config.default.container.trap.add.chance, min = 0, max = 100}),
+        numberSetting{key = "container.trap.add.levelReference", name = "levelReferenceTrap", default = config.default.container.trap.add.levelReference, integer = true, min = 1},
+        textLabel{name = "empty", description = "removeLock"},
+        numberSetting({key = "container.trap.remove.chance", name = "chanceToUnlock", default = config.default.container.trap.remove.chance, min = 0, max = 100}),
+    },
+})
+
+storageName = config.storageName.."_3"
+for _, arg in pairs(arguments) do
+    I.Settings.updateRendererArgument(storageName, arg.key, arg)
+end
+lableId = 0
 arguments = {}
 
 I.Settings.registerGroup({
     key = config.storageName.."_4",
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
-    name = "world",
+    name = "door",
     permanentStorage = false,
     order = 4,
     settings = {
-        boolSetting({key = "world.static.tree.randomize", name = "randomizeTrees", default = config.default.world.static.tree.randomize}),
-        numberSetting({key = "world.static.tree.typesPerCell", name = "typesPerCell", default = config.default.world.static.tree.typesPerCell,
-            integer = true, min = 1, max = 10}),
-        boolSetting({key = "world.static.rock.randomize", name = "randomizeRocks", default = config.default.world.static.rock.randomize}),
-        numberSetting({key = "world.static.rock.typesPerCell", name = "typesPerCell", default = config.default.world.static.rock.typesPerCell,
-            integer = true, min = 1, max = 10}),
-        boolSetting({key = "world.static.flora.randomize", name = "randomizeFlora", default = config.default.world.static.flora.randomize}),
-        numberSetting({key = "world.static.flora.typesPerCell", name = "typesPerCell", default = config.default.world.static.flora.typesPerCell,
-            integer = true, min = 1, max = 10}),
-        boolSetting({key = "world.herb.randomize", name = "randomizeHerbs", default = config.default.world.herb.randomize}),
-        numberSetting({key = "world.herb.typesPerCell", name = "typesPerCell", default = config.default.world.herb.typesPerCell,
-            integer = true, min = 1, max = 10}),
+        textLabel{name = "empty", description = "lock"},
+        numberSetting({key = "door.lock.maxValue", name = "maxLock", default = config.default.door.lock.maxValue, min = 1, max = 10000}),
+        textLabel{name = "empty", description = "existing"},
+        numberSetting({key = "door.lock.chance", name = "chanceToChange", default = config.default.door.lock.chance, min = 0, max = 100}),
+        minmaxSetting{key = "door.lock.rregion", name = "rregion", default = config.default.door.lock.rregion, independent = true, min = -1, max = 1},
+        textLabel{name = "empty", description = "addNew"},
+        numberSetting({key = "door.lock.add.chance", name = "chanceToAdd", default = config.default.door.lock.add.chance, min = 0, max = 100}),
+        numberSetting{key = "door.lock.add.levelReference", name = "levelReferenceLock", default = config.default.door.lock.add.levelReference, integer = true, min = 1},
+        textLabel{name = "empty", description = "removeLock"},
+        numberSetting({key = "door.lock.remove.chance", name = "chanceToUnlock", default = config.default.door.lock.remove.chance, min = 0, max = 100}),
+        textLabel{name = "empty", description = "trap"},
+        textLabel{name = "empty", description = "existing"},
+        numberSetting({key = "door.trap.chance", name = "chanceToChange", default = config.default.door.trap.chance, min = 0, max = 100}),
+        numberSetting{key = "door.trap.levelReference", name = "levelReferenceTrap", default = config.default.door.trap.levelReference, integer = true, min = 1},
+        textLabel{name = "empty", description = "addNew"},
+        numberSetting({key = "door.trap.add.chance", name = "chanceToAdd", default = config.default.door.trap.add.chance, min = 0, max = 100}),
+        numberSetting{key = "door.trap.add.levelReference", name = "levelReferenceTrap", default = config.default.door.trap.add.levelReference, integer = true, min = 1},
+        textLabel{name = "empty", description = "removeLock"},
+        numberSetting({key = "door.trap.remove.chance", name = "chanceToUnlock", default = config.default.door.trap.remove.chance, min = 0, max = 100}),
     },
 })
 
+storageName = config.storageName.."_4"
 for _, arg in pairs(arguments) do
-    I.Settings.updateRendererArgument(config.storageName.."_4", arg.key, arg)
+    I.Settings.updateRendererArgument(storageName, arg.key, arg)
 end
+lableId = 0
 arguments = {}
 
-for i = 0, 4 do
+I.Settings.registerGroup({
+    key = config.storageName.."_5",
+    page = "MorrowindWorldRandomizer",
+    l10n = "morrowind_world_randomizer",
+    name = "world",
+    permanentStorage = false,
+    order = 5,
+    settings = {
+        boolSetting({key = "world.item.randomize", name = "randomizeItemsWithoutContainer", default = config.default.world.item.randomize}),
+        minmaxSetting{key = "world.item.rregion", name = "rregion", default = config.default.world.item.rregion, independent = true, min = -1, max = 1},
+        textLabel{name = "empty", description = "light"},
+        boolSetting({key = "world.light.randomize", name = "randomizeLight", default = config.default.world.light.randomize}),
+        textLabel{name = "empty", description = "trees"},
+        boolSetting({key = "world.static.tree.randomize", name = "randomizeTrees", default = config.default.world.static.tree.randomize}),
+        numberSetting({key = "world.static.tree.typesPerCell", name = "typesPerCell", default = config.default.world.static.tree.typesPerCell,
+            integer = true, min = 1, max = 10}),
+        textLabel{name = "empty", description = "rocks"},
+        boolSetting({key = "world.static.rock.randomize", name = "randomizeRocks", default = config.default.world.static.rock.randomize}),
+        numberSetting({key = "world.static.rock.typesPerCell", name = "typesPerCell", default = config.default.world.static.rock.typesPerCell,
+            integer = true, min = 1, max = 10}),
+        textLabel{name = "empty", description = "flora"},
+        boolSetting({key = "world.static.flora.randomize", name = "randomizeFlora", default = config.default.world.static.flora.randomize}),
+        numberSetting({key = "world.static.flora.typesPerCell", name = "typesPerCell", default = config.default.world.static.flora.typesPerCell,
+            integer = true, min = 1, max = 10}),
+        textLabel{name = "empty", description = "herbs"},
+        boolSetting({key = "world.herb.randomize", name = "randomizeHerbs", default = config.default.world.herb.randomize}),
+        numberSetting({key = "world.herb.typesPerCell", name = "typesPerCell", default = config.default.world.herb.typesPerCell,
+            integer = true, min = 1, max = 10}),
+        boolSetting({key = "world.herb.item.randomize", name = "randomizeItemsInHerb", default = config.default.world.herb.item.randomize}),
+        minmaxSetting{key = "world.herb.item.rregion", name = "rregion", default = config.default.world.herb.item.rregion, independent = true, min = -1, max = 1},
+    },
+})
+
+storageName = config.storageName.."_5"
+for _, arg in pairs(arguments) do
+    I.Settings.updateRendererArgument(storageName, arg.key, arg)
+end
+lableId = 0
+arguments = {}
+
+for i = 0, 5 do
     storage.playerSection(config.storageName.."_"..tostring(i)):subscribe(async:callback(function()
-        core.sendGlobalEvent("mwr_loadLocalConfigData", storage.playerSection(config.storageName.."_"..tostring(i)):asTable())
+        local sotrageName = config.storageName.."_"..tostring(i)
+        core.sendGlobalEvent("mwr_loadLocalConfigData", storage.playerSection(sotrageName):asTable())
     end))
 end

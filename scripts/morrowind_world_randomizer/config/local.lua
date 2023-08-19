@@ -198,6 +198,7 @@ this.default = {
         },
         lock = {
             chance = 100,
+            maxValue = 100,
             rregion = {
                 min = 1,
                 max = 1,
@@ -225,6 +226,7 @@ this.default = {
     door = {
         lock = {
             chance = 100,
+            maxValue = 100,
             rregion = {
                 min = 1,
                 max = 1,

@@ -120,11 +120,11 @@ local function lockTrap(object, config)
             types.Lockable.unlock(object)
         elseif config.lock.chance * 0.01 > math.random() then
             local lockLevel = types.Lockable.getLockLevel(object)
-            types.Lockable.lock(object, random.getRandom(lockLevel, 100, config.lock.rregion.min, config.lock.rregion.max))
+            types.Lockable.lock(object, random.getRandom(lockLevel, config.lock.maxValue, config.lock.rregion.min, config.lock.rregion.max))
         end
     elseif config.lock.add.chance * 0.01 > math.random() then
         local playerLevel = types.Actor.stats.level(world.players[1]).current
-        local val = math.floor(math.random() * 100 * playerLevel / config.lock.add.levelReference)
+        local val = math.floor(math.random() * config.lock.maxValue * playerLevel / config.lock.add.levelReference)
         types.Lockable.lock(object, val)
     end
     local trap = types.Lockable.getTrapSpell(object)
