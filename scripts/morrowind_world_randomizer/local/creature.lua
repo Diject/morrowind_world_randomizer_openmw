@@ -7,7 +7,7 @@ local objectType = require("scripts.morrowind_world_randomizer.generator.types")
 
 local actor = require("scripts.morrowind_world_randomizer.local.actor")(objectType.creature)
 local self = require('openmw.self')
-local core = require('openmw.core')
+local async = require('openmw.async')
 
 local function deactivate()
     if self.object.count == 0 then
@@ -20,9 +20,9 @@ return {
         onInactive = deactivate,
     },
     eventHandlers = {
-        mwr_actor_setEquipment = actor.setEquipment,
-        mwr_actor_randomizeInventory = actor.randomizeInventory,
-        mwr_actor_setDynamicStats = actor.setDynamicStats,
-        mwr_actor_randomizeSpells = actor.randmizeSpells,
+        mwr_actor_setEquipment = async:callback(actor.setEquipment),
+        mwr_actor_randomizeInventory = async:callback(actor.randomizeInventory),
+        mwr_actor_setDynamicStats = async:callback(actor.setDynamicStats),
+        mwr_actor_randomizeSpells = async:callback(actor.randmizeSpells),
     },
 }

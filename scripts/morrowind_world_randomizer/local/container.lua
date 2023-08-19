@@ -8,7 +8,7 @@ local log = require("scripts.morrowind_world_randomizer.utils.log")
 
 local self = require('openmw.self')
 local Container = require('openmw.types').Container
-local core = require('openmw.core')
+local async = require('openmw.async')
 
 local function randomizeInventory()
     local items = {}
@@ -20,6 +20,6 @@ end
 
 return {
     eventHandlers = {
-        mwr_container_randomizeInventory = randomizeInventory,
+        mwr_container_randomizeInventory = async:callback(randomizeInventory),
     },
 }

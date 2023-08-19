@@ -63,7 +63,7 @@ end
 
 return {
     eventHandlers = {
-        mwr_lowestPosInCircle = lowestInCircle,
+        mwr_lowestPosInCircle = async:callback(lowestInCircle),
         mwrbd_updateSettings = async:callback(function(data)
             local configData = data.configData
             if not configData then return end
@@ -76,7 +76,6 @@ return {
                     end
                 end
             end
-            filStorage(storage.playerSection(config.storageName))
             filStorage(storage.playerSection(config.storageName.."_0"))
             filStorage(storage.playerSection(config.storageName.."_1"))
             filStorage(storage.playerSection(config.storageName.."_2"))

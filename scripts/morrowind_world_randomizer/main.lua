@@ -209,6 +209,78 @@ local function onActivate(object, actor)
     end
 end
 
+local function mwr_updateInventory(data)
+    local config = localConfig.getConfigTableByObjectType(data.objectType)
+    if config then
+        local equipment = (data.objectType == objectType.npc or data.objectType == objectType.creature) and types.Actor.getEquipment(data.object) or {}
+        for _, itemData in pairs(data.items) do
+            if itemData.item.count == 0 then goto continue end
+            local isArtifact = generatorData.obtainableArtifacts[itemData.item.recordId]
+            local newId
+            if isArtifact then
+                if not localStorage.data.other.artifacts or #localStorage.data.other.artifacts == 0 then
+                    localStorage.data.other.artifacts = {}
+                    for id, _ in pairs(generatorData.obtainableArtifacts) do
+                        table.insert(localStorage.data.other.artifacts, id)
+                    end
+                end
+                local pos = math.random(1, #localStorage.data.other.artifacts)
+                newId = localStorage.data.other.artifacts[pos]
+                table.remove(localStorage.data.other.artifacts, pos)
+            else
+                ---@type mwr.itemPosData
+                local advData = itemData.advData or globalData.itemsData.items[itemData.item.recordId]
+                if not advData then goto continue end
+                local grp = globalData.itemsData.groups[advData.type][advData.subType]
+                newId = grp[random.getRandom(advData.pos, #grp, config.item.rregion.min, config.item.rregion.max)]
+                local i = 10
+                while (data.objectType == objectType.npc or data.objectType == objectType.creature) and
+                        i > 0 and globalData.itemsData.items[newId] and globalData.itemsData.items[newId].isDangerous do
+                    newId = grp[random.getRandom(advData.pos, #grp, config.item.rregion.min, config.item.rregion.max)]
+                    i = i - 1
+                end
+                if i == 0 then goto continue end
+            end
+            local obj = createItem(newId, itemData.item, itemData, data.objectType == objectType.creature)
+            log("object ", data.object, "new item ", obj, "old item ", itemData.item, "count ", obj.count)
+            localStorage.setRefRandomizationTimestamp(obj)
+            local inventory = (data.objectType == objectType.npc or data.objectType == objectType.creature) and
+                types.Actor.inventory(data.object) or types.Container.content(data.object)
+            obj:moveInto(inventory)
+            localStorage.removeObjectData(itemData.item)
+            itemData.item:remove()
+            if itemData.slot then
+                equipment[itemData.slot] = obj
+            end
+            ::continue::
+        end
+        if data.objectType == objectType.npc or data.objectType == objectType.creature then
+            data.object:sendEvent("mwr_actor_setEquipment", equipment)
+        end
+    end
+end
+
+local function mwr_moveToPoint(data)
+    if not data.params or not data.params.object then return end
+    local object = data.params.object
+    object:teleport(data.params.cell, data.res or data.params.pos, {onGround = data.res and false or true, rotation = data.params.rotation})
+end
+
+local function mwr_deactivateObject(data)
+    local object = data.object
+    if localStorage.isIdInDeletionList(object.id) then
+        localStorage.removeIdFromDeletionList(object.id)
+        log("Parent actor removed", object)
+        object:remove()
+    end
+    localStorage.clearRefRandomizationTimestamp(object)
+    log("Deactivated", object)
+end
+
+local function mwr_loadLocalConfigData(data)
+    localConfig.loadData(data)
+end
+
 return {
     engineHandlers = {
         onActorActive = async:callback(onActorActive),
@@ -220,72 +292,9 @@ return {
         onActivate = async:callback(onActivate),
     },
     eventHandlers = {
-        mwr_updateInventory = async:callback(function(data)
-            local config = localConfig.getConfigTableByObjectType(data.objectType)
-            if config then
-                local equipment = (data.objectType == objectType.npc or data.objectType == objectType.creature) and types.Actor.getEquipment(data.object) or {}
-                for _, itemData in pairs(data.items) do
-                    local isArtifact = generatorData.obtainableArtifacts[itemData.item.recordId]
-                    local newId
-                    if isArtifact then
-                        if not localStorage.data.other.artifacts or #localStorage.data.other.artifacts == 0 then
-                            localStorage.data.other.artifacts = {}
-                            for id, _ in pairs(generatorData.obtainableArtifacts) do
-                                table.insert(localStorage.data.other.artifacts, id)
-                            end
-                        end
-                        local pos = math.random(1, #localStorage.data.other.artifacts)
-                        newId = localStorage.data.other.artifacts[pos]
-                        table.remove(localStorage.data.other.artifacts, pos)
-                    else
-                        ---@type mwr.itemPosData
-                        local advData = itemData.advData or globalData.itemsData.items[itemData.item.recordId]
-                        if not advData then goto continue end
-                        local grp = globalData.itemsData.groups[advData.type][advData.subType]
-                        newId = grp[random.getRandom(advData.pos, #grp, config.item.rregion.min, config.item.rregion.max)]
-                        local i = 10
-                        while (data.objectType == objectType.npc or data.objectType == objectType.creature) and
-                                i > 0 and globalData.itemsData.items[newId] and globalData.itemsData.items[newId].isDangerous do
-                            newId = grp[random.getRandom(advData.pos, #grp, config.item.rregion.min, config.item.rregion.max)]
-                            i = i - 1
-                        end
-                        if i == 0 then goto continue end
-                    end
-                    local obj = createItem(newId, itemData.item, itemData, data.objectType == objectType.creature)
-                    log("object ", data.object, "new item ", obj, "old item ", itemData.item, "count ", obj.count)
-                    localStorage.setRefRandomizationTimestamp(obj)
-                    local inventory = (data.objectType == objectType.npc or data.objectType == objectType.creature) and
-                        types.Actor.inventory(data.object) or types.Container.content(data.object)
-                    obj:moveInto(inventory)
-                    localStorage.removeObjectData(itemData.item)
-                    itemData.item:remove()
-                    if itemData.slot then
-                        equipment[itemData.slot] = obj
-                    end
-                    ::continue::
-                end
-                if data.objectType == objectType.npc or data.objectType == objectType.creature then
-                    data.object:sendEvent("mwr_actor_setEquipment", equipment)
-                end
-            end
-        end),
-        mwr_loadLocalConfigData = function(data)
-            localConfig.loadData(data)
-        end,
-        mwr_moveToPoint = function(data)
-            if not data.params or not data.params.object then return end
-            local object = data.params.object
-            object:teleport(data.params.cell, data.res or data.params.pos, {onGround = data.res and false or true, rotation = data.params.rotation})
-        end,
-        mwr_deactivateObject = function(data)
-            local object = data.object
-            if localStorage.isIdInDeletionList(object.id) then
-                localStorage.removeIdFromDeletionList(object.id)
-                log("Parent actor removed", object)
-                object:remove()
-            end
-            localStorage.clearRefRandomizationTimestamp(object)
-            log("Deactivated", object)
-        end
+        mwr_updateInventory = async:callback(mwr_updateInventory),
+        mwr_loadLocalConfigData = mwr_loadLocalConfigData,
+        mwr_moveToPoint = async:callback(mwr_moveToPoint),
+        mwr_deactivateObject = async:callback(mwr_deactivateObject),
     },
 }
