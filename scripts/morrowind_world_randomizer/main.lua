@@ -33,7 +33,7 @@ local function isReadyForRandomization(ref, once)
     local tm = localStorage.getRefRandomizationTimestamp(ref)
     if tm and once then
         return false
-    elseif tm and (localConfig.data.randomizeOnce or tm + localConfig.data.randomizeAfter > world.getSimulationTime()) then
+    elseif tm and (localConfig.data.randomizeOnce or (tm + localConfig.data.randomizeAfter > world.getSimulationTime())) then
         return false
     end
     return true
@@ -203,6 +203,12 @@ local function onNewGame()
     world.players[1]:sendEvent("mwrbd_updateSettings", {configData = localConfig.data})
 end
 
+local function onActivate(object, actor)
+    if localConfig.data.doNot.activatedContainers and object.type == types.Container and not types.Lockable.isLocked(object) then
+        localStorage.setRefRandomizationTimestamp(object, 9999999999)
+    end
+end
+
 return {
     engineHandlers = {
         onActorActive = async:callback(onActorActive),
@@ -211,6 +217,7 @@ return {
         onSave = async:callback(onSave),
         onLoad = async:callback(onLoad),
         onNewGame = async:callback(onNewGame),
+        onActivate = async:callback(onActivate),
     },
     eventHandlers = {
         mwr_updateInventory = async:callback(function(data)

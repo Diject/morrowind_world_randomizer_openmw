@@ -34,9 +34,19 @@ this.config = nil
 ---@type mwr.localStorage
 this.storage = nil
 
-function this.isReadyForRandomization(cellName)
+function this.isCellReadyForRandomization(cellName)
     local time = this.storage.getCellRandomizationTimestamp(cellName)
-    if time and (this.config.data.randomizeOnce or time + this.config.data.randomizeAfter > world.getSimulationTime()) then
+    if time and (this.config.data.randomizeOnce or (time + this.config.data.randomizeAfter > world.getSimulationTime())) then
+        return false
+    end
+    return true
+end
+
+local function isReadyForRandomization(ref, once)
+    local tm = this.storage.getRefRandomizationTimestamp(ref)
+    if tm and once then
+        return false
+    elseif tm and (this.config.data.randomizeOnce or (tm + this.config.data.randomizeAfter > world.getSimulationTime())) then
         return false
     end
     return true
@@ -149,7 +159,7 @@ this.randomize = async:callback(function(cell)
     if not cell then return end
     local cellName = advString.getCellName(cell)
     local firstTime = not this.storage.getCellRandomizationTimestamp(cellName)
-    if this.isReadyForRandomization(cellName) then
+    if this.isCellReadyForRandomization(cellName) then
         log("cell randomization", cellName)
 
         this.randomizeStatics(cell, firstTime)
@@ -207,6 +217,7 @@ this.randomize = async:callback(function(cell)
         local containers = cell:getAll(types.Container)
         config = this.config.getConfigTableByObjectType(objectType.container)
         for _, container in pairs(containers or {}) do
+            if not isReadyForRandomization(container) and this.config.data.doNot.activatedContainers then goto continue end
             if this.herbsData.objects[container.recordId] then -- for herbs
                 if this.config.data.world.herb.item.randomize then
                     local inventory = types.Container.content(container)
@@ -232,6 +243,7 @@ this.randomize = async:callback(function(cell)
                 end
                 lockTrap(container, config)
             end
+            ::continue::
         end
 
         local doors = cell:getAll(types.Door)

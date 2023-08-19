@@ -18,6 +18,9 @@ this.default = {
     enabled = true,
     randomizeAfter = 10,
     randomizeOnce = false,
+    doNot = {
+        activatedContainers = true,
+    },
     world = {
         item = {
             randomize = true,

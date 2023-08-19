@@ -7,8 +7,8 @@ local this = {}
 
 this.data = {lastRand = {}, cellLastRand = {}, creatureParent = {}, deletionList = {}, actorBase = {}, other = {}}
 
-function this.setRefRandomizationTimestamp(reference)
-    this.data.lastRand[reference.id] = world.getSimulationTime()
+function this.setRefRandomizationTimestamp(reference, timestamp)
+    this.data.lastRand[reference.id] = timestamp or world.getSimulationTime()
 end
 
 ---@return integer|nil
