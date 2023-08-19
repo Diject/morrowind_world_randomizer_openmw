@@ -25,8 +25,8 @@ this.default = {
         item = {
             randomize = true,
             rregion = {
-                min = 1,
-                max = 1,
+                min = 100,
+                max = 100,
             },
         },
         static = {
@@ -48,8 +48,8 @@ this.default = {
             item = {
                 randomize = true,
                 rregion = {
-                    min = 1,
-                    max = 1,
+                    min = 100,
+                    max = 100,
                 },
             },
             typesPerCell = 4,
@@ -62,8 +62,8 @@ this.default = {
         item = {
             randomize = true,
             rregion = {
-                min = 1,
-                max = 1,
+                min = 100,
+                max = 100,
             },
         },
         stat = {
@@ -115,8 +115,8 @@ this.default = {
             levelReference = 20,
             bySkillMax = 2,
             rregion = {
-                min = 1,
-                max = 1,
+                min = 100,
+                max = 100,
             },
             add = {
                 count = 10,
@@ -124,8 +124,8 @@ this.default = {
                 bySkillMax = 2,
                 levelReference = 20,
                 rregion = {
-                    min = 1,
-                    max = 1,
+                    min = 100,
+                    max = 100,
                 },
             },
             remove = {
@@ -137,14 +137,14 @@ this.default = {
         randomize = true,
         byType = false,
         rregion = {
-            min = 1,
-            max = 1,
+            min = 100,
+            max = 100,
         },
         item = {
             randomize = true,
             rregion = {
-                min = 1,
-                max = 1,
+                min = 100,
+                max = 100,
             },
         },
         stat = {
@@ -175,15 +175,15 @@ this.default = {
             randomize = true,
             bySchool = true,
             rregion = {
-                min = 1,
-                max = 1,
+                min = 100,
+                max = 100,
             },
             add = {
                 count = 10,
                 levelReference = 20,
                 rregion = {
-                    min = 1,
-                    max = 1,
+                    min = 100,
+                    max = 100,
                 },
             },
             remove = {
@@ -195,16 +195,16 @@ this.default = {
         item = {
             randomize = true,
             rregion = {
-                min = 1,
-                max = 1,
+                min = 100,
+                max = 100,
             },
         },
         lock = {
             chance = 100,
             maxValue = 100,
             rregion = {
-                min = 1,
-                max = 1,
+                min = 100,
+                max = 100,
             },
             add = {
                 chance = 15,
@@ -231,8 +231,8 @@ this.default = {
             chance = 100,
             maxValue = 100,
             rregion = {
-                min = 1,
-                max = 1,
+                min = 100,
+                max = 100,
             },
             add = {
                 chance = 15,

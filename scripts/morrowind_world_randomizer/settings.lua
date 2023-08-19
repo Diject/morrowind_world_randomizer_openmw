@@ -138,7 +138,7 @@ I.Settings.registerGroup({
     settings = {
         textLabel{name = "empty", description = "items"},
         boolSetting{key = "npc.item.randomize", name = "randomizeItemsInInventory", default = config.default.npc.item.randomize},
-        minmaxSetting{key = "npc.item.rregion", name = "rregion", default = config.default.npc.item.rregion, independent = true, min = -1, max = 1},
+        minmaxSetting{key = "npc.item.rregion", name = "rregion", default = config.default.npc.item.rregion, independent = true, min = -100, max = 100},
         textLabel{name = "empty", description = "stats"},
         boolSetting{key = "npc.stat.dynamic.randomize", name = "randomizeDynamicStats", default = config.default.npc.stat.dynamic.randomize},
         boolSetting{key = "npc.stat.dynamic.additive", name = "additive", default = config.default.npc.stat.dynamic.additive},
@@ -158,7 +158,7 @@ I.Settings.registerGroup({
         textLabel{name = "empty", description = "spells"},
         boolSetting{key = "npc.spell.randomize", name = "randomizeSpells", default = config.default.npc.spell.randomize},
         boolSetting{key = "npc.spell.bySchool", name = "spellsBySchool", default = config.default.npc.spell.bySchool},
-        minmaxSetting{key = "npc.spell.rregion", name = "rregion", default = config.default.npc.spell.rregion, independent = true, min = -1, max = 1},
+        minmaxSetting{key = "npc.spell.rregion", name = "rregion", default = config.default.npc.spell.rregion, independent = true, min = -100, max = 100},
         boolSetting{key = "npc.spell.bySkill", name = "spellsBySkill", default = config.default.npc.spell.bySkill},
         numberSetting{key = "npc.spell.bySkillMax", name = "bySkillMax", default = config.default.npc.spell.levelReference, integer = true, min = 1, max = 5},
         numberSetting{key = "npc.spell.levelReference", name = "levelReferenceSpells", default = config.default.npc.spell.levelReference, integer = true, min = 1},
@@ -169,7 +169,7 @@ I.Settings.registerGroup({
         boolSetting{key = "npc.spell.add.bySkill", name = "spellsBySkill", default = config.default.npc.spell.add.bySkill},
         numberSetting{key = "npc.spell.add.bySkillMax", name = "bySkillMax", default = config.default.npc.spell.add.levelReference, integer = true, min = 1, max = 5},
         numberSetting{key = "npc.spell.add.levelReference", name = "levelReferenceSpells", default = config.default.npc.spell.add.levelReference, integer = true, min = 1},
-        minmaxSetting{key = "npc.spell.add.rregion", name = "rregion", default = config.default.npc.spell.add.rregion, independent = true, min = -1, max = 1},
+        minmaxSetting{key = "npc.spell.add.rregion", name = "rregion", default = config.default.npc.spell.add.rregion, independent = true, min = -100, max = 100},
     },
 })
 
@@ -190,7 +190,7 @@ I.Settings.registerGroup({
     settings = {
         textLabel{name = "empty", description = "items"},
         boolSetting{key = "creature.item.randomize", name = "randomizeItemsInInventory", default = config.default.creature.item.randomize},
-        minmaxSetting{key = "creature.item.rregion", name = "rregion", default = config.default.creature.item.rregion, independent = true, min = -1, max = 1},
+        minmaxSetting{key = "creature.item.rregion", name = "rregion", default = config.default.creature.item.rregion, independent = true, min = -100, max = 100},
         textLabel{name = "empty", description = "stats"},
         boolSetting{key = "creature.stat.dynamic.randomize", name = "randomizeDynamicStats", default = config.default.creature.stat.dynamic.randomize},
         boolSetting{key = "creature.stat.dynamic.additive", name = "additive", default = config.default.creature.stat.dynamic.additive},
@@ -200,7 +200,7 @@ I.Settings.registerGroup({
         textLabel{name = "empty", description = "spells"},
         boolSetting{key = "creature.spell.randomize", name = "randomizeSpells", default = config.default.creature.spell.randomize},
         boolSetting{key = "creature.spell.bySchool", name = "spellsBySchool", default = config.default.creature.spell.bySchool},
-        minmaxSetting{key = "creature.spell.rregion", name = "rregion", default = config.default.creature.spell.rregion, independent = true, min = -1, max = 1},
+        minmaxSetting{key = "creature.spell.rregion", name = "rregion", default = config.default.creature.spell.rregion, independent = true, min = -100, max = 100},
         boolSetting{key = "creature.spell.bySkill", name = "spellsBySkill", default = config.default.creature.spell.bySkill},
         numberSetting{key = "creature.spell.bySkillMax", name = "bySkillMax", default = config.default.creature.spell.levelReference, integer = true, min = 1, max = 5},
         numberSetting{key = "creature.spell.levelReference", name = "levelReferenceSpells", default = config.default.creature.spell.levelReference, integer = true, min = 1},
@@ -211,7 +211,7 @@ I.Settings.registerGroup({
         boolSetting{key = "creature.spell.add.bySkill", name = "spellsBySkill", default = config.default.creature.spell.add.bySkill},
         numberSetting{key = "creature.spell.add.bySkillMax", name = "bySkillMax", default = config.default.creature.spell.add.levelReference, integer = true, min = 1, max = 5},
         numberSetting{key = "creature.spell.add.levelReference", name = "levelReferenceSpells", default = config.default.creature.spell.add.levelReference, integer = true, min = 1},
-        minmaxSetting{key = "creature.spell.add.rregion", name = "rregion", default = config.default.creature.spell.add.rregion, independent = true, min = -1, max = 1},
+        minmaxSetting{key = "creature.spell.add.rregion", name = "rregion", default = config.default.creature.spell.add.rregion, independent = true, min = -100, max = 100},
     },
 })
 
@@ -232,12 +232,12 @@ I.Settings.registerGroup({
     settings = {
         textLabel{name = "empty", description = "items"},
         boolSetting({key = "container.item.randomize", name = "randomizeItemsInContainer", default = config.default.container.item.randomize}),
-        minmaxSetting{key = "container.item.rregion", name = "rregion", default = config.default.container.item.rregion, independent = true, min = -1, max = 1},
+        minmaxSetting{key = "container.item.rregion", name = "rregion", default = config.default.container.item.rregion, independent = true, min = -100, max = 100},
         textLabel{name = "empty", description = "lock"},
         numberSetting({key = "container.lock.maxValue", name = "maxLock", default = config.default.container.lock.maxValue, min = 1, max = 10000}),
         textLabel{name = "empty", description = "existing"},
         numberSetting({key = "container.lock.chance", name = "chanceToChange", default = config.default.container.lock.chance, min = 0, max = 100}),
-        minmaxSetting{key = "container.lock.rregion", name = "rregion", default = config.default.container.lock.rregion, independent = true, min = -1, max = 1},
+        minmaxSetting{key = "container.lock.rregion", name = "rregion", default = config.default.container.lock.rregion, independent = true, min = -100, max = 100},
         textLabel{name = "empty", description = "addNew"},
         numberSetting({key = "container.lock.add.chance", name = "chanceToAdd", default = config.default.container.lock.add.chance, min = 0, max = 100}),
         numberSetting{key = "container.lock.add.levelReference", name = "levelReferenceLock", default = config.default.container.lock.add.levelReference, integer = true, min = 1},
@@ -274,7 +274,7 @@ I.Settings.registerGroup({
         numberSetting({key = "door.lock.maxValue", name = "maxLock", default = config.default.door.lock.maxValue, min = 1, max = 10000}),
         textLabel{name = "empty", description = "existing"},
         numberSetting({key = "door.lock.chance", name = "chanceToChange", default = config.default.door.lock.chance, min = 0, max = 100}),
-        minmaxSetting{key = "door.lock.rregion", name = "rregion", default = config.default.door.lock.rregion, independent = true, min = -1, max = 1},
+        minmaxSetting{key = "door.lock.rregion", name = "rregion", default = config.default.door.lock.rregion, independent = true, min = -100, max = 100},
         textLabel{name = "empty", description = "addNew"},
         numberSetting({key = "door.lock.add.chance", name = "chanceToAdd", default = config.default.door.lock.add.chance, min = 0, max = 100}),
         numberSetting{key = "door.lock.add.levelReference", name = "levelReferenceLock", default = config.default.door.lock.add.levelReference, integer = true, min = 1},
@@ -308,7 +308,7 @@ I.Settings.registerGroup({
     order = 5,
     settings = {
         boolSetting({key = "world.item.randomize", name = "randomizeItemsWithoutContainer", default = config.default.world.item.randomize}),
-        minmaxSetting{key = "world.item.rregion", name = "rregion", default = config.default.world.item.rregion, independent = true, min = -1, max = 1},
+        minmaxSetting{key = "world.item.rregion", name = "rregion", default = config.default.world.item.rregion, independent = true, min = -100, max = 100},
         textLabel{name = "empty", description = "light"},
         boolSetting({key = "world.light.randomize", name = "randomizeLight", default = config.default.world.light.randomize}),
         textLabel{name = "empty", description = "trees"},
@@ -328,7 +328,7 @@ I.Settings.registerGroup({
         numberSetting({key = "world.herb.typesPerCell", name = "typesPerCell", default = config.default.world.herb.typesPerCell,
             integer = true, min = 1, max = 10}),
         boolSetting({key = "world.herb.item.randomize", name = "randomizeItemsInHerb", default = config.default.world.herb.item.randomize}),
-        minmaxSetting{key = "world.herb.item.rregion", name = "rregion", default = config.default.world.herb.item.rregion, independent = true, min = -1, max = 1},
+        minmaxSetting{key = "world.herb.item.rregion", name = "rregion", default = config.default.world.herb.item.rregion, independent = true, min = -100, max = 100},
     },
 })
 

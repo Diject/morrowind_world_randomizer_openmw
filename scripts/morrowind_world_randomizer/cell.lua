@@ -145,13 +145,13 @@ local function lockTrap(object, config)
         elseif config.trap.chance * 0.01 > math.random() then
             local group = this.spellsData.groups[core.magic.SPELL_TYPE.Spell].trapHarm
             local playerLevel = types.Actor.stats.level(world.players[1]).current
-            local pos = random.getRandom(math.floor(#group * playerLevel / config.trap.levelReference), #group, 1, 0)
+            local pos = random.getRandom(math.floor(#group * playerLevel / config.trap.levelReference), #group, 100, 0)
             types.Lockable.setTrapSpell(object, group[pos])
         end
     elseif config.trap.add.chance * 0.01 > math.random() then
         local group = this.spellsData.groups[core.magic.SPELL_TYPE.Spell].trapHarm
         local playerLevel = types.Actor.stats.level(world.players[1]).current
-        local pos = random.getRandom(math.floor(#group * playerLevel / config.trap.add.levelReference), #group, 1, 0)
+        local pos = random.getRandom(math.floor(#group * playerLevel / config.trap.add.levelReference), #group, 100, 0)
         types.Lockable.setTrapSpell(object, group[pos])
     end
 end
@@ -171,7 +171,7 @@ this.randomize = async:callback(function(cell)
                 local advData = this.lightsData.objects[light.recordId]
                 if advData then
                     local group = this.lightsData.groups[advData.group]
-                    local newObj = world.createObject(group[random.getRandom(math.floor(lightPos[advData.group] * #group), #group, 0.1, 0.1)], 1)
+                    local newObj = world.createObject(group[random.getRandom(math.floor(lightPos[advData.group] * #group), #group, 10, 10)], 1)
                     local box1 = light:getBoundingBox()
                     local box2 = newObj:getBoundingBox()
                     local offset = (box1.vertices[1].z - box2.vertices[1].z)
