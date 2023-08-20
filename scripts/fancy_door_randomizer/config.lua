@@ -25,6 +25,7 @@ this.default = {
     swap = true,
     allowLockedExit = true,
     unlockLockedExit = true,
+    untrapExit = false,
     saveOnFailure = true,
     inToEx = {
         toInToEx = true,
@@ -65,7 +66,7 @@ function this.setValueByString(val, str)
     local lastName
     local prevVar
     for _, varName in ipairs(stringLib.split(str, delimiter)) do
-        if var[varName] then
+        if var[varName] ~= nil then
             lastName = varName
             prevVar = var
             var = var[lastName]
@@ -74,7 +75,7 @@ function this.setValueByString(val, str)
         end
     end
     if lastName then
-        if prevVar then
+        if prevVar ~= nil then
             prevVar[lastName] = val
         else
             var[lastName] = val
@@ -87,7 +88,7 @@ end
 function this.getValueByString(str)
     local var = this.data
     for _, varName in pairs(stringLib.split(str, delimiter)) do
-        if var[varName] then
+        if var[varName] ~= nil then
             var = var[varName]
         else
             return nil

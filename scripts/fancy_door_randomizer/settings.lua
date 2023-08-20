@@ -189,6 +189,7 @@ I.Settings.registerGroup({
         boolSetting({key = "exitDoor", name = "exitDoor", default = config.default.exitDoor}),
         boolSetting({key = "allowLockedExit", name = "allowLockedExit", default = config.default.allowLockedExit}),
         boolSetting({key = "unlockLockedExit", name = "unlockLockedExit", default = config.default.unlockLockedExit}),
+        boolSetting({key = "untrapExit", name = "untrapExit", default = config.default.untrapExit}),
     },
 })
 
@@ -259,13 +260,12 @@ I.Settings.updateRendererArgument(storageName, "radius", {min = 1, max = 100, in
 local mainStorage = storage.playerSection(storageName)
 
 local function updateConfig()
-    local newConfig = require("scripts.fancy_door_randomizer.config")
-    newConfig.loadPlayerSettings(storage.playerSection(storageName):asTable())
-    newConfig.loadPlayerSettings(storage.playerSection(storageName.."_inToEx"):asTable())
-    newConfig.loadPlayerSettings(storage.playerSection(storageName.."_inToIn"):asTable())
-    newConfig.loadPlayerSettings(storage.playerSection(storageName.."_exToEx"):asTable())
-    newConfig.loadPlayerSettings(storage.playerSection(storageName.."_exToIn"):asTable())
-    core.sendGlobalEvent("fdrbd_loadConfigData", newConfig.data)
+    config.loadPlayerSettings(storage.playerSection(storageName):asTable())
+    config.loadPlayerSettings(storage.playerSection(storageName.."_inToEx"):asTable())
+    config.loadPlayerSettings(storage.playerSection(storageName.."_inToIn"):asTable())
+    config.loadPlayerSettings(storage.playerSection(storageName.."_exToEx"):asTable())
+    config.loadPlayerSettings(storage.playerSection(storageName.."_exToIn"):asTable())
+    core.sendGlobalEvent("fdrbd_loadConfigData", config.data)
 end
 
 local function updateMainSettings()

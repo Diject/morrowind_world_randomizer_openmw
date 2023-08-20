@@ -94,7 +94,14 @@ local function changeDoorDestinationAndTeleport(old, new, actor)
         local toMainDoor = doorLib.getBackDoor(old)
         local targetDoor = doorLib.getBackDoor(new)
         if config.data.unlockLockedExit then
-            Lockable.unlock(targetDoor)
+            async:newUnsavableSimulationTimer(2, function()
+                Lockable.unlock(targetDoor)
+            end)
+        end
+        if config.data.untrapExit then
+            async:newUnsavableSimulationTimer(2, function()
+                Lockable.setTrapSpell(targetDoor, nil)
+            end)
         end
         storage.setData(targetDoor.id, Door.destPosition(toMainDoor), Door.destRotation(toMainDoor), Door.destCell(toMainDoor))
         if configData.swap then
