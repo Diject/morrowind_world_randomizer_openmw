@@ -136,6 +136,7 @@ I.Settings.registerGroup({
     permanentStorage = true,
     order = 1,
     settings = {
+        boolSetting({key = "logging", name = "logging", default = false}),
         boolSetting({key = "itemSafeMode", name = "itemSafeMode", default = false}),
         boolSetting({key = "creatureSafeMode", name = "creatureSafeMode", default = false}),
     },

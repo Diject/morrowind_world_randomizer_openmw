@@ -290,6 +290,7 @@ end
 local function mwr_updateGeneratorSettings(data)
     local global = storage.globalSection(globalStorage.storageName)
     for name, val in pairs(data) do
+        globalStorage.data[name] = val
         global:set(name, val)
     end
     rebuildStorageData()
