@@ -169,7 +169,7 @@ this.randomize = async:callback(function(cell)
             local lightPos = {["0"] = math.random(), ["1"] = math.random(), ["2"] = math.random()}
             for _, light in pairs(cell:getAll(types.Light)) do
                 local advData = this.lightsData.objects[light.recordId]
-                if advData then
+                if advData and light.enabled then
                     local group = this.lightsData.groups[advData.group]
                     local newObj = world.createObject(group[random.getRandom(math.floor(lightPos[advData.group] * #group), #group, 10, 10)], 1)
                     local box1 = light:getBoundingBox()
@@ -186,6 +186,7 @@ this.randomize = async:callback(function(cell)
         local config = this.config.getConfigTableByObjectType(nil)
         local items = cell:getAll()
         for _, item in pairs(items or {}) do
+            if not item.enabled then goto continue end
             ---@type mwr.itemPosData
             local advItemData = this.itemsData.items[item.recordId]
             local isArtifact = generatorData.obtainableArtifacts[item.recordId]
@@ -213,12 +214,13 @@ this.randomize = async:callback(function(cell)
                 item:remove()
                 new:teleport(cell, pos, {onGround = true, rotation = rot})
             end
+            ::continue::
         end
 
         local containers = cell:getAll(types.Container)
         config = this.config.getConfigTableByObjectType(objectType.container)
         for _, container in pairs(containers or {}) do
-            if not isReadyForRandomization(container) and this.config.data.doNot.activatedContainers then goto continue end
+            if not container.enabled or (not isReadyForRandomization(container) and this.config.data.doNot.activatedContainers) then goto continue end
             if this.herbsData.objects[container.recordId] then -- for herbs
                 if this.config.data.world.herb.item.randomize then
                     local inventory = types.Container.content(container)

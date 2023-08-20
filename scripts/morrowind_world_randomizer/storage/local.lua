@@ -37,6 +37,10 @@ function this.setCreatureParentIdData(crea, parent)
     this.data.creatureParent[crea.id] = parent.id
 end
 
+function this.clearCreatureParentIdData(crea)
+    this.data.creatureParent[crea.id] = nil
+end
+
 function this.getCreatureParentData(crea)
     return this.data.creatureParent[crea.id]
 end
@@ -55,6 +59,7 @@ function this.removeIdFromDeletionList(id)
 end
 
 function this.loadData(data)
+    if not data then return end
     this.data = data
 end
 

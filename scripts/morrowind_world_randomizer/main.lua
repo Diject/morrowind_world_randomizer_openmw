@@ -74,8 +74,24 @@ local function initData()
     globalData = globalStorage.data
 end
 
+-- fix for created creatures
+local cellsForCheck = {}
+time.runRepeatedly(function()
+    for cell, _ in pairs(cellsForCheck) do
+        for _, actor in pairs(cell:getAll(types.Creature)) do
+            if localStorage.isIdInDeletionList(actor.id) then
+                localStorage.removeIdFromDeletionList(actor.id)
+                log("Parent actor removed", actor)
+                actor:remove()
+            end
+        end
+        cellsForCheck[cell] = nil
+    end
+end, 30 * time.second, { initialDelay = math.random() * 10 * time.second })
+
 local function onActorActive(actor)
     if not localConfig.data.enabled then return end
+    cellsForCheck[actor.cell] = true
     async:newUnsavableSimulationTimer(0.2, function()
         if not actor or not actor:isValid() then return end
         local actorSavedData = localStorage.saveActorData(actor)
@@ -101,6 +117,7 @@ local function onActorActive(actor)
                 local newActor = group[random.getRandom(actorData.pos, #group, config.rregion.min, config.rregion.max)]
                 local new = world.createObject(newActor)
                 localStorage.setRefRandomizationTimestamp(new)
+                if config.item.randomize then new:sendEvent("mwr_actor_randomizeInventory", {itemsData = globalData.itemsData, config = config}) end
                 new:teleport(actor.cell, actor.position, {onGround = true, rotation = actor.rotation})
                 localStorage.setCreatureParentIdData(new, actor)
                 actor.enabled = false
@@ -164,25 +181,9 @@ local function onActorActive(actor)
     end)
 end
 
--- fix for created creatures
-local cellsForCheck = {}
-time.runRepeatedly(function()
-    for cell, _ in pairs(cellsForCheck) do
-        for _, actor in pairs(cell:getAll(types.Creature)) do
-            if localStorage.isIdInDeletionList(actor.id) then
-                localStorage.removeIdFromDeletionList(actor.id)
-                log("Parent actor removed", actor)
-                actor:remove()
-            end
-        end
-        cellsForCheck[cell] = nil
-    end
-end, 30 * time.second, { initialDelay = math.random() * 10 * time.second })
-
 local function onObjectActive(object)
     if not localConfig.data.enabled then return end
     cellLib.randomize(object.cell)
-    cellsForCheck[object.cell] = true
 end
 
 local function onInit()
@@ -195,23 +196,34 @@ local function onSave()
     return {config = localConfig.data, storage = localStorage.data}
 end
 
+local function updateSettings()
+    async:newUnsavableSimulationTimer(0.5, function()
+        if #world.players > 0 then
+            world.players[1]:sendEvent("mwrbd_updateSettings", {configData = localConfig.data})
+        else
+            updateSettings()
+        end
+    end)
+end
+
 local function onLoad(data)
+    math.randomseed(os.time())
     localConfig.loadData(data.config)
-    world.players[1]:sendEvent("mwrbd_updateSettings", {configData = localConfig.data})
+    updateSettings()
     localStorage.loadData(data.storage)
     if not globalData then
         initData()
-        cellLib.init(globalData, localConfig, localStorage)
     end
+    cellLib.init(globalData, localConfig, localStorage)
 end
 
 local function onNewGame()
-    world.players[1]:sendEvent("mwrbd_updateSettings", {configData = localConfig.data})
+    updateSettings()
 end
 
 local function onActivate(object, actor)
     if localConfig.data.doNot.activatedContainers and object.type == types.Container and not types.Lockable.isLocked(object) then
-        localStorage.setRefRandomizationTimestamp(object, 9999999999)
+        localStorage.setRefRandomizationTimestamp(object, 999999999)
     end
 end
 
@@ -274,10 +286,10 @@ end
 
 local function mwr_deactivateObject(data)
     local object = data.object
-    if localStorage.isIdInDeletionList(object.id) then
-        localStorage.removeIdFromDeletionList(object.id)
-        log("Parent actor removed", object)
-        object:remove()
+    local parentId = localStorage.getCreatureParentData(object)
+    if parentId then
+        localStorage.addIdToDeletionList(parentId)
+        localStorage.clearCreatureParentIdData(object)
     end
     localStorage.clearRefRandomizationTimestamp(object)
     log("Deactivated", object)

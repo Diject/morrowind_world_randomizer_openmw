@@ -23,16 +23,26 @@ local function onSave()
     return {storage = storage.data, config = config.data}
 end
 
+local function updateSettings()
+    async:newUnsavableSimulationTimer(0.5, function()
+        if #world.players > 0 then
+            world.players[1]:sendEvent("fdrbd_updateSettings", {configData = config.data})
+        else
+            updateSettings()
+        end
+    end)
+end
+
 local function onLoad(data)
     storage.data = data.storage or {}
     config.loadData(data.config or {})
-    world.players[1]:sendEvent("fdrbd_updateSettings", {configData = config.data})
+    updateSettings()
     doorLib.init(storage)
     doorsData = doorLib.fingDoors(storage, config)
 end
 
 local function onNewGame()
-    world.players[1]:sendEvent("fdrbd_updateSettings", {configData = config.data})
+    updateSettings()
 end
 
 local function chooseDoorByConfigData(doorData, doorConfig)
