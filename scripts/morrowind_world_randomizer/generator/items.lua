@@ -40,7 +40,9 @@ local function checkMajorRequirements(id, scriptId)
 end
 
 local function checkMinorRequirements(item, objectType)
-    if not generatorData.forbiddenModels[item.model:lower() or "0"] and item.icon ~= "" and
+    local model = item.model:lower()
+    local icon = item.icon:lower()
+    if model and not generatorData.forbiddenModels[model] and icon ~= "" and not generatorData.forbiddenIcons[icon] and
             not (objectType == objectIds.book and item.enchant == "") then
         return true
     end

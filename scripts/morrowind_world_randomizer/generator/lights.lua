@@ -1,3 +1,5 @@
+local generatorData = require("scripts.morrowind_world_randomizer.generator.data")
+
 local this = {}
 
 local Light = require('openmw.types').Light
@@ -15,8 +17,10 @@ function this.generateData()
 
     local temp = {}
     for _, light in pairs(Light.records) do
-        local id = light.id:lower()
-        table.insert(temp, {id = id, color = light.color, haveModel = light.model ~= "meshes\\", canCarry = light.isCarriable})
+        if not generatorData.forbiddenModels[light.model:lower()] then
+            local id = light.id:lower()
+            table.insert(temp, {object = light, id = id, color = light.color, haveModel = light.model ~= "meshes\\", canCarry = light.isCarriable})
+        end
     end
     table.sort(temp, function(a, b) return a.color < b.color end)
     out.groups["0"] = {}
@@ -27,8 +31,10 @@ function this.generateData()
             table.insert(out.groups["0"], data.id)
             out.objects[data.id] = {group = "0"}
         elseif data.canCarry then
-            table.insert(out.groups["1"], data.id)
-            out.objects[data.id] = {group = "1"}
+            if not generatorData.forbiddenIcons[data.object.icon:lower()] then
+                table.insert(out.groups["1"], data.id)
+                out.objects[data.id] = {group = "1"}
+            end
         else
             table.insert(out.groups["2"], data.id)
             out.objects[data.id] = {group = "2"}

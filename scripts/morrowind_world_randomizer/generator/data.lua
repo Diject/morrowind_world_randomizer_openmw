@@ -156,10 +156,18 @@ this.forbiddenIds = {
     ["rock_glass_05"] = true,
     ["rock_glass_06"] = true,
     ["rock_glass_07"] = true,
+
+    ["dremora_ttpc"] = true,
+    ["dremora_gothren_guard1"] = true,
+    ["dremora_gothren_guard2"] = true,
 }
 
 this.forbiddenModels = { -- lowercase
     ["meshes\\pc\\f\\pc_help_deprec_01.nif"] = true,
+}
+
+this.forbiddenIcons = {
+    ["icons\\default icon.dds"] = true,
 }
 
 this.scriptWhiteList = {

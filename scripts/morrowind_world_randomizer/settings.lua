@@ -264,8 +264,8 @@ I.Settings.registerGroup({
         textLabel{name = "empty", description = "addNew"},
         numberSetting({key = "container.trap.add.chance", name = "chanceToAdd", default = config.default.container.trap.add.chance, min = 0, max = 100}),
         numberSetting{key = "container.trap.add.levelReference", name = "levelReferenceTrap", default = config.default.container.trap.add.levelReference, integer = true, min = 1},
-        textLabel{name = "empty", description = "removeLock"},
-        numberSetting({key = "container.trap.remove.chance", name = "chanceToUnlock", default = config.default.container.trap.remove.chance, min = 0, max = 100}),
+        textLabel{name = "empty", description = "untrapping"},
+        numberSetting({key = "container.trap.remove.chance", name = "chanceToRemoveTrap", default = config.default.container.trap.remove.chance, min = 0, max = 100}),
     },
 })
 
@@ -301,8 +301,8 @@ I.Settings.registerGroup({
         textLabel{name = "empty", description = "addNew"},
         numberSetting({key = "door.trap.add.chance", name = "chanceToAdd", default = config.default.door.trap.add.chance, min = 0, max = 100}),
         numberSetting{key = "door.trap.add.levelReference", name = "levelReferenceTrap", default = config.default.door.trap.add.levelReference, integer = true, min = 1},
-        textLabel{name = "empty", description = "removeLock"},
-        numberSetting({key = "door.trap.remove.chance", name = "chanceToUnlock", default = config.default.door.trap.remove.chance, min = 0, max = 100}),
+        textLabel{name = "empty", description = "untrapping"},
+        numberSetting({key = "door.trap.remove.chance", name = "chanceToRemoveTrap", default = config.default.door.trap.remove.chance, min = 0, max = 100}),
     },
 })
 

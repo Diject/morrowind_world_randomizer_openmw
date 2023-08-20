@@ -58,9 +58,9 @@ function this.generateFloraData()
     local data = {}
     for  _, object in pairs(types.Static.records) do
         local id = object.id:lower()
-        if (id:find("grass") or id:find("bush") or id:find("flora")) and
+        if checkRequirements(id, object) and (id:find("grass") or id:find("bush") or id:find("flora")) and
                 not (id:find("tree") or id:find("log") or id:find("menhir") or id:find("root") or id:find("parasol") or id:find("rock") or
-                id:find("plane")) and checkRequirements(id, object) then
+                id:find("plane") or id:find("caveentr")) then
 
             local str = ((id:gsub("[_ ]", "") or ""):match(".+%d+") or ""):match("%a+")
             if str then
