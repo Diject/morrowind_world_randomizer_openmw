@@ -106,13 +106,15 @@ local function textLabel(args)
     return data
 end
 
+local order = 0
+
 I.Settings.registerGroup({
     key = config.storageName.."_0",
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "mainSettings",
     permanentStorage = false,
-    order = 0,
+    order = order,
     settings = {
         boolSetting({key = "enabled", name = "enableRandomizer", default = config.default.enabled}),
         boolSetting({key = "randomizeOnce", name = "onlyOnce", default = config.default.randomizeOnce}),
@@ -121,10 +123,29 @@ I.Settings.registerGroup({
     },
 })
 
+order = order + 1
 local storageName = config.storageName.."_0"
 for _, arg in pairs(arguments) do
     I.Settings.updateRendererArgument(storageName, arg.key, arg)
 end
+lableId = 0
+arguments = {}
+
+require("scripts.morrowind_world_randomizer.renderers.profileSelector")
+I.Settings.registerGroup({
+    key = config.storageName.."_profiles",
+    page = "MorrowindWorldRandomizer",
+    l10n = "morrowind_world_randomizer",
+    name = "presets",
+    permanentStorage = false,
+    order = order,
+    settings = {
+        {renderer = "mwrbd_createProfile", key = "newProfile", default = "default", name = "newPreset"},
+        {renderer = "mwrbd_profileSelector", key = "profileSelector", default = "", name = "presets"},
+    },
+})
+
+order = order + 1
 lableId = 0
 arguments = {}
 
@@ -134,7 +155,7 @@ I.Settings.registerGroup({
     l10n = "morrowind_world_randomizer",
     name = "dataGeneration",
     permanentStorage = true,
-    order = 1,
+    order = order,
     settings = {
         boolSetting({key = "logging", name = "logging", default = false}),
         boolSetting({key = "itemSafeMode", name = "itemSafeMode", default = false}),
@@ -142,13 +163,15 @@ I.Settings.registerGroup({
     },
 })
 
+order = order + 1
+
 I.Settings.registerGroup({
     key = config.storageName.."_1",
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "npc",
     permanentStorage = false,
-    order = 2,
+    order = order,
     settings = {
         textLabel{name = "empty", description = "items"},
         boolSetting{key = "npc.item.randomize", name = "randomizeItemsInInventory", default = config.default.npc.item.randomize},
@@ -187,6 +210,7 @@ I.Settings.registerGroup({
     },
 })
 
+order = order + 1
 storageName = config.storageName.."_1"
 for _, arg in pairs(arguments) do
     I.Settings.updateRendererArgument(storageName, arg.key, arg)
@@ -200,7 +224,7 @@ I.Settings.registerGroup({
     l10n = "morrowind_world_randomizer",
     name = "creature",
     permanentStorage = false,
-    order = 3,
+    order = order,
     settings = {
         textLabel{name = "empty", description = "items"},
         boolSetting{key = "creature.item.randomize", name = "randomizeItemsInInventory", default = config.default.creature.item.randomize},
@@ -229,6 +253,7 @@ I.Settings.registerGroup({
     },
 })
 
+order = order + 1
 storageName = config.storageName.."_2"
 for _, arg in pairs(arguments) do
     I.Settings.updateRendererArgument(storageName, arg.key, arg)
@@ -242,7 +267,7 @@ I.Settings.registerGroup({
     l10n = "morrowind_world_randomizer",
     name = "container",
     permanentStorage = false,
-    order = 4,
+    order = order,
     settings = {
         textLabel{name = "empty", description = "items"},
         boolSetting({key = "container.item.randomize", name = "randomizeItemsInContainer", default = config.default.container.item.randomize}),
@@ -269,6 +294,7 @@ I.Settings.registerGroup({
     },
 })
 
+order = order + 1
 storageName = config.storageName.."_3"
 for _, arg in pairs(arguments) do
     I.Settings.updateRendererArgument(storageName, arg.key, arg)
@@ -282,7 +308,7 @@ I.Settings.registerGroup({
     l10n = "morrowind_world_randomizer",
     name = "door",
     permanentStorage = false,
-    order = 5,
+    order = order,
     settings = {
         textLabel{name = "empty", description = "lock"},
         numberSetting({key = "door.lock.maxValue", name = "maxLock", default = config.default.door.lock.maxValue, min = 1, max = 10000}),
@@ -306,6 +332,7 @@ I.Settings.registerGroup({
     },
 })
 
+order = order + 1
 storageName = config.storageName.."_4"
 for _, arg in pairs(arguments) do
     I.Settings.updateRendererArgument(storageName, arg.key, arg)
@@ -319,7 +346,7 @@ I.Settings.registerGroup({
     l10n = "morrowind_world_randomizer",
     name = "world",
     permanentStorage = false,
-    order = 6,
+    order = order,
     settings = {
         boolSetting({key = "world.item.randomize", name = "randomizeItemsWithoutContainer", default = config.default.world.item.randomize}),
         minmaxSetting{key = "world.item.rregion", name = "rregion", default = config.default.world.item.rregion, independent = true, min = -100, max = 100},
@@ -346,6 +373,7 @@ I.Settings.registerGroup({
     },
 })
 
+order = order + 1
 storageName = config.storageName.."_5"
 for _, arg in pairs(arguments) do
     I.Settings.updateRendererArgument(storageName, arg.key, arg)

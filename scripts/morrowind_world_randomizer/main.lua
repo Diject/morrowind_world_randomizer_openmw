@@ -27,6 +27,8 @@ local objectType = require("scripts.morrowind_world_randomizer.generator.types")
 
 local cellLib = require("scripts.morrowind_world_randomizer.cell")
 
+local profiles = require("scripts.morrowind_world_randomizer.storage.profiles")
+
 ---@type mwr.globalStorageData
 local globalData = nil
 
@@ -200,6 +202,7 @@ local function updateSettings()
     async:newUnsavableSimulationTimer(0.5, function()
         if #world.players > 0 then
             world.players[1]:sendEvent("mwrbd_updateSettings", {configData = localConfig.data})
+            world.players[1]:sendEvent("mwrbd_updateProfiles", {profileNames = profiles.getProfileNames(), protectedNames = profiles.protectedNames})
         else
             updateSettings()
         end
@@ -225,6 +228,10 @@ local function onActivate(object, actor)
     if localConfig.data.doNot.activatedContainers and object.type == types.Container and not types.Lockable.isLocked(object) then
         localStorage.setRefRandomizationTimestamp(object, 999999999)
     end
+end
+
+local function onPlayerAdded(player)
+
 end
 
 local function mwr_updateInventory(data)
@@ -317,6 +324,7 @@ return {
         onLoad = async:callback(onLoad),
         onNewGame = async:callback(onNewGame),
         onActivate = async:callback(onActivate),
+        onPlayerAdded = async:callback(onPlayerAdded),
     },
     eventHandlers = {
         mwr_updateInventory = async:callback(mwr_updateInventory),
@@ -324,5 +332,21 @@ return {
         mwr_moveToPoint = async:callback(mwr_moveToPoint),
         mwr_deactivateObject = async:callback(mwr_deactivateObject),
         mwr_updateGeneratorSettings = async:callback(mwr_updateGeneratorSettings),
+        mwrbd_saveProfile = async:callback(function(data)
+            profiles.saveProfile(data.name, localConfig)
+            if world.players[1] then
+                world.players[1]:sendEvent("mwrbd_updateProfiles", {profileNames = profiles.getProfileNames(), protectedNames = profiles.protectedNames})
+            end
+        end),
+        mwrbd_deleteProfile = async:callback(function(data)
+            profiles.deleteProfile(data.name)
+            if world.players[1] then
+                world.players[1]:sendEvent("mwrbd_updateProfiles", {profileNames = profiles.getProfileNames(), protectedNames = profiles.protectedNames})
+            end
+        end),
+        mwrbd_loadProfile = async:callback(function(data)
+            profiles.loadProfile(data.name, localConfig)
+            world.players[1]:sendEvent("mwrbd_updateSettings", {configData = localConfig.data})
+        end),
     },
 }

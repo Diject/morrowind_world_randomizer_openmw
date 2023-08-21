@@ -7,6 +7,7 @@ local async = require('openmw.async')
 local storage = require('openmw.storage')
 local util = require("openmw.util")
 local nearby = require("openmw.nearby")
+local I = require("openmw.interfaces")
 
 local config = require("scripts.morrowind_world_randomizer.config.local")
 require("scripts.morrowind_world_randomizer.settings")
@@ -61,27 +62,35 @@ local function lowestInCircle(params)
     end
 end
 
+local function mwrbd_updateSettings(data)
+    local configData = data.configData
+    if not configData then return end
+    config.data = configData
+    local function filStorage(storageSection)
+        for name, val in pairs(storageSection:asTable()) do
+            local confVal = config.getValueByString(name)
+            if confVal and confVal ~= val then
+                storageSection:set(name, confVal)
+            end
+        end
+    end
+    filStorage(storage.playerSection(config.storageName.."_0"))
+    filStorage(storage.playerSection(config.storageName.."_1"))
+    filStorage(storage.playerSection(config.storageName.."_2"))
+    filStorage(storage.playerSection(config.storageName.."_3"))
+    filStorage(storage.playerSection(config.storageName.."_4"))
+    filStorage(storage.playerSection(config.storageName.."_5"))
+end
+
+local function mwrbd_updateProfiles(data)
+    local storageName = config.storageName.."_profiles"
+    I.Settings.updateRendererArgument(storageName, "profileSelector", {profiles = data.profileNames, protected = data.protectedNames, maxHeight = 5,})
+end
+
 return {
     eventHandlers = {
         mwr_lowestPosInCircle = async:callback(lowestInCircle),
-        mwrbd_updateSettings = async:callback(function(data)
-            local configData = data.configData
-            if not configData then return end
-            config.data = configData
-            local function filStorage(storageSection)
-                for name, val in pairs(storageSection:asTable()) do
-                    local confVal = config.getValueByString(name)
-                    if confVal and confVal ~= val then
-                        storageSection:set(name, confVal)
-                    end
-                end
-            end
-            filStorage(storage.playerSection(config.storageName.."_0"))
-            filStorage(storage.playerSection(config.storageName.."_1"))
-            filStorage(storage.playerSection(config.storageName.."_2"))
-            filStorage(storage.playerSection(config.storageName.."_3"))
-            filStorage(storage.playerSection(config.storageName.."_4"))
-            filStorage(storage.playerSection(config.storageName.."_5"))
-        end),
+        mwrbd_updateSettings = async:callback(mwrbd_updateSettings),
+        mwrbd_updateProfiles = async:callback(mwrbd_updateProfiles),
     },
 }
