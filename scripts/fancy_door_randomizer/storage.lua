@@ -54,7 +54,7 @@ end
 function this.setData(doorId, pos, rot, cell)
     ---@type fdr.doorStorageObject
     local data = {cell = {name = cell.name, gridX = cell.gridX, gridY = cell.gridY}, pos = {x = pos.x, y = pos.y, z = pos.z},
-        rotAngle = rot:getYaw(), timestamp = world.getSimulationTime()}
+        rotAngle = rot:getYaw(), timestamp = world.getGameTime()}
     this.data[doorId] = data
 end
 

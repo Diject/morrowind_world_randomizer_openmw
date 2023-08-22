@@ -38,7 +38,7 @@ this.storage = nil
 
 function this.isCellReadyForRandomization(cellName)
     local time = this.storage.getCellRandomizationTimestamp(cellName)
-    if time and (this.config.data.randomizeOnce or (time + this.config.data.randomizeAfter > world.getSimulationTime())) then
+    if time and (this.config.data.randomizeOnce or (time + this.config.data.randomizeAfter * 3600 > world.getGameTime())) then
         return false
     end
     return true
@@ -48,7 +48,7 @@ local function isReadyForRandomization(ref, once)
     local tm = this.storage.getRefRandomizationTimestamp(ref)
     if tm and once then
         return false
-    elseif tm and (this.config.data.randomizeOnce or (tm + this.config.data.randomizeAfter > world.getSimulationTime())) then
+    elseif tm and (this.config.data.randomizeOnce or (tm + this.config.data.randomizeAfter * 3600 > world.getGameTime())) then
         return false
     end
     return true

@@ -44,7 +44,7 @@ local function fillStorageFromCell(cell, doorData, storage, config)
         local storageData = storage.getData(door.id)
         if Door.isTeleport(door) and not this.forbiddenDoorIds[door.recordId] and isValidPosition(Door.destPosition(door)) and
                 door.enabled and not (excludeLocked and Lockable.isLocked(door)) and
-                not (storageData and storageData.timestamp + config.data.interval > world.getSimulationTime()) then
+                not (storageData and storageData.timestamp + config.data.interval * 3600 > world.getGameTime()) then
             local posExterior = this.isExterior(door.cell)
             local destExterior = this.isExterior(Door.destCell(door))
             if posExterior and destExterior then

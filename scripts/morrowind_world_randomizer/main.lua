@@ -36,7 +36,7 @@ local function isReadyForRandomization(ref, once)
     local tm = localStorage.getRefRandomizationTimestamp(ref)
     if tm and once then
         return false
-    elseif tm and (localConfig.data.randomizeOnce or (tm + localConfig.data.randomizeAfter > world.getSimulationTime())) then
+    elseif tm and (localConfig.data.randomizeOnce or (tm + localConfig.data.randomizeAfter * 3600 > world.getGameTime())) then
         return false
     end
     return true

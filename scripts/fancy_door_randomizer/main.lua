@@ -126,7 +126,7 @@ Activation.addHandlerForType(Door,
         if configData.enabled and Door.isTeleport(door) and not Lockable.isLocked(door) and not Lockable.getTrapSpell(door) and
                 not doorLib.forbiddenDoorIds[door.recordId] then
             local storageData = storage.getData(door.id)
-            local timeExpired = storageData and storageData.timestamp + configData.interval < world.getSimulationTime()
+            local timeExpired = storageData and storageData.timestamp + configData.interval * 3600 < world.getGameTime()
             if storageData and not timeExpired then
                 actor:teleport(storageData.cell, storageData.pos, {onGround = true, rotation = storageData.rotAngle})
                 -- return false
