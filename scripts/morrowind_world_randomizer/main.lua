@@ -184,6 +184,9 @@ local function onActorActive(actor)
 end
 
 local function onObjectActive(object)
+    if localStorage.data.scale and localStorage.data.scale[object.id] then
+        object:setScale(localStorage.data.scale[object.id])
+    end
     if not localConfig.data.enabled then return end
     cellLib.randomize(object.cell)
 end

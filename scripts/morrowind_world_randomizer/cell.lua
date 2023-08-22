@@ -122,6 +122,8 @@ local function createNewStatic(oldObj, group, nearestObjects)
         callbackName = "mwr_moveToPoint",
     })
     newObj:setScale(scale)
+    this.storage.data.scale[newObj.id] = scale
+    this.storage.data.scale[oldObj.id] = nil
     oldObj:remove()
 end
 
