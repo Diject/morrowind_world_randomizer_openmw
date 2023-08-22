@@ -69,9 +69,9 @@ function this.generateData(smart)
     }
 
     local dangerousItems = {}
+    local itemCount = {}
 
     if smart then
-        local itemCount = {}
         local processItems = function(data)
             for _, item in pairs(data) do
                 local id = item.recordId:lower()
@@ -99,41 +99,28 @@ function this.generateData(smart)
                 end
             end
         end
-        for groupId, records in pairs(recordData) do
-            if not out.groups[groupId] then out.groups[groupId] = {} end
-            local data = out.groups[groupId]
-            for _, item in pairs(records[1].records) do
-                local scriptId = item.mwscript:lower()
-                local itemId = item.id:lower()
-                local count = itemCount[itemId]
-                if checkMajorRequirements(itemId, scriptId) and checkMinorRequirements(item, groupId) and count then
-                    local type = tostring(item.type or "0")
-                    if not data[type] then data[type] = {} end
-                    table.insert(data[type], itemId)
-                    if item.enchant and item.enchant ~= "" and dangerousEnchantIds[item.enchant:lower()] then
-                        dangerousItems[itemId] = true
-                    end
+    end
+
+    for groupId, records in pairs(recordData) do
+        local itemData = {}
+        for _, item in pairs(records[1].records) do
+            local scriptId = item.mwscript:lower()
+            local itemId = item.id:lower()
+            local count = smart and itemCount[itemId] or true
+            if checkMajorRequirements(itemId, scriptId) and checkMinorRequirements(item, groupId) and count then
+                local type = tostring(item.type or "0")
+                table.insert(itemData, {id = itemId, value = item[records[2]], type = type})
+                if item.enchant and item.enchant ~= "" and dangerousEnchantIds[item.enchant:lower()] then
+                    dangerousItems[itemId] = true
                 end
             end
-            table.sort(data, function(a, b) return a[records[2]] < b[records[2]] end)
         end
-    else
-        for groupId, records in pairs(recordData) do
-            if not out.groups[groupId] then out.groups[groupId] = {} end
-            local data = out.groups[groupId]
-            for _, item in pairs(records[1].records) do
-                local scriptId = item.mwscript:lower()
-                local itemId = item.id:lower()
-                if checkMajorRequirements(itemId, scriptId) and checkMinorRequirements(item, groupId) then
-                    local type = tostring(item.type or "0")
-                    if not data[type] then data[type] = {} end
-                    table.insert(data[type], itemId)
-                    if item.enchant and item.enchant ~= "" and dangerousEnchantIds[item.enchant:lower()] then
-                        dangerousItems[itemId] = true
-                    end
-                end
-            end
-            table.sort(data, function(a, b) return a[records[2]] < b[records[2]] end)
+        table.sort(itemData, function(a, b) return a.value < b.value end)
+        if not out.groups[groupId] then out.groups[groupId] = {} end
+        local group = out.groups[groupId]
+        for _, dt in pairs(itemData) do
+            if not group[dt.type] then group[dt.type] = {} end
+            table.insert(group[dt.type], dt.id)
         end
     end
 
