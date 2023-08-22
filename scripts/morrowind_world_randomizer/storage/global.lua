@@ -14,7 +14,7 @@ local this = {}
 
 this.storageName = "MWR_By_Diject"
 
-this.version = 1
+this.version = 2
 
 ---@class mwr.globalStorageData
 ---@field version number

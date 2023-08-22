@@ -42,8 +42,8 @@ end
 local function checkMinorRequirements(item, objectType)
     local model = item.model:lower()
     local icon = item.icon:lower()
-    if model and not generatorData.forbiddenModels[model] and icon ~= "" and not generatorData.forbiddenIcons[icon] and
-            not (objectType == objectIds.book and item.enchant == "") then
+    if model and not generatorData.forbiddenModels[model] and icon ~= "icons\\" and not generatorData.forbiddenIcons[icon] and
+            not (objectType == objectIds.book and item.enchant == "") and not (item.value and item.value == 0) then
         return true
     end
     return false

@@ -178,6 +178,9 @@ this.randomize = async:callback(function(cell)
                     local box2 = newObj:getBoundingBox()
                     local offset = (box1.vertices[1].z - box2.vertices[1].z)
                     local pos = util.vector3(light.position.x, light.position.y, light.position.z + offset)
+                    newObj.ownerRecordId = light.ownerRecordId
+                    newObj.ownerFactionId = light.ownerFactionId
+                    newObj.ownerFactionRank = light.ownerFactionRank
                     light:remove()
                     newObj:teleport(light.cell, pos, {rotation = light.rotation})
                 end
@@ -213,6 +216,9 @@ this.randomize = async:callback(function(cell)
                 local pos = item.position
                 local rot = item.rotation
                 log("world", item, "new item", new, "count ", new.count)
+                new.ownerRecordId = item.ownerRecordId
+                new.ownerFactionId = item.ownerFactionId
+                new.ownerFactionRank = item.ownerFactionRank
                 item:remove()
                 new:teleport(cell, pos, {onGround = true, rotation = rot})
             end
@@ -222,7 +228,8 @@ this.randomize = async:callback(function(cell)
         local containers = cell:getAll(types.Container)
         config = this.config.getConfigTableByObjectType(objectType.container)
         for _, container in pairs(containers or {}) do
-            if not container.enabled or (not isReadyForRandomization(container) and this.config.data.doNot.activatedContainers) or
+            local record = types.Container.record(container)
+            if record.mwscript ~= "" or not container.enabled or (not isReadyForRandomization(container) and this.config.data.doNot.activatedContainers) or
                     generatorData.forbiddenContainersDoors[container.recordId] then goto continue end
             if this.herbsData.objects[container.recordId] then -- for herbs
                 if this.config.data.world.herb.item.randomize then
