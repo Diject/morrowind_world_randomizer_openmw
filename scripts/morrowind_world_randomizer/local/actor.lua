@@ -270,16 +270,20 @@ function this.randmizeSpells(data)
         for _, spell in pairs(spellList) do
             local id = spell.id:lower()
             local newSpellId = chooseNewSpellId(spellsData, id, spellConfig)
-            log("new spell", newSpellId)
-            spells:add(newSpellId)
+            if newSpellId then
+                log("new spell", newSpellId)
+                spells:add(newSpellId)
+            end
         end
     end
     local addCount = spellConfig.add.count
     while addCount > 0 do
         local newSpellId = chooseNewSpellId(spellsData, nil, spellConfig.add, true)
-        log("new spell", newSpellId)
-        spells:add(newSpellId)
-        addCount = addCount - 1
+        if newSpellId then
+            log("new spell", newSpellId)
+            spells:add(newSpellId)
+            addCount = addCount - 1
+        end
     end
 end
 

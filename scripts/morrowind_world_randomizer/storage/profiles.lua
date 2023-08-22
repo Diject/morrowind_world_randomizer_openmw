@@ -18,6 +18,8 @@ end
 
 function this.saveProfile(name, config)
     if not name or name == "" then return false end
+    name = name:lower()
+    if this.protectedNames[name] then return false end
     if not config then config = this.config end
     this.data[name] = tableLib.deepcopy(config.data)
     storage:reset(this.data)
@@ -26,6 +28,7 @@ end
 
 function this.loadProfile(name, config)
     if not name or name == "" or not this.data[name] then return false end
+    name = name:lower()
     if not config then config = this.config end
     config.loadData(this.config.default)
     config.loadData(this.data[name])
@@ -34,6 +37,7 @@ end
 
 function this.deleteProfile(name)
     if not name or name == "" or not this.data[name] then return false end
+    name = name:lower()
     this.data[name] = nil
     storage:reset(this.data)
     return true

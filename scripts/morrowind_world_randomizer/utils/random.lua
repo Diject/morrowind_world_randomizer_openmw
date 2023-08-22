@@ -1,6 +1,8 @@
 local random = {}
 
 function random.getRandom(pos, itemsCount, lower, upper)
+    pos = math.floor(pos)
+    itemsCount = math.floor(itemsCount)
     lower = lower * 0.01
     upper = upper * 0.01
     if pos > itemsCount then pos = itemsCount end

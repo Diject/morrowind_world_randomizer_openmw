@@ -69,7 +69,7 @@ local function mwrbd_updateSettings(data)
     local function filStorage(storageSection)
         for name, val in pairs(storageSection:asTable()) do
             local confVal = config.getValueByString(name)
-            if confVal and confVal ~= val then
+            if confVal ~= nil and confVal ~= val then
                 storageSection:set(name, confVal)
             end
         end

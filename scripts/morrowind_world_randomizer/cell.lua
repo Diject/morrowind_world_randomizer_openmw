@@ -220,7 +220,8 @@ this.randomize = async:callback(function(cell)
         local containers = cell:getAll(types.Container)
         config = this.config.getConfigTableByObjectType(objectType.container)
         for _, container in pairs(containers or {}) do
-            if not container.enabled or (not isReadyForRandomization(container) and this.config.data.doNot.activatedContainers) then goto continue end
+            if not container.enabled or (not isReadyForRandomization(container) and this.config.data.doNot.activatedContainers) or
+                    generatorData.forbiddenContainersDoors[container.recordId] then goto continue end
             if this.herbsData.objects[container.recordId] then -- for herbs
                 if this.config.data.world.herb.item.randomize then
                     local inventory = types.Container.content(container)
@@ -252,7 +253,9 @@ this.randomize = async:callback(function(cell)
         local doors = cell:getAll(types.Door)
         config = this.config.getConfigTableByObjectType(objectType.door)
         for _, door in pairs(doors or {}) do
-            lockTrap(door, config)
+            if not generatorData.forbiddenContainersDoors[door.recordId] then
+                lockTrap(door, config)
+            end
         end
     end
 end)

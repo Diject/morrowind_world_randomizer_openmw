@@ -113,7 +113,7 @@ I.Settings.registerGroup({
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "mainSettings",
-    permanentStorage = false,
+    permanentStorage = true,
     order = order,
     settings = {
         boolSetting({key = "enabled", name = "enableRandomizer", default = config.default.enabled}),
@@ -137,7 +137,7 @@ I.Settings.registerGroup({
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "presets",
-    permanentStorage = false,
+    permanentStorage = true,
     order = order,
     settings = {
         {renderer = "mwrbd_createProfile", key = "newProfile", default = "default", name = "newPreset"},
@@ -154,7 +154,7 @@ I.Settings.registerGroup({
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "dataGeneration",
-    permanentStorage = true,
+    permanentStorage = false,
     order = order,
     settings = {
         boolSetting({key = "logging", name = "logging", default = false}),
@@ -170,7 +170,7 @@ I.Settings.registerGroup({
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "npc",
-    permanentStorage = false,
+    permanentStorage = true,
     order = order,
     settings = {
         textLabel{name = "empty", description = "items"},
@@ -223,7 +223,7 @@ I.Settings.registerGroup({
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "creature",
-    permanentStorage = false,
+    permanentStorage = true,
     order = order,
     settings = {
         textLabel{name = "empty", description = "items"},
@@ -266,7 +266,7 @@ I.Settings.registerGroup({
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "container",
-    permanentStorage = false,
+    permanentStorage = true,
     order = order,
     settings = {
         textLabel{name = "empty", description = "items"},
@@ -307,7 +307,7 @@ I.Settings.registerGroup({
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "door",
-    permanentStorage = false,
+    permanentStorage = true,
     order = order,
     settings = {
         textLabel{name = "empty", description = "lock"},
@@ -345,7 +345,7 @@ I.Settings.registerGroup({
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",
     name = "world",
-    permanentStorage = false,
+    permanentStorage = true,
     order = order,
     settings = {
         boolSetting({key = "world.item.randomize", name = "randomizeItemsWithoutContainer", default = config.default.world.item.randomize}),
