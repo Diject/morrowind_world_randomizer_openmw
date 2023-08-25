@@ -124,6 +124,13 @@ function this.saveActorData(actor, rewrite)
     for _, spell in pairs(Actor.spells(actor)) do
         table.insert(data.spells, spell.id:lower())
     end
+
+    data.items = {}
+
+    for _, item in pairs(Actor.inventory(actor):getAll()) do
+        table.insert(data.items, {id = item.recordId, count = item.count})
+    end
+
     this.data.actorBase[actor.recordId] = data
     return data
 end
