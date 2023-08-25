@@ -104,7 +104,7 @@ local function onActorActive(actor)
         local isAlive = types.Actor.stats.dynamic.health(actor).current > 0
 
         if firstRandomization then
-            if actor.type == types.Creature and config.randomize and not actor.contentFile and
+            if actor.type == types.Creature and config.randomize and (not config.onlyLeveled or not actor.contentFile) and
                     globalStorage.data.creaturesData.objects[actor.recordId] and isAlive then
                 local actorData = globalStorage.data.creaturesData.objects[actor.recordId]
                 local group

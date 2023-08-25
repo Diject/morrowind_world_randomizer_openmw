@@ -226,6 +226,11 @@ I.Settings.registerGroup({
     permanentStorage = true,
     order = order,
     settings = {
+        textLabel{name = "empty", description = "spawn"},
+        boolSetting{key = "creature.randomize", name = "randomizeCreatures", default = config.default.creature.randomize},
+        boolSetting{key = "creature.onlyLeveled", name = "onlyLeveled", default = config.default.creature.onlyLeveled},
+        boolSetting{key = "creature.byType", name = "byCreatureType", default = config.default.creature.byType},
+        minmaxSetting{key = "creature.rregion", name = "rregion", default = config.default.creature.rregion, independent = true, min = -100, max = 100},
         textLabel{name = "empty", description = "items"},
         boolSetting{key = "creature.item.randomize", name = "randomizeItemsInInventory", default = config.default.creature.item.randomize},
         minmaxSetting{key = "creature.item.rregion", name = "rregion", default = config.default.creature.item.rregion, independent = true, min = -100, max = 100},
