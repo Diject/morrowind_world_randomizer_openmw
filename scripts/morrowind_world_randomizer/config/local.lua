@@ -15,8 +15,8 @@ this.storageName = "Settings_MWR_By_Diject"
 ---@class mwr.configData
 this.default = {
     version = 1,
-    enabled = true,
-    randomizeAfter = 10,
+    enabled = false,
+    randomizeAfter = 72,
     randomizeOnce = false,
     doNot = {
         activatedContainers = true,
@@ -25,8 +25,8 @@ this.default = {
         item = {
             randomize = true,
             rregion = {
-                min = 100,
-                max = 100,
+                min = 20,
+                max = 20,
             },
         },
         static = {
@@ -46,10 +46,10 @@ this.default = {
         herb = {
             randomize = true,
             item = {
-                randomize = true,
+                randomize = false,
                 rregion = {
-                    min = 100,
-                    max = 100,
+                    min = 20,
+                    max = 20,
                 },
             },
             typesPerCell = 4,
@@ -62,8 +62,8 @@ this.default = {
         item = {
             randomize = true,
             rregion = {
-                min = 100,
-                max = 100,
+                min = 20,
+                max = 20,
             },
         },
         stat = {
@@ -115,21 +115,21 @@ this.default = {
             levelReference = 20,
             bySkillMax = 2,
             rregion = {
-                min = 100,
-                max = 100,
+                min = 20,
+                max = 20,
             },
             add = {
-                count = 10,
+                count = 2,
                 bySkill = true,
                 bySkillMax = 2,
                 levelReference = 20,
                 rregion = {
-                    min = 100,
-                    max = 100,
+                    min = 20,
+                    max = 20,
                 },
             },
             remove = {
-                count = 20,
+                count = 0,
             },
         },
     },
@@ -137,14 +137,14 @@ this.default = {
         randomize = true,
         byType = false,
         rregion = {
-            min = 100,
-            max = 100,
+            min = 20,
+            max = 20,
         },
         item = {
             randomize = true,
             rregion = {
-                min = 100,
-                max = 100,
+                min = 20,
+                max = 20,
             },
         },
         stat = {
@@ -175,19 +175,19 @@ this.default = {
             randomize = true,
             bySchool = true,
             rregion = {
-                min = 100,
-                max = 100,
+                min = 20,
+                max = 20,
             },
             add = {
-                count = 10,
+                count = 2,
                 levelReference = 20,
                 rregion = {
-                    min = 100,
-                    max = 100,
+                    min = 20,
+                    max = 20,
                 },
             },
             remove = {
-                count = 20,
+                count = 0,
             },
         },
     },
@@ -195,16 +195,16 @@ this.default = {
         item = {
             randomize = true,
             rregion = {
-                min = 100,
-                max = 100,
+                min = 20,
+                max = 20,
             },
         },
         lock = {
             chance = 100,
             maxValue = 100,
             rregion = {
-                min = 100,
-                max = 100,
+                min = 30,
+                max = 30,
             },
             add = {
                 chance = 15,
@@ -231,22 +231,22 @@ this.default = {
             chance = 100,
             maxValue = 100,
             rregion = {
-                min = 100,
-                max = 100,
+                min = 30,
+                max = 30,
             },
             add = {
-                chance = 15,
-                levelReference = 1,
+                chance = 5,
+                levelReference = 15,
             },
             remove = {
-                chance = 25,
+                chance = 20,
             },
         },
         trap = {
             chance = 100,
             levelReference = 1,
             add = {
-                chance = 100,
+                chance = 10,
                 levelReference = 1,
             },
             remove = {
