@@ -43,7 +43,7 @@ local function isReadyForRandomization(ref, once)
 end
 
 local function createItem(id, oldItem, advData, skipOwner)
-    local new = world.createObject(id, advData and advData.count or oldItem.count)
+    local new = world.createObject(id, advData.count or oldItem.count)
     if not skipOwner then
         new.ownerFactionId = oldItem.ownerFactionId
         new.ownerFactionRank = oldItem.ownerFactionRank
@@ -318,6 +318,26 @@ local function mwr_updateGeneratorSettings(data)
     rebuildStorageData()
 end
 
+local function mwrbd_saveProfile(data)
+    profiles.saveProfile(data.name, localConfig)
+    if world.players[1] then
+        world.players[1]:sendEvent("mwrbd_updateProfiles", {profileNames = profiles.getProfileNames(), protectedNames = profiles.protectedNames})
+    end
+end
+
+local function mwrbd_deleteProfile(data)
+    profiles.deleteProfile(data.name)
+    if world.players[1] then
+        world.players[1]:sendEvent("mwrbd_updateProfiles", {profileNames = profiles.getProfileNames(), protectedNames = profiles.protectedNames})
+    end
+end
+
+local function mwrbd_loadProfile(data)
+    profiles.loadProfile(data.name, localConfig)
+    world.players[1]:sendEvent("mwrbd_updateSettings", {configData = localConfig.data})
+end
+
+
 return {
     engineHandlers = {
         onActorActive = async:callback(onActorActive),
@@ -327,7 +347,7 @@ return {
         onLoad = async:callback(onLoad),
         onNewGame = async:callback(onNewGame),
         onActivate = async:callback(onActivate),
-        onPlayerAdded = async:callback(onPlayerAdded),
+        -- onPlayerAdded = async:callback(onPlayerAdded),
     },
     eventHandlers = {
         mwr_updateInventory = async:callback(mwr_updateInventory),
@@ -335,21 +355,8 @@ return {
         mwr_moveToPoint = async:callback(mwr_moveToPoint),
         mwr_deactivateObject = async:callback(mwr_deactivateObject),
         mwr_updateGeneratorSettings = async:callback(mwr_updateGeneratorSettings),
-        mwrbd_saveProfile = async:callback(function(data)
-            profiles.saveProfile(data.name, localConfig)
-            if world.players[1] then
-                world.players[1]:sendEvent("mwrbd_updateProfiles", {profileNames = profiles.getProfileNames(), protectedNames = profiles.protectedNames})
-            end
-        end),
-        mwrbd_deleteProfile = async:callback(function(data)
-            profiles.deleteProfile(data.name)
-            if world.players[1] then
-                world.players[1]:sendEvent("mwrbd_updateProfiles", {profileNames = profiles.getProfileNames(), protectedNames = profiles.protectedNames})
-            end
-        end),
-        mwrbd_loadProfile = async:callback(function(data)
-            profiles.loadProfile(data.name, localConfig)
-            world.players[1]:sendEvent("mwrbd_updateSettings", {configData = localConfig.data})
-        end),
+        mwrbd_saveProfile = async:callback(mwrbd_saveProfile),
+        mwrbd_deleteProfile = async:callback(mwrbd_deleteProfile),
+        mwrbd_loadProfile = async:callback(mwrbd_loadProfile),
     },
 }
