@@ -254,6 +254,11 @@ this.default = {
             },
         },
     },
+    other = {
+        restockFix = {
+            enabled = true,
+        },
+    },
 }
 
 ---@type mwr.configData

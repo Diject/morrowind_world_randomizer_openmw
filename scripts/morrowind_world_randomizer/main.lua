@@ -228,8 +228,44 @@ local function onNewGame()
 end
 
 local function onActivate(object, actor)
+    if not localConfig.data.enabled then return end
     if localConfig.data.doNot.activatedContainers and object.type == types.Container and not types.Lockable.isLocked(object) then
         localStorage.setRefRandomizationTimestamp(object, 999999999)
+    end
+
+    if localConfig.data.other.restockFix.enabled and object.type.baseType and object.type.baseType == types.Actor and
+            types.Actor.stats.dynamic.health(object).current > 0 and types.Actor.getStance(object) == types.Actor.STANCE.Nothing then
+
+        local inventory = types.Actor.inventory(object)
+
+        if not localStorage.data.other.lastItems then localStorage.data.other.lastItems = {} end
+        local items = tableLib.deepcopy(localStorage.data.other.lastItems)
+
+        local checkItem = function(it)
+            if globalData.itemsData.items[it.recordId] and (it.type == types.Book or it.type == types.Potion or it.type == types.Repair or
+                    it.type == types.Probe or it.type == types.Lockpick or it.type == types.Ingredient) then
+                return true
+            end
+            return false
+        end
+
+        for _, item in pairs(inventory:getAll()) do
+            if items[item.recordId] then
+                items[item.recordId].count = items[item.recordId].count - item.count
+                if items[item.recordId].count <= 0 then items[item.recordId] = nil end
+            end
+        end
+        for id, data in pairs(items) do
+            local newItem = world.createObject(id, data.count)
+            newItem:moveInto(inventory)
+        end
+        localStorage.data.other.lastItems = {}
+        local lastItems = localStorage.data.other.lastItems
+        for _, item in pairs(inventory:getAll()) do
+            if checkItem(item) then
+                lastItems[item.recordId] = {count = item.count}
+            end
+        end
     end
 end
 
