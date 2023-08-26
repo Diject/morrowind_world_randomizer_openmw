@@ -18,6 +18,7 @@ this.default = {
     enabled = false,
     randomizeAfter = 72,
     randomizeOnce = false,
+    cellLoadingTime = 0.5,
     doNot = {
         activatedContainers = true,
     },

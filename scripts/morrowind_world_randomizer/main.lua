@@ -77,9 +77,9 @@ local function initData()
 end
 
 -- fix for created creatures
-local cellsForCheck = {}
+local cellsForCreaatureCheck = {}
 time.runRepeatedly(function()
-    for cell, _ in pairs(cellsForCheck) do
+    for cell, _ in pairs(cellsForCreaatureCheck) do
         for _, actor in pairs(cell:getAll(types.Creature)) do
             if localStorage.isIdInDeletionList(actor.id) then
                 localStorage.removeIdFromDeletionList(actor.id)
@@ -87,13 +87,13 @@ time.runRepeatedly(function()
                 actor:remove()
             end
         end
-        cellsForCheck[cell] = nil
+        cellsForCreaatureCheck[cell] = nil
     end
 end, 30 * time.second, { initialDelay = math.random() * 10 * time.second })
 
 local function onActorActive(actor)
     if not localConfig.data.enabled then return end
-    cellsForCheck[actor.cell] = true
+    cellsForCreaatureCheck[actor.cell] = true
     async:newUnsavableSimulationTimer(0.2, function()
         if not actor or not actor:isValid() then return end
         local actorSavedData = localStorage.saveActorData(actor)
@@ -183,12 +183,22 @@ local function onActorActive(actor)
     end)
 end
 
+local cellsToRandomize = {}
+time.runRepeatedly(function()
+    for cell, tm in pairs(cellsToRandomize) do
+        if tm + localConfig.data.cellLoadingTime <= os.time() then
+            cellLib.randomize(cell)
+            cellsToRandomize[cell] = nil
+        end
+    end
+end, 1 * time.second, { initialDelay = math.random() * time.second })
+
 local function onObjectActive(object)
     if localStorage.data.scale and localStorage.data.scale[object.id] then
         object:setScale(localStorage.data.scale[object.id])
     end
     if not localConfig.data.enabled then return end
-    cellLib.randomize(object.cell)
+    cellsToRandomize[object.cell] = os.time()
 end
 
 local function onInit()
@@ -234,7 +244,7 @@ local function onActivate(object, actor)
     end
 
     if localConfig.data.other.restockFix.enabled and object.type.baseType and object.type.baseType == types.Actor and
-            types.Actor.stats.dynamic.health(object).current > 0 and types.Actor.getStance(object) == types.Actor.STANCE.Nothing then
+            types.Actor.stats.dynamic.health(object).current > 0 and object.contentFile and types.Actor.getStance(object) == types.Actor.STANCE.Nothing then
 
         local inventory = types.Actor.inventory(object)
 
