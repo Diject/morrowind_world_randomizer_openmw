@@ -238,32 +238,41 @@ local function onActivate(object, actor)
 
         local inventory = types.Actor.inventory(object)
 
-        if not localStorage.data.other.lastItems then localStorage.data.other.lastItems = {} end
-        local items = tableLib.deepcopy(localStorage.data.other.lastItems)
-
-        local checkItem = function(it)
-            if globalData.itemsData.items[it.recordId] and (it.type == types.Book or it.type == types.Potion or it.type == types.Repair or
-                    it.type == types.Probe or it.type == types.Lockpick or it.type == types.Ingredient) then
-                return true
+        if not localStorage.data.other.lastItems[object.id] then
+            localStorage.data.other.lastItems[object.id] = {}
+            local lastItems = localStorage.data.other.lastItems[object.id]
+            local itemData = {}
+            for _, item in pairs(inventory:getAll()) do
+                if globalData.itemsData.items[item.recordId] and (item.type == types.Book or item.type == types.Potion or item.type == types.Repair or
+                        item.type == types.Probe or item.type == types.Lockpick or item.type == types.Ingredient) then
+                    table.insert(itemData, {id = item.recordId, count = item.count})
+                end
             end
-            return false
-        end
-
-        for _, item in pairs(inventory:getAll()) do
-            if items[item.recordId] then
-                items[item.recordId].count = items[item.recordId].count - item.count
-                if items[item.recordId].count <= 0 then items[item.recordId] = nil end
+            local count = random.getIntBetween(localConfig.data.other.restockFix.iregion.min, localConfig.data.other.restockFix.iregion.max)
+            while count > 0 and #itemData > 0 do
+                local pos = math.random(#itemData)
+                local itData = itemData[pos]
+                lastItems[itData.id] = {count = itData.count}
+                table.remove(itemData, pos)
+                count = count - 1
             end
-        end
-        for id, data in pairs(items) do
-            local newItem = world.createObject(id, data.count)
-            newItem:moveInto(inventory)
-        end
-        localStorage.data.other.lastItems = {}
-        local lastItems = localStorage.data.other.lastItems
-        for _, item in pairs(inventory:getAll()) do
-            if checkItem(item) then
-                lastItems[item.recordId] = {count = item.count}
+        else
+            local items = tableLib.deepcopy(localStorage.data.other.lastItems[object.id])
+
+            for id, data in pairs(items) do
+                local count = data.count
+                for _, item in pairs(inventory:findAll(id)) do
+                    count = count - item.count
+                end
+                if count <= 0 then
+                    items[id] = nil
+                else
+                    data.count = count
+                end
+            end
+            for id, data in pairs(items) do
+                local newItem = world.createObject(id, data.count)
+                newItem:moveInto(inventory)
             end
         end
     end
@@ -277,6 +286,12 @@ local function mwr_updateInventory(data)
     local config = localConfig.getConfigTableByObjectType(data.objectType)
     if config then
         local equipment = (data.objectType == objectType.npc or data.objectType == objectType.creature) and types.Actor.getEquipment(data.object) or {}
+        local restockData
+        if localConfig.data.other.restockFix.enabled and localStorage.data.other.lastItems[data.object.id] then
+            restockData = localStorage.data.other.lastItems[data.object.id]
+        else
+            restockData = {}
+        end
         for _, itemData in pairs(data.items) do
             if itemData.item.count == 0 then goto continue end
             local isArtifact = generatorData.obtainableArtifacts[itemData.item.recordId]
@@ -305,16 +320,21 @@ local function mwr_updateInventory(data)
                 end
                 if i == 0 then goto continue end
             end
-            local obj = createItem(newId, itemData.item, itemData, data.objectType == objectType.creature)
-            log("object ", data.object, "new item ", obj, "old item ", itemData.item, "count ", obj.count)
-            localStorage.setRefRandomizationTimestamp(obj)
+            local newItem = createItem(newId, itemData.item, itemData, data.objectType == objectType.creature)
+            log("object ", data.object, "new item ", newItem, "old item ", itemData.item, "count ", newItem.count)
+            localStorage.setRefRandomizationTimestamp(newItem)
             local inventory = (data.objectType == objectType.npc or data.objectType == objectType.creature) and
                 types.Actor.inventory(data.object) or types.Container.content(data.object)
-            obj:moveInto(inventory)
+            newItem:moveInto(inventory)
+            local restockItem = restockData[itemData.item.recordId]
+            if restockItem then
+                restockData[newId] = {count = restockItem.count}
+                restockData[itemData.item.recordId] = nil
+            end
             localStorage.removeObjectData(itemData.item)
             itemData.item:remove()
             if itemData.slot then
-                equipment[itemData.slot] = obj
+                equipment[itemData.slot] = newItem
             end
             ::continue::
         end

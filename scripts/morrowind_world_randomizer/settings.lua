@@ -386,7 +386,28 @@ end
 lableId = 0
 arguments = {}
 
-for i = 0, 5 do
+I.Settings.registerGroup({
+    key = config.storageName.."_6",
+    page = "MorrowindWorldRandomizer",
+    l10n = "morrowind_world_randomizer",
+    name = "other",
+    permanentStorage = true,
+    order = order,
+    settings = {
+        boolSetting({key = "other.restockFix.enabled", name = "restock", description = "restockDescr", default = config.default.other.restockFix.enabled}),
+        minmaxSetting{key = "other.restockFix.iregion", name = "itemCountMinMax", default = config.default.other.restockFix.iregion, independent = false, integer = true},
+    },
+})
+
+order = order + 1
+storageName = config.storageName.."_6"
+for _, arg in pairs(arguments) do
+    I.Settings.updateRendererArgument(storageName, arg.key, arg)
+end
+lableId = 0
+arguments = {}
+
+for i = 0, 6 do
     local sotrageName = config.storageName.."_"..tostring(i)
     storage.playerSection(sotrageName):subscribe(async:callback(function()
         core.sendGlobalEvent("mwr_loadLocalConfigData", storage.playerSection(sotrageName):asTable())

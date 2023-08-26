@@ -27,6 +27,11 @@ function random.getBetween(min, max)
     return min + math.random() * (max - min)
 end
 
+function random.getIntBetween(min, max)
+    if min > max then max, min = min, max end
+    return math.random(min, max)
+end
+
 function random.GetBetweenForMulDiv(min, max)
     if min < 1 and min > 0 and max > 1 then
         if math.random() < 0.5 then

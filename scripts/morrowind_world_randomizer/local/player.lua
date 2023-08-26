@@ -80,6 +80,7 @@ local function mwrbd_updateSettings(data)
     filStorage(storage.playerSection(config.storageName.."_3"))
     filStorage(storage.playerSection(config.storageName.."_4"))
     filStorage(storage.playerSection(config.storageName.."_5"))
+    filStorage(storage.playerSection(config.storageName.."_6"))
 end
 
 local function mwrbd_updateProfiles(data)

@@ -258,6 +258,10 @@ this.default = {
     other = {
         restockFix = {
             enabled = true,
+            iregion = {
+                min = 1,
+                max = 5,
+            },
         },
     },
 }
