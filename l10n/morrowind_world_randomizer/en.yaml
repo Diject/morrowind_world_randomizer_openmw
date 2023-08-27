@@ -1,6 +1,17 @@
 empty: ""
 modName: "Morrowind World Randomizer"
-modDescription: "A randomizer for static objects and inventories"
+modDescription: "A randomizer for many game elements.\nThe settings are separate for each character."
+principles: "Principle of the item randomizer:\nFirst, the position of the object (or value) to be randomized is found in the sorted list,\n
+then the boundary values of the region are calculated relative to it.\nLeft shift decrease(increase if negative) the minimum boundary value\n
+by the shift value multiplied by the list length.\nRight shift increase(decrease if negative) the maximum boundary value\n
+by the shift value multiplied by the list length.\n\n
+For example, in a list of 100 elements,\nyou need to randomize the 50th with the left shift of 20% and the right of 10%.\n
+The result will be a random object with a range of 30 to 60.\n
+If the left shift is 100% and the right is 100% the result will be between 1 and 100.\n
+If the left shift is -20% and the right is 40% the result will be between 70 and 90.\n
+If the left shift is 40% and the right is -20% the result will be between 10 and 30.\n
+If the left shift is 100% and the right is 0% the result will be between 1 and 50.\n
+If the left shift is 0% and the right is 100% the result will be between 50 and 100.\n\nThe minimum range is 5% or 3 items.\nMost of the lists are sorted by object level."
 mainSettings: "Main"
 enableRandomizer: "Enable the randomizer?"
 onlyOnce: "Randomize an object only once?"
@@ -21,7 +32,7 @@ randomizeTrees: "Randomize trees"
 randomizeRocks: "Randomize rocks"
 randomizeFlora: "Randomize flora objects"
 randomizeHerbs: "Randomize herbs"
-typesPerCell: "Types per a cell"
+typesPerCell: "Types per cell"
 npc: "An NPC"
 creature: "An creature"
 randomizeDynamicStats: "Randomize dynamic Stats"
@@ -41,7 +52,7 @@ randomizeSpells: "Randomize spells"
 spellsBySchool: "A new spell will be from the same school"
 spellsBySkill: "A new spell will be from the schools with the highest skill value"
 levelReferenceSpells: "The level at which an object can have the most powerful spells"
-bySkillMax: "Number of schools with the highest skills value"
+bySkillMax: "Number of spell schools with the highest skills value"
 addSpell: "Add a new spell"
 count: "Count"
 removeSpell: "Remove a spell"
@@ -83,3 +94,4 @@ byCreatureType: "To the same creature type"
 restock: "Restock"
 restockDescr: "Give each NPC a refillable supply that refreshes when their character is activated. Only for ingredients, alchemy, lockpicking tools and scrolls. (This can compensate the broken restock of merchant resupply after randomization.)"
 itemCountMinMax: "Number of positions per NPC Min-Max"
+info: "Info"

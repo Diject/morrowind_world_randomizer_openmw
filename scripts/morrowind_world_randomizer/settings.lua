@@ -7,6 +7,7 @@ local util = require('openmw.util')
 
 require("scripts.morrowind_world_randomizer.renderers.minmax")
 require("scripts.morrowind_world_randomizer.renderers.label")
+require("scripts.morrowind_world_randomizer.renderers.text")
 
 local config = require("scripts.morrowind_world_randomizer.config.local")
 
@@ -106,6 +107,20 @@ local function textLabel(args)
     return data
 end
 
+local function text(args)
+    local data = {
+        renderer = "mwrbd_text",
+        key = "__dummy__"..tostring(lableId),
+        name = args.name,
+        description = args.description,
+        disabled = args.disabled,
+        text = args.text,
+    }
+    table.insert(arguments, data)
+    lableId = lableId + 1
+    return data
+end
+
 local order = 0
 
 I.Settings.registerGroup({
@@ -164,6 +179,26 @@ I.Settings.registerGroup({
 })
 
 order = order + 1
+
+storageName = config.storageName.."_info"
+I.Settings.registerGroup({
+    key = storageName,
+    page = "MorrowindWorldRandomizer",
+    l10n = "morrowind_world_randomizer",
+    name = "info",
+    permanentStorage = false,
+    order = order,
+    settings = {
+        text{name = "empty", text = "principles"},
+    },
+})
+
+order = order + 1
+for _, arg in pairs(arguments) do
+    I.Settings.updateRendererArgument(storageName, arg.key, arg)
+end
+lableId = 0
+arguments = {}
 
 I.Settings.registerGroup({
     key = config.storageName.."_1",
