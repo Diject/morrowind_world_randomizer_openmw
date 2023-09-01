@@ -248,26 +248,16 @@ local function onActivate(object, actor)
 
         local inventory = types.Actor.inventory(object)
 
-        if not localStorage.data.other.lastItems[object.id] then
-            localStorage.data.other.lastItems[object.id] = {}
-            local lastItems = localStorage.data.other.lastItems[object.id]
-            local itemData = {}
+        if not localStorage.data.other.restock[object.id] then
+            localStorage.data.other.restock[object.id] = {}
+            local restockingItems = localStorage.data.other.restock[object.id]
             for _, item in pairs(inventory:getAll()) do
-                if globalData.itemsData.items[item.recordId] and (item.type == types.Book or item.type == types.Potion or item.type == types.Repair or
-                        item.type == types.Probe or item.type == types.Lockpick or item.type == types.Ingredient) then
-                    table.insert(itemData, {id = item.recordId, count = item.count})
+                if types.Item.isRestocking(item) then
+                    restockingItems[item.id] = {count = item.count}
                 end
             end
-            local count = random.getIntBetween(localConfig.data.other.restockFix.iregion.min, localConfig.data.other.restockFix.iregion.max)
-            while count > 0 and #itemData > 0 do
-                local pos = math.random(#itemData)
-                local itData = itemData[pos]
-                lastItems[itData.id] = {count = itData.count}
-                table.remove(itemData, pos)
-                count = count - 1
-            end
         else
-            local items = tableLib.deepcopy(localStorage.data.other.lastItems[object.id])
+            local items = tableLib.deepcopy(localStorage.data.other.restock[object.id])
 
             for id, data in pairs(items) do
                 local count = data.count
@@ -297,8 +287,8 @@ local function mwr_updateInventory(data)
     if config then
         local equipment = (data.objectType == objectType.npc or data.objectType == objectType.creature) and types.Actor.getEquipment(data.object) or {}
         local restockData
-        if localConfig.data.other.restockFix.enabled and localStorage.data.other.lastItems[data.object.id] then
-            restockData = localStorage.data.other.lastItems[data.object.id]
+        if localConfig.data.other.restockFix.enabled and localStorage.data.other.restock[data.object.id] then
+            restockData = localStorage.data.other.restock[data.object.id]
         else
             restockData = {}
         end
@@ -336,10 +326,17 @@ local function mwr_updateInventory(data)
             local inventory = (data.objectType == objectType.npc or data.objectType == objectType.creature) and
                 types.Actor.inventory(data.object) or types.Container.content(data.object)
             newItem:moveInto(inventory)
-            local restockItem = restockData[itemData.item.recordId]
-            if restockItem then
-                restockData[newId] = {count = restockItem.count}
-                restockData[itemData.item.recordId] = nil
+            if types.Item.isRestocking(itemData.item) then
+                if not localStorage.data.other.restock[data.object.id] then
+                    localStorage.data.other.restock[data.object.id] = {}
+                end
+                localStorage.data.other.restock[data.object.id][newId] = {count = itemData.item.count}
+            else
+                local restockItem = restockData[itemData.item.recordId]
+                if restockItem then
+                    restockData[newId] = {count = restockItem.count}
+                    restockData[itemData.item.recordId] = nil
+                end
             end
             localStorage.removeObjectData(itemData.item)
             itemData.item:remove()
