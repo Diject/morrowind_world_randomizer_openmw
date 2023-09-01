@@ -4,8 +4,6 @@ local async = require('openmw.async')
 local localConfigLib = require("scripts.fancy_door_randomizer.config")
 local storageName = localConfigLib.storageName
 
-require("scripts.fancy_door_randomizer.settings")
-
 return {
     eventHandlers = {
         fdrbd_updateSettings = async:callback(function(data)
@@ -15,7 +13,8 @@ return {
             local function filStorage(storageSection)
                 for name, val in pairs(storageSection:asTable()) do
                     local confVal = localConfigLib.getValueByString(name)
-                    if confVal and confVal ~= val then
+                    print(name, val, confVal)
+                    if confVal ~= nil and confVal ~= val then
                         storageSection:set(name, confVal)
                     end
                 end
@@ -25,6 +24,7 @@ return {
             filStorage(storage.playerSection(storageName.."_inToIn"))
             filStorage(storage.playerSection(storageName.."_exToEx"))
             filStorage(storage.playerSection(storageName.."_exToIn"))
+            require("scripts.fancy_door_randomizer.settings")
         end),
     },
 }

@@ -10,7 +10,6 @@ local nearby = require("openmw.nearby")
 local I = require("openmw.interfaces")
 
 local config = require("scripts.morrowind_world_randomizer.config.local")
-require("scripts.morrowind_world_randomizer.settings")
 
 -- config.loadPlayerSettings(storage.playerSection(config.storageName.."_0"):asTable())
 -- config.loadPlayerSettings(storage.playerSection(config.storageName.."_1"):asTable())
@@ -81,6 +80,7 @@ local function mwrbd_updateSettings(data)
     filStorage(storage.playerSection(config.storageName.."_4"))
     filStorage(storage.playerSection(config.storageName.."_5"))
     filStorage(storage.playerSection(config.storageName.."_6"))
+    require("scripts.morrowind_world_randomizer.settings")
 end
 
 local function mwrbd_updateProfiles(data)
