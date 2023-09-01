@@ -1,6 +1,6 @@
 empty: ""
 modName: "Morrowind World Randomizer"
-modDescription: "A randomizer for many game elements.\nThe settings are separate for each character."
+modDescription: "A randomizer for many game elements.\nThe settings are individual for each character."
 principles: "Principle of the item randomizer:\nFirst, the position of the object (or value) to be randomized is found in the sorted list,\n
 then the boundary values of the region are calculated relative to it.\nLeft shift decrease(increase if negative) the minimum boundary value\n
 by the shift value multiplied by the list length.\nRight shift increase(decrease if negative) the maximum boundary value\n

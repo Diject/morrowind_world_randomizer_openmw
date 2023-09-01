@@ -1,5 +1,5 @@
 modName: "Fancy Door Randomizer"
-modDescription: "A mod that randomizes the destination of doors"
+modDescription: "A mod that randomizes door destinations. The settings are individual for each character"
 mainSettings: ""
 enabled: "Enable the mod"
 chance: "Chance in %"
