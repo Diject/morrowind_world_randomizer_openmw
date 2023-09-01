@@ -16,11 +16,11 @@ this.modes = {"nearestMode", "simpleMode"}
 
 ---@class fdr.configData
 this.default = {
-    enabled = true,
-    chance = 100,
+    enabled = false,
+    chance = 25,
     mode = this.modes[1],
     radius = 2,
-    interval = 1,
+    interval = 24,
     exitDoor = true,
     swap = true,
     allowLockedExit = true,
