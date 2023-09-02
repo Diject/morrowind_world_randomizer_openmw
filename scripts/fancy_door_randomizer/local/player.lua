@@ -13,7 +13,6 @@ return {
             local function filStorage(storageSection)
                 for name, val in pairs(storageSection:asTable()) do
                     local confVal = localConfigLib.getValueByString(name)
-                    print(name, val, confVal)
                     if confVal ~= nil and confVal ~= val then
                         storageSection:set(name, confVal)
                     end
