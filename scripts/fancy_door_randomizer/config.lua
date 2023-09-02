@@ -1,5 +1,5 @@
-local advTable = require("scripts.morrowind_world_randomizer.utils.table")
-local stringLib = require("scripts.morrowind_world_randomizer.utils.string")
+local advTable = require("scripts.fancy_door_randomizer.utils.table")
+local stringLib = require("scripts.fancy_door_randomizer.utils.string")
 
 ---@class fdr.config
 local this = {}

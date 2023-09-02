@@ -2,7 +2,7 @@ local world = require('openmw.world')
 local Door = require('openmw.types').Door
 local Lockable = require('openmw.types').Lockable
 
-local stringLib = require("scripts.morrowind_world_randomizer.utils.string")
+local stringLib = require("scripts.fancy_door_randomizer.utils.string")
 
 local this = {}
 
