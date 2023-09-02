@@ -1,8 +1,4 @@
 local core = require("openmw.core")
-if not core.contentFiles.has(require("scripts.morrowind_world_randomizer.scriptName")) then
-    return
-end
-
 local async = require('openmw.async')
 local storage = require('openmw.storage')
 local util = require("openmw.util")

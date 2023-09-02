@@ -1,8 +1,3 @@
-local core = require("openmw.core")
-if not core.contentFiles.has(require("scripts.morrowind_world_randomizer.scriptName")) then
-    return
-end
-
 local log = require("scripts.morrowind_world_randomizer.utils.log")
 
 local generatorData = require("scripts.morrowind_world_randomizer.generator.data")
