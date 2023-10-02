@@ -440,7 +440,7 @@ local function mwr_deactivateObject(data)
 end
 
 local function mwr_loadLocalConfigData(data)
-    localConfig.loadData(data)
+    localConfig.loadPlayerSettings(data)
 end
 
 local function mwr_updateGeneratorSettings(data)
