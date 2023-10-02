@@ -71,10 +71,50 @@ local function initData()
     globalData = globalStorage.data
 end
 
--- fix for created creatures
-local cellsForCreaatureCheck = {}
-time.runRepeatedly(function()
-    for cell, _ in pairs(cellsForCreaatureCheck) do
+-- fixes for created creatures
+local function killParentCreature(parentData)
+    if not parentData then return end
+    local cellData = parentData.cellData
+    local parentId = parentData.parentId
+    local cell = cellData.isExterior and world.getExteriorCell(cellData.gridX, cellData.gridY) or
+        world.getCellByName(cellData.name)
+    if not cell then return end
+    for _, ref in pairs(cell:getAll(types.Creature)) do
+        if ref.id == parentId then
+            if types.Actor.stats.dynamic.health(ref).current > 0 then
+                ref.enabled = true
+                ref:addScript("scripts/morrowind_world_randomizer/local/killNewCreature.lua")
+                localStorage.saveObjectScale(ref.id, 0.0001)
+                ref:setScale(0.0001)
+                log("Parent actor killed", ref)
+                return true
+            end
+            break
+        end
+    end
+end
+
+local function deleteParentCreature(parentData)
+    if parentData then
+        local cellData = parentData.cellData
+        local parentId = parentData.parentId
+        local cell = cellData.isExterior and world.getExteriorCell(cellData.gridX, cellData.gridY) or
+            world.getCellByName(cellData.name)
+        if not cell then return end
+        for _, ref in pairs(cell:getAll(types.Creature)) do
+            if ref.id == parentId then
+                log("Parent actor removed", ref)
+                ref:remove()
+                return true
+            end
+        end
+    end
+    return nil
+end
+
+local cellsForCreatureCheck = {}
+local creaCheckTimer = time.runRepeatedly(function()
+    for cell, _ in pairs(cellsForCreatureCheck) do
         for _, actor in pairs(cell:getAll(types.Creature)) do
             if localStorage.isIdInDeletionList(actor.id) then
                 localStorage.removeIdFromDeletionList(actor.id)
@@ -82,13 +122,32 @@ time.runRepeatedly(function()
                 actor:remove()
             end
         end
-        cellsForCreaatureCheck[cell] = nil
+        cellsForCreatureCheck[cell] = nil
     end
-end, 30 * time.second, { initialDelay = math.random() * 10 * time.second })
+end, 1 * time.second, { initialDelay = math.random() * 5 * time.second })
+
+local creaturesForHealthCheck = {}
+time.runRepeatedly(function()
+    for id, reference in pairs(creaturesForHealthCheck) do
+        if reference and reference:isValid() and types.Actor.stats.dynamic.health(reference).current == 0 then
+            local parentData = localStorage.getCreatureParentData(reference.id)
+            if killParentCreature(parentData) then
+                creaturesForHealthCheck[id] = nil
+            end
+        end
+    end
+end, 1 * time.second, { initialDelay = math.random() * time.second })
+--
 
 local function onActorActive(actor)
     if not localConfig.data.enabled then return end
-    cellsForCreaatureCheck[actor.cell] = true
+    if localConfig.data.creature.killParent then
+        local actorParentId = localStorage.getCreatureParentData(actor.id)
+        if actorParentId and not creaturesForHealthCheck[actor.id] then
+            creaturesForHealthCheck[actor.id] = actor
+        end
+    end
+    cellsForCreatureCheck[actor.cell] = true
     async:newUnsavableSimulationTimer(0.2, function()
         if not actor or not actor:isValid() then return end
         local actorSavedData = localStorage.saveActorData(actor)
@@ -115,8 +174,12 @@ local function onActorActive(actor)
                 local new = world.createObject(newActor)
                 localStorage.setRefRandomizationTimestamp(new)
                 if config.item.randomize then new:sendEvent("mwr_actor_randomizeInventory", {itemsData = globalData.itemsData, config = config}) end
+                log("new creature", new, "old", actor)
                 new:teleport(actor.cell, actor.position, {onGround = true, rotation = actor.rotation})
-                localStorage.setCreatureParentIdData(new, actor)
+                localStorage.setCreatureParentData(new, actor)
+                if localConfig.data.creature.killParent then
+                    creaturesForHealthCheck[new.id] = new
+                end
                 actor.enabled = false
             end
         end
@@ -140,7 +203,7 @@ local function onActorActive(actor)
                     magicka = math.max(1, magicka * random.getBetween(config.stat.dynamic.magicka.vregion.min, config.stat.dynamic.magicka.vregion.max))
                     fatigue = math.max(1, fatigue * random.getBetween(config.stat.dynamic.fatigue.vregion.min, config.stat.dynamic.fatigue.vregion.max))
                 end
-                actor:sendEvent("mwr_actor_setDynamicStats", {health = health, magicka = magicka, fatigue = fatigue})
+                actor:sendEvent("mwr_actor_setDynamicBaseStats", {health = health, magicka = magicka, fatigue = fatigue})
             end
 
             if config.stat.attributes and config.stat.attributes.randomize then
@@ -189,8 +252,9 @@ time.runRepeatedly(function()
 end, 1 * time.second, { initialDelay = math.random() * time.second })
 
 local function onObjectActive(object)
-    if localStorage.data.scale and localStorage.data.scale[object.id] then
-        object:setScale(localStorage.data.scale[object.id])
+    local objectScale = localStorage.getObjectScale(object.id)
+    if objectScale then
+        object:setScale(objectScale)
     end
     if not localConfig.data.enabled then return end
     cellsToRandomize[object.cell] = os.time()
@@ -203,6 +267,7 @@ local function onInit()
 end
 
 local function onSave()
+    localConfig.data.version = localConfig.default.version ---@diagnostic disable-line: inject-field
     return {config = localConfig.data, storage = localStorage.data}
 end
 
@@ -222,6 +287,9 @@ local function onLoad(data)
     localConfig.loadData(data.config)
     updateSettings()
     localStorage.loadData(data.storage)
+    if localStorage.getDeletionListCount() == 0 and not localStorage.hasCreatureOldParentData() then -- removes a part from the old version
+        creaCheckTimer()
+    end
     if not globalData then
         initData()
     end
@@ -357,10 +425,15 @@ end
 
 local function mwr_deactivateObject(data)
     local object = data.object
-    local parentId = localStorage.getCreatureParentData(object)
+    local parentId = localStorage.getCreatureParentId(object.id)
     if parentId then
-        localStorage.addIdToDeletionList(parentId)
-        localStorage.clearCreatureParentIdData(object)
+        local parentData = localStorage.getCreatureParentData(object.id)
+        if parentData then
+            if deleteParentCreature(parentData) then localStorage.clearCreatureParentData(object.id) end
+        else
+            localStorage.addIdToDeletionList(parentId)
+            localStorage.clearCreatureParentData(object.id)
+        end
     end
     localStorage.clearRefRandomizationTimestamp(object)
     log("Deactivated", object)
@@ -398,6 +471,12 @@ local function mwrbd_loadProfile(data)
     world.players[1]:sendEvent("mwrbd_updateSettings", {configData = localConfig.data})
 end
 
+local function mwrbd_processDeathOfDisabled(data)
+    local reference = data.reference
+    if not reference then return end
+    reference:removeScript("scripts/morrowind_world_randomizer/local/killNewCreature.lua")
+end
+
 
 return {
     engineHandlers = {
@@ -419,5 +498,6 @@ return {
         mwrbd_saveProfile = async:callback(mwrbd_saveProfile),
         mwrbd_deleteProfile = async:callback(mwrbd_deleteProfile),
         mwrbd_loadProfile = async:callback(mwrbd_loadProfile),
+        mwrbd_processDeathOfDisabled = async:callback(mwrbd_processDeathOfDisabled),
     },
 }

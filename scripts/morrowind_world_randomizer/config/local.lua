@@ -14,7 +14,7 @@ this.storageName = "Settings_MWR_By_Diject"
 
 ---@class mwr.configData
 this.default = {
-    version = 1,
+    version = 2,
     enabled = false,
     randomizeAfter = 72,
     randomizeOnce = false,
@@ -138,6 +138,7 @@ this.default = {
         randomize = true,
         onlyLeveled = false,
         byType = false,
+        killParent = true,
         rregion = {
             min = 20,
             max = 20,

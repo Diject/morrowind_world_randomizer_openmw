@@ -19,6 +19,7 @@ return {
         mwr_actor_setEquipment = async:callback(actor.setEquipment),
         mwr_actor_randomizeInventory = async:callback(actor.randomizeInventory),
         mwr_actor_setDynamicStats = async:callback(actor.setDynamicStats),
+        mwr_actor_setDynamicBaseStats = async:callback(actor.setDynamicBaseStats),
         mwr_actor_randomizeSpells = async:callback(actor.randmizeSpells),
     },
 }

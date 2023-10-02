@@ -33,16 +33,45 @@ function this.removeObjectData(reference)
     this.data.lastRand[reference.id] = nil
 end
 
-function this.setCreatureParentIdData(crea, parent)
-    this.data.creatureParent[crea.id] = parent.id
+function this.setCreatureParentData(crea, parent)
+    local cell = parent.cell
+    this.data.creatureParent[crea.id] = {
+        parentId = parent.id,
+        cellData = {isExterior = cell.isExterior, gridX = cell.gridX, gridY = cell.gridY, name = cell.name}
+    }
 end
 
-function this.clearCreatureParentIdData(crea)
-    this.data.creatureParent[crea.id] = nil
+function this.hasCreatureOldParentData() -- for compatibility with older versions
+    for _, data in pairs(this.data.creatureParent) do
+        if type(data) == "string" then
+            return true
+        end
+    end
+    return false
 end
 
-function this.getCreatureParentData(crea)
-    return this.data.creatureParent[crea.id]
+function this.clearCreatureParentData(id)
+    this.data.creatureParent[id] = nil
+end
+
+function this.getCreatureParentId(id)
+    local data = this.data.creatureParent[id]
+    if data then
+        if type(data) == "string" then -- for compatibility with older versions
+            return data
+        else
+            return data.parentId
+        end
+    end
+    return data
+end
+
+function this.getCreatureParentData(id)
+    local data = this.data.creatureParent[id]
+    if data and type(data) ~= "string" then -- for compatibility with older versions
+        return data
+    end
+    return nil
 end
 
 function this.addIdToDeletionList(id)
@@ -52,6 +81,14 @@ end
 ---@return boolean
 function this.isIdInDeletionList(id)
     return this.data.deletionList[id]
+end
+
+function this.getDeletionListCount()
+    local count = 0
+    for _, _ in pairs(this.data.deletionList) do
+        count = count + 1
+    end
+    return count
 end
 
 function this.removeIdFromDeletionList(id)
@@ -137,6 +174,14 @@ end
 
 function this.getActorData(recordId)
     return this.data.actorBase[recordId]
+end
+
+function this.saveObjectScale(id, scale)
+    this.data.scale[id] = scale
+end
+
+function this.getObjectScale(id)
+    return this.data.scale[id]
 end
 
 return this
