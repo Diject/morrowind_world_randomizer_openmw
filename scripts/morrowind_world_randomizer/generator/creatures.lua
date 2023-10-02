@@ -24,7 +24,7 @@ function this.generateCreatureData(safeMode)
         for _, record in pairs(types.Creature.records) do
             local id = record.id:lower()
             if not generatorData.forbiddenIds[id] and (generatorData.scriptWhiteList[id] or record.mwscript == "") and
-                    not generatorData.forbiddenModels[record.model] and not id:find("summon") then
+                    not generatorData.forbiddenModels[record.model] and not id:find("summon") and not id:find("dead") then
 
                 if not tempGroups[record.type] then tempGroups[record.type] = {} end
                 table.insert(tempGroups[record.type], {id = id, soul = record.soulValue})
