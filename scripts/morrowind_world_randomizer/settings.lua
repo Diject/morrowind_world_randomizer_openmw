@@ -264,7 +264,7 @@ I.Settings.registerGroup({
         textLabel{name = "empty", description = "spawn"},
         boolSetting{key = "creature.randomize", name = "randomizeCreatures", default = config.default.creature.randomize},
         boolSetting{key = "creature.onlyLeveled", name = "onlyLeveled", default = config.default.creature.onlyLeveled},
-        boolSetting{key = "creature.killParent", name = "killParent", default = config.default.creature.killParent},
+        boolSetting{key = "creature.killParent", name = "creatureKillParent", default = config.default.creature.killParent},
         boolSetting{key = "creature.byType", name = "byCreatureType", default = config.default.creature.byType},
         minmaxSetting{key = "creature.rregion", name = "rregion", default = config.default.creature.rregion, independent = true, min = -100, max = 100},
         textLabel{name = "empty", description = "items"},
