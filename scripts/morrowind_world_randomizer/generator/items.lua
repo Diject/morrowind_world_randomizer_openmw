@@ -71,32 +71,30 @@ function this.generateData(smart)
     local dangerousItems = {}
     local itemCount = {}
 
-    if smart then
-        local processItems = function(data)
-            for _, item in pairs(data) do
-                local id = item.recordId:lower()
-                if not itemCount[id] then
-                    itemCount[id] = 1
-                else
-                    itemCount[id] = itemCount[id] + 1
-                end
+    local processItems = function(data)
+        for _, item in pairs(data) do
+            local id = item.recordId:lower()
+            if not itemCount[id] then
+                itemCount[id] = 1
+            else
+                itemCount[id] = itemCount[id] + 1
             end
         end
-        for _, cell in pairs(world.cells) do
-            local npcs = cell:getAll(types.NPC) or {}
-            local creatures = cell:getAll(types.Creature) or {}
-            local containers = cell:getAll(types.Container) or {}
-            for groupId, records in pairs(recordData) do
-                processItems(cell:getAll(records[1]))
-                for _, actor in pairs(npcs) do
-                    processItems(types.Actor.inventory(actor):getAll(records[1]))
-                end
-                for _, actor in pairs(creatures) do
-                    processItems(types.Actor.inventory(actor):getAll(records[1]))
-                end
-                for _, container in pairs(containers) do
-                    processItems(types.Container.content(container):getAll(records[1]))
-                end
+    end
+    for _, cell in pairs(world.cells) do
+        local npcs = cell:getAll(types.NPC) or {}
+        local creatures = cell:getAll(types.Creature) or {}
+        local containers = cell:getAll(types.Container) or {}
+        for groupId, records in pairs(recordData) do
+            processItems(cell:getAll(records[1]))
+            for _, actor in pairs(npcs) do
+                processItems(types.Actor.inventory(actor):getAll(records[1]))
+            end
+            for _, actor in pairs(creatures) do
+                processItems(types.Actor.inventory(actor):getAll(records[1]))
+            end
+            for _, container in pairs(containers) do
+                processItems(types.Container.content(container):getAll(records[1]))
             end
         end
     end
@@ -106,10 +104,10 @@ function this.generateData(smart)
         for _, item in pairs(records[1].records) do
             local scriptId = item.mwscript:lower()
             local itemId = item.id:lower()
-            local count = smart and itemCount[itemId] or true
+            local count = smart and itemCount[itemId] or 0
             if checkMajorRequirements(itemId, scriptId) and checkMinorRequirements(item, groupId) and count then
                 local type = tostring(item.type or "0")
-                table.insert(itemData, {id = itemId, value = item[records[2]], type = type})
+                table.insert(itemData, {id = itemId, value = item[records[2]], type = type, count = count})
                 if item.enchant and item.enchant ~= "" and dangerousEnchantIds[item.enchant:lower()] then
                     dangerousItems[itemId] = true
                 end
