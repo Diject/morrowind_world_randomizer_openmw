@@ -13,6 +13,15 @@ local this = {}
 ---@field objects table<string, mwr.creatureParameters>
 ---@field groups table<string>
 
+local function checkRequirements(record)
+    local id = record.id:lower()
+    if not generatorData.forbiddenIds[id] and (generatorData.scriptWhiteList[id] or record.mwscript == "") and
+            not generatorData.forbiddenModels[record.model] and not id:find("summon") and not id:find("dead") then
+        return true
+    end
+    return false
+end
+
 ---@param safeMode boolean
 ---@return mwr.creaturesData
 function this.generateCreatureData(safeMode)
@@ -23,8 +32,7 @@ function this.generateCreatureData(safeMode)
     if not safeMode then
         for _, record in pairs(types.Creature.records) do
             local id = record.id:lower()
-            if not generatorData.forbiddenIds[id] and (generatorData.scriptWhiteList[id] or record.mwscript == "") and
-                    not generatorData.forbiddenModels[record.model] and not id:find("summon") and not id:find("dead") then
+            if not checkRequirements(record) then
 
                 if not tempGroups[record.type] then tempGroups[record.type] = {} end
                 table.insert(tempGroups[record.type], {id = id, soul = record.soulValue})
@@ -60,7 +68,7 @@ function this.generateCreatureData(safeMode)
         end
         for _, crea in pairs(types.Creature.records) do
             local id = crea.id:lower()
-            if creaTable[id] then
+            if creaTable[id] and checkRequirements(crea) then
                 if not tempGroups[crea.type] then tempGroups[crea.type] = {} end
                 table.insert(tempGroups[crea.type], {id = id, soul = crea.soulValue})
             end
