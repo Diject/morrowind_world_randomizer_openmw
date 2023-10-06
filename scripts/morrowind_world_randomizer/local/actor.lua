@@ -27,6 +27,8 @@ this.objectType = nil
 ---@field strength integer
 ---@field willpower integer
 
+local magicSchoolStr = {Alteration = "alteration", Conjuration = "conjuration", Destruction = "destruction", Illusion = "illusion", Mysticism = "mysticism", Restoration = "restoration"}
+
 function this.randomizeInventory(data)
     if not data or not data.config then return end
     if data.config.item.randomize then
@@ -193,12 +195,12 @@ local function chooseNewSpellId(spellsData, oldId, config, skipChecks)
         if config.bySkill then
             local tb = {}
             local skills = types.NPC.stats.skills
-            table.insert(tb, {core.magic.SCHOOL.Alteration, skills.alteration(self)})
-            table.insert(tb, {core.magic.SCHOOL.Conjuration, skills.conjuration(self)})
-            table.insert(tb, {core.magic.SCHOOL.Destruction, skills.destruction(self)})
-            table.insert(tb, {core.magic.SCHOOL.Illusion, skills.illusion(self)})
-            table.insert(tb, {core.magic.SCHOOL.Mysticism, skills.mysticism(self)})
-            table.insert(tb, {core.magic.SCHOOL.Restoration, skills.restoration(self)})
+            table.insert(tb, {magicSchoolStr.Alteration, skills.alteration(self)})
+            table.insert(tb, {magicSchoolStr.Conjuration, skills.conjuration(self)})
+            table.insert(tb, {magicSchoolStr.Destruction, skills.destruction(self)})
+            table.insert(tb, {magicSchoolStr.Illusion, skills.illusion(self)})
+            table.insert(tb, {magicSchoolStr.Mysticism, skills.mysticism(self)})
+            table.insert(tb, {magicSchoolStr.Restoration, skills.restoration(self)})
             table.sort(tb, function(a, b) return a[2].modified > b[2].modified end)
             local school = tb[math.random(1, math.min(6, config.bySkillMax))][1]
             local level = Actor.stats.level(self).current
