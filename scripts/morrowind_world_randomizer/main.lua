@@ -24,8 +24,7 @@ local cellLib = require("scripts.morrowind_world_randomizer.cell")
 
 local profiles = require("scripts.morrowind_world_randomizer.storage.profiles")
 
----@type mwr.globalStorageData
-local globalData = nil
+local itemGenerator = require("scripts.morrowind_world_randomizer.generator.newItems")
 
 local function isReadyForRandomization(ref, once)
     local tm = localStorage.getRefRandomizationTimestamp(ref)
@@ -48,27 +47,61 @@ local function createItem(id, oldItem, advData, skipOwner)
 end
 
 local function rebuildStorageData()
-    globalStorage.data.version = globalStorage.version
+    local step = 0
     local statics = require("scripts.morrowind_world_randomizer.generator.statics")
-    globalStorage.data.treesData = statics.rebuildRocksTreesData(require("scripts.morrowind_world_randomizer.data.TreesData_TR"))
-    globalStorage.data.rocksData = statics.rebuildRocksTreesData(require("scripts.morrowind_world_randomizer.data.RocksData_TR"))
-    local itemSafeMode = storage.globalSection(globalStorage.storageName):get("itemSafeMode")
-    globalStorage.data.itemsData = require("scripts.morrowind_world_randomizer.generator.items").generateData(itemSafeMode)
-    globalStorage.data.floraData = statics.generateFloraData()
-    globalStorage.data.herbsData = require("scripts.morrowind_world_randomizer.generator.containers").generateHerbData()
-    local creatureSafeMode = storage.globalSection(globalStorage.storageName):get("creatureSafeMode")
-    globalStorage.data.creaturesData = require("scripts.morrowind_world_randomizer.generator.creatures").generateCreatureData(creatureSafeMode)
-    globalStorage.data.spellsData = require("scripts.morrowind_world_randomizer.generator.spells").generateSpellData()
-    globalStorage.data.lightsData = require("scripts.morrowind_world_randomizer.generator.lights").generateData()
-    globalStorage.saveGameFilesDataToStorage()
-    globalStorage.save()
+    async:newUnsavableSimulationTimer(0.1, function()
+        globalStorage.data.treesData = statics.rebuildRocksTreesData(require("scripts.morrowind_world_randomizer.data.TreesData_TR"))
+        step = step + 1
+    end)
+    async:newUnsavableSimulationTimer(0.1, function()
+        globalStorage.data.rocksData = statics.rebuildRocksTreesData(require("scripts.morrowind_world_randomizer.data.RocksData_TR"))
+        step = step + 1
+    end)
+    async:newUnsavableSimulationTimer(0.1, function()
+        local itemSafeMode = storage.globalSection(globalStorage.storageName):get("itemSafeMode")
+        globalStorage.data.itemsData = require("scripts.morrowind_world_randomizer.generator.items").generateData(itemSafeMode)
+        step = step + 1
+    end)
+    async:newUnsavableSimulationTimer(0.1, function()
+        globalStorage.data.floraData = statics.generateFloraData()
+        step = step + 1
+    end)
+    async:newUnsavableSimulationTimer(0.1, function()
+        globalStorage.data.herbsData = require("scripts.morrowind_world_randomizer.generator.containers").generateHerbData()
+        step = step + 1
+    end)
+    async:newUnsavableSimulationTimer(0.1, function()
+        local creatureSafeMode = storage.globalSection(globalStorage.storageName):get("creatureSafeMode")
+        globalStorage.data.creaturesData = require("scripts.morrowind_world_randomizer.generator.creatures").generateCreatureData(creatureSafeMode)
+        step = step + 1
+    end)
+    async:newUnsavableSimulationTimer(0.1, function()
+        globalStorage.data.spellsData = require("scripts.morrowind_world_randomizer.generator.spells").generateSpellData()
+        step = step + 1
+    end)
+    async:newUnsavableSimulationTimer(0.1, function()
+        globalStorage.data.lightsData = require("scripts.morrowind_world_randomizer.generator.lights").generateData()
+        step = step + 1
+    end)
+    local timer
+    timer = time.runRepeatedly(function()
+        if step >= 8 then
+            globalStorage.data.version = globalStorage.version
+            globalStorage.saveGameFilesDataToStorage()
+            globalStorage.save()
+            cellLib.init(globalStorage.data, localConfig, localStorage)
+            itemGenerator.init(globalStorage.data, localConfig.data)
+            timer()
+        end
+    end, 1 * time.second, {})
 end
 
 local function initData()
     if globalStorage.init() then
         rebuildStorageData()
     end
-    globalData = globalStorage.data
+    cellLib.init(globalStorage.data, localConfig, localStorage)
+    itemGenerator.init(globalStorage.data, localConfig.data)
 end
 
 -- fixes for created creatures
@@ -173,7 +206,7 @@ local function onActorActive(actor)
                 local newActor = group[random.getRandom(actorData.pos, #group, config.rregion.min, config.rregion.max)]
                 local new = world.createObject(newActor)
                 localStorage.setRefRandomizationTimestamp(new)
-                if config.item.randomize then new:sendEvent("mwr_actor_randomizeInventory", {itemsData = globalData.itemsData, config = config}) end
+                if config.item.randomize then new:sendEvent("mwr_actor_randomizeInventory", {itemsData = globalStorage.data.itemsData, config = config}) end
                 log("new creature", new, "old", actor)
                 new:teleport(actor.cell, actor.position, {onGround = true, rotation = actor.rotation})
                 localStorage.setCreatureParentData(new, actor)
@@ -187,7 +220,7 @@ local function onActorActive(actor)
         if firstRandomization or (isAlive and isReadyForRandomization(actor)) then
             if config.item.randomize then
                 localStorage.setRefRandomizationTimestamp(actor)
-                actor:sendEvent("mwr_actor_randomizeInventory", {itemsData = globalData.itemsData, config = config})
+                actor:sendEvent("mwr_actor_randomizeInventory", {itemsData = globalStorage.data.itemsData, config = config})
             end
 
             if config.stat.dynamic.randomize and isAlive then
@@ -234,7 +267,7 @@ local function onActorActive(actor)
 
             if config.spell then
                 async:newUnsavableSimulationTimer(0.2, function()
-                    actor:sendEvent("mwr_actor_randomizeSpells", {config = config, spellsData = globalData.spellsData, actorData = actorSavedData})
+                    actor:sendEvent("mwr_actor_randomizeSpells", {config = config, spellsData = globalStorage.data.spellsData, actorData = actorSavedData})
                 end)
             end
         end
@@ -263,7 +296,6 @@ end
 local function onInit()
     math.randomseed(os.time())
     initData()
-    cellLib.init(globalData, localConfig, localStorage)
 end
 
 local function onSave()
@@ -290,10 +322,10 @@ local function onLoad(data)
     if localStorage.getDeletionListCount() == 0 and not localStorage.hasCreatureOldParentData() then -- removes a part from the old version
         creaCheckTimer()
     end
-    if not globalData then
+    if not globalStorage.data then
         initData()
     end
-    cellLib.init(globalData, localConfig, localStorage)
+    cellLib.init(globalStorage.data, localConfig, localStorage)
 end
 
 local function onNewGame()
@@ -316,7 +348,7 @@ local function onActivate(object, actor)
             local lastItems = localStorage.data.other.lastItems[object.id]
             local itemData = {}
             for _, item in pairs(inventory:getAll()) do
-                if globalData.itemsData.items[item.recordId] and (item.type == types.Book or item.type == types.Potion or item.type == types.Repair or
+                if globalStorage.data.itemsData.items[item.recordId] and (item.type == types.Book or item.type == types.Potion or item.type == types.Repair or
                         item.type == types.Probe or item.type == types.Lockpick or item.type == types.Ingredient) then
                     table.insert(itemData, {id = item.recordId, count = item.count})
                 end
@@ -369,6 +401,7 @@ local function mwr_updateInventory(data)
             if itemData.item.count == 0 then goto continue end
             local isArtifact = generatorData.obtainableArtifacts[itemData.item.recordId]
             local newId
+            local newData
             if isArtifact then
                 if not localStorage.data.other.artifacts or #localStorage.data.other.artifacts == 0 then
                     localStorage.data.other.artifacts = {}
@@ -381,18 +414,24 @@ local function mwr_updateInventory(data)
                 table.remove(localStorage.data.other.artifacts, pos)
             else
                 ---@type mwr.itemPosData
-                local advData = itemData.advData or globalData.itemsData.items[itemData.item.recordId]
+                local advData = itemData.advData or globalStorage.data.itemsData.items[itemData.item.recordId]
                 if not advData then goto continue end
-                local grp = globalData.itemsData.groups[advData.type][advData.subType]
+                local grp = globalStorage.data.itemsData.groups[advData.type][advData.subType]
                 newId = grp[random.getRandom(advData.pos, #grp, config.item.rregion.min, config.item.rregion.max)]
+                newData = globalStorage.data.itemsData.items[newId]
                 local i = 10
                 while (data.objectType == objectType.npc or data.objectType == objectType.creature) and
-                        i > 0 and globalData.itemsData.items[newId] and globalData.itemsData.items[newId].isDangerous do
+                        i > 0 and newData and newData.isDangerous do
                     newId = grp[random.getRandom(advData.pos, #grp, config.item.rregion.min, config.item.rregion.max)]
+                    newData = globalStorage.data.itemsData.items[newId]
                     i = i - 1
                 end
                 if i == 0 then goto continue end
             end
+            if not isArtifact and math.random() < localConfig.data.item.new.chance * 0.01 then
+                newId = itemGenerator.new(newId, itemData.item.type) or newId
+            end
+            if not itemData.item.type.record(newId) then goto continue end
             local newItem = createItem(newId, itemData.item, itemData, data.objectType == objectType.creature)
             log("object ", data.object, "new item ", newItem, "old item ", itemData.item, "count ", newItem.count)
             localStorage.setRefRandomizationTimestamp(newItem)
@@ -443,13 +482,21 @@ local function mwr_loadLocalConfigData(data)
     localConfig.loadPlayerSettings(data)
 end
 
+local updateGenSettings = false
+
 local function mwr_updateGeneratorSettings(data)
     local global = storage.globalSection(globalStorage.storageName)
     for name, val in pairs(data) do
         globalStorage.data[name] = val
         global:set(name, val)
     end
-    rebuildStorageData()
+    updateGenSettings = true
+    async:newUnsavableSimulationTimer(0.2, function()
+        if updateGenSettings then
+            updateGenSettings = false
+            rebuildStorageData()
+        end
+    end)
 end
 
 local function mwrbd_saveProfile(data)

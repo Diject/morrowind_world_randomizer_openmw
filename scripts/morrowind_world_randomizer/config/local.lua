@@ -14,7 +14,7 @@ this.storageName = "Settings_MWR_By_Diject"
 
 ---@class mwr.configData
 this.default = {
-    version = 2,
+    version = 3,
     enabled = false,
     randomizeAfter = 72,
     randomizeOnce = false,
@@ -254,6 +254,54 @@ this.default = {
             },
             remove = {
                 chance = 25,
+            },
+        },
+    },
+    item = {
+        new = {
+            chance = 100,
+            change = {
+                name = false,
+                model = true,
+                icon = true,
+                prefix = true,
+                enchantment = true,
+            },
+            linkIconToModel = false,
+            model = {
+                rregion = {
+                    min = 100,
+                    max = 100,
+                },
+            },
+            stats = {
+                rregion = {
+                    min = 20,
+                    max = 20,
+                },
+            },
+            enchantment = {
+                chance = 100,
+                rregion = {
+                    min = 20,
+                    max = 20,
+                },
+            },
+            effects = {
+                add = {
+                    chance = 50,
+                    vregion = {
+                        min = 0,
+                        max = 2,
+                    },
+                },
+                remove = {
+                    chance = 0,
+                    vregion = {
+                        min = 0,
+                        max = 2,
+                    },
+                },
             },
         },
     },

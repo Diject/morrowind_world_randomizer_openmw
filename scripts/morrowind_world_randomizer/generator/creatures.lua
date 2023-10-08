@@ -32,7 +32,7 @@ function this.generateCreatureData(safeMode)
     if not safeMode then
         for _, record in pairs(types.Creature.records) do
             local id = record.id:lower()
-            if not checkRequirements(record) then
+            if checkRequirements(record) then
 
                 if not tempGroups[record.type] then tempGroups[record.type] = {} end
                 table.insert(tempGroups[record.type], {id = id, soul = record.soulValue})
