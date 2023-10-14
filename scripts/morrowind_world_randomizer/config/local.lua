@@ -260,6 +260,7 @@ this.default = {
     item = {
         new = {
             chance = 100,
+            threshold = 5,
             change = {
                 name = false,
                 model = true,

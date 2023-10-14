@@ -76,6 +76,7 @@ local function mwrbd_updateSettings(data)
     filStorage(storage.playerSection(config.storageName.."_4"))
     filStorage(storage.playerSection(config.storageName.."_5"))
     filStorage(storage.playerSection(config.storageName.."_6"))
+    filStorage(storage.playerSection(config.storageName.."_7"))
     require("scripts.morrowind_world_randomizer.settings")
 end
 

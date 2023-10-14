@@ -423,6 +423,49 @@ lableId = 0
 arguments = {}
 
 I.Settings.registerGroup({
+    key = config.storageName.."_7",
+    page = "MorrowindWorldRandomizer",
+    l10n = "morrowind_world_randomizer",
+    name = "items",
+    permanentStorage = true,
+    order = order,
+    settings = {
+        numberSetting({key = "item.new.chance", name = "newItemChance", default = config.default.item.new.chance,
+            integer = false, min = 0, max = 100}),
+        numberSetting({key = "item.new.threshold", name = "newItemThreshold", default = config.default.item.new.threshold,
+            integer = true, min = 0}),
+        boolSetting({key = "item.new.change.name", name = "newItemChangeName", default = config.default.item.new.change.name}),
+        boolSetting({key = "item.new.change.model", name = "newItemChangeModel", default = config.default.item.new.change.model}),
+        boolSetting({key = "item.new.change.icon", name = "newItemChangeIcon", default = config.default.item.new.change.icon}),
+        boolSetting({key = "item.new.change.enchantment", name = "newItemChangeEnchantment", default = config.default.item.new.change.enchantment}),
+        boolSetting({key = "item.new.change.prefix", name = "newItemAddPrefix", default = config.default.item.new.change.prefix}),
+        boolSetting({key = "item.new.linkIconToModel", name = "newItemLinkIconToModel", default = config.default.item.new.linkIconToModel}),
+        textLabel{name = "empty", description = "newItemStats"},
+        minmaxSetting{key = "item.new.stats.rregion", name = "rregion", default = config.default.item.new.stats.rregion, independent = true, min = -100, max = 100},
+        textLabel{name = "empty", description = "newItemEnchantment"},
+        numberSetting({key = "item.new.enchantment.chance", name = "newItemChanceAddEnchantment", default = config.default.item.new.enchantment.chance,
+            integer = false, min = 0, max = 100}),
+        minmaxSetting{key = "item.new.enchantment.rregion", name = "rregion", default = config.default.item.new.enchantment.rregion, independent = true, min = -100, max = 100},
+        textLabel{name = "empty", description = "newItemPotions"},
+        numberSetting({key = "item.new.effects.add.chance", name = "newItemChanceToAddNewEffect", default = config.default.item.new.effects.add.chance,
+            integer = false, min = 0, max = 100}),
+        minmaxSetting{key = "item.new.effects.add.vregion", name = "newItemNewEffectMinMax", default = config.default.item.new.effects.add.vregion, independent = false,
+            min = 0, max = 4},
+        numberSetting({key = "item.new.effects.remove.chance", name = "newItemChanceToRemoveEffect", default = config.default.item.new.effects.remove.chance,
+            integer = false, min = 0, max = 100}),
+        minmaxSetting{key = "item.new.effects.remove.vregion", name = "newItemRemoveEffectMinMax", default = config.default.item.new.effects.remove.vregion, independent = false, min = 0, max = 4},
+    },
+})
+
+order = order + 1
+storageName = config.storageName.."_7"
+for _, arg in pairs(arguments) do
+    I.Settings.updateRendererArgument(storageName, arg.key, arg)
+end
+lableId = 0
+arguments = {}
+
+I.Settings.registerGroup({
     key = config.storageName.."_6",
     page = "MorrowindWorldRandomizer",
     l10n = "morrowind_world_randomizer",

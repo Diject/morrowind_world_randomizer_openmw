@@ -31,6 +31,7 @@ function this.new(oldId, itType)
     ---@type mwr.itemPosData
     local data = itemsData.items[oldId]
     if not data then return end
+    if not data.count or config.new.threshold > data.count then return end
     local group = itemsData.groups[data.type][data.subType]
     if not group then return end
     local groupCount = #group

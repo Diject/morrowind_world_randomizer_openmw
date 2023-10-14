@@ -6,6 +6,7 @@ local generatorData = require("scripts.morrowind_world_randomizer.generator.data
 local tableLib = require("scripts.morrowind_world_randomizer.utils.table")
 local objectIds = require("scripts.morrowind_world_randomizer.generator.types").objectStrType
 local spellLib = require("scripts.morrowind_world_randomizer.utils.spell")
+local itemCountData = require("scripts.morrowind_world_randomizer.data.ItemCountData")
 
 ---@class mwr.itemPosData
 ---@field pos integer
@@ -134,10 +135,9 @@ function this.generateData(smart)
             local scriptId = item.mwscript:lower()
             local itemId = item.id:lower()
             local itemCountExists = itemCount[itemId]
-            local count = itemCountExists or 0
             if checkMajorRequirements(itemId, scriptId) and checkMinorRequirements(item, groupId) and (not smart or itemCountExists) then
                 local type = tostring(item.type or "0")
-                table.insert(itemData, {id = itemId, value = item[records[2]], type = type, count = count})
+                table.insert(itemData, {id = itemId, value = item[records[2]], type = type})
                 if item.enchant and item.enchant ~= "" and dangerousEnchantIds[item.enchant:lower()] then
                     dangerousItems[itemId] = true
                 end
@@ -150,7 +150,7 @@ function this.generateData(smart)
             if not group[dt.type] then group[dt.type] = {} end
             table.insert(group[dt.type], dt.id)
             ---@diagnostic disable-next-line: missing-fields
-            out.items[dt.id] = {count = dt.count, type = groupId, subType = dt.type,
+            out.items[dt.id] = {count = itemCountData[dt.id], type = groupId, subType = dt.type,
                 isArtifact = generatorData.obtainableArtifacts[dt.id] and true or false, isDangerous = dangerousItems[dt.id] and true or false}
         end
     end
