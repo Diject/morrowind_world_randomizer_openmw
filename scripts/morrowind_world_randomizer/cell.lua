@@ -196,7 +196,7 @@ this.randomize = async:callback(function(cell)
             local advItemData = this.itemsData.items[item.recordId]
             local isArtifact = generatorData.obtainableArtifacts[item.recordId]
             local newId
-            if isArtifact then
+            if isArtifact and this.config.data.item.artifactsAsSeparate then
                 if not this.storage.data.other.artifacts or #this.storage.data.other.artifacts == 0 then
                     this.storage.data.other.artifacts = {}
                     for id, _ in pairs(generatorData.obtainableArtifacts) do
@@ -207,6 +207,9 @@ this.randomize = async:callback(function(cell)
                 newId = this.storage.data.other.artifacts[pos]
                 table.remove(this.storage.data.other.artifacts, pos)
             elseif advItemData and config then
+                if this.config.data.item.safeMode and advItemData.count and this.config.data.item.safeModeThreshold > advItemData.count then
+                    goto continue
+                end
                 local grp = this.itemsData.groups[advItemData.type][advItemData.subType]
                 newId = grp[random.getRandom(advItemData.pos, #grp, config.item.rregion.min, config.item.rregion.max)]
             end

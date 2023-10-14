@@ -7,11 +7,6 @@ local I = require("openmw.interfaces")
 
 local config = require("scripts.morrowind_world_randomizer.config.local")
 
--- config.loadPlayerSettings(storage.playerSection(config.storageName.."_0"):asTable())
--- config.loadPlayerSettings(storage.playerSection(config.storageName.."_1"):asTable())
--- config.loadPlayerSettings(storage.playerSection(config.storageName.."_2"):asTable())
--- core.sendGlobalEvent("mwr_loadLocalConfigData", config.data)
-
 ---@class mwr.lowestInCircle.attributes
 ---@field pos any
 ---@field radius number

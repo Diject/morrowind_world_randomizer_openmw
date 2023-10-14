@@ -430,6 +430,9 @@ I.Settings.registerGroup({
     permanentStorage = true,
     order = order,
     settings = {
+        boolSetting({key = "item.safeMode", name = "itemAdvancedSafeMode", default = config.default.item.safeMode}),
+        boolSetting({key = "item.artifactsAsSeparate", name = "artifactsAsSeparateCategory", default = config.default.item.artifactsAsSeparate}),
+        textLabel{name = "empty", description = "newUniqueItems"},
         numberSetting({key = "item.new.chance", name = "newItemChance", default = config.default.item.new.chance,
             integer = false, min = 0, max = 100}),
         numberSetting({key = "item.new.threshold", name = "newItemThreshold", default = config.default.item.new.threshold,
@@ -486,7 +489,7 @@ end
 lableId = 0
 arguments = {}
 
-for i = 0, 6 do
+for i = 0, 7 do
     local sotrageName = config.storageName.."_"..tostring(i)
     storage.playerSection(sotrageName):subscribe(async:callback(function()
         core.sendGlobalEvent("mwr_loadLocalConfigData", storage.playerSection(sotrageName):asTable())

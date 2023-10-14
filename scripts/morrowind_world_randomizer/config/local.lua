@@ -258,6 +258,9 @@ this.default = {
         },
     },
     item = {
+        safeMode = true,
+        safeModeThreshold = 2,
+        artifactsAsSeparate = true,
         new = {
             chance = 100,
             threshold = 5,

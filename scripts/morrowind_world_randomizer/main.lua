@@ -399,10 +399,13 @@ local function mwr_updateInventory(data)
         end
         for _, itemData in pairs(data.items) do
             if itemData.item.count == 0 then goto continue end
+            ---@type mwr.itemPosData
+            local advData = itemData.advData or globalStorage.data.itemsData.items[itemData.item.recordId]
+            if not advData then goto continue end
             local isArtifact = generatorData.obtainableArtifacts[itemData.item.recordId]
             local newId
             local newData
-            if isArtifact then
+            if isArtifact and localConfig.data.item.artifactsAsSeparate then
                 if not localStorage.data.other.artifacts or #localStorage.data.other.artifacts == 0 then
                     localStorage.data.other.artifacts = {}
                     for id, _ in pairs(generatorData.obtainableArtifacts) do
@@ -413,9 +416,9 @@ local function mwr_updateInventory(data)
                 newId = localStorage.data.other.artifacts[pos]
                 table.remove(localStorage.data.other.artifacts, pos)
             else
-                ---@type mwr.itemPosData
-                local advData = itemData.advData or globalStorage.data.itemsData.items[itemData.item.recordId]
-                if not advData then goto continue end
+                if localConfig.data.item.safeMode and advData.count and localConfig.data.item.safeModeThreshold > advData.count then
+                    goto continue
+                end
                 local grp = globalStorage.data.itemsData.groups[advData.type][advData.subType]
                 newId = grp[random.getRandom(advData.pos, #grp, config.item.rregion.min, config.item.rregion.max)]
                 newData = globalStorage.data.itemsData.items[newId]
