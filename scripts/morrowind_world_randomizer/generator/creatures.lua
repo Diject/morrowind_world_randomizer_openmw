@@ -43,28 +43,43 @@ function this.generateCreatureData(safeMode)
         for _, cell in pairs(world.cells) do
             local levLists = cell:getAll() or {}
             for _, levList in pairs(levLists) do
-                if tostring(levList.type) == "LevelledCreature" then
+                if levList.type == types.LevelledCreature then
                     local record = types.LevelledCreature.record(levList)
-                    local creatures = {}
-                    for _, crea in pairs(record.creatures) do
-                        creatures[crea.id:lower()] = true
+                    local recordId = record.id:lower()
+                    if not tempData[recordId] then
+                        tempData[recordId] = {creatures = record.creatures, count = 1}
+                    else
+                        tempData[recordId].count = tempData[recordId].count + 1
                     end
-                    tempData[record.id:lower()] = {creatures = creatures}
+                elseif levList.type == types.Creature or levList.type == types.NPC or levList.type == types.Container then
+                    local recordId = levList.recordId:lower()
+                    if not tempData[recordId] then
+                        tempData[recordId] = {creatures = {{id = recordId}}, count = 1}
+                    else
+                        tempData[recordId].count = tempData[recordId].count + 1
+                    end
                 end
             end
         end
-        local function findCreature(creaList, grp)
-            for id, crea in pairs(creaList) do
-                if tempData[id] then
-                    findCreature(tempData[id].creatures, grp)
+        local function findCreature(creaList, grp, cnt)
+            if not creaList then return end
+            for _, crea in pairs(creaList) do
+                local id = crea.id:lower()
+                local record = types.LevelledCreature.record(id)
+                if record then
+                    findCreature(record.creatures, grp, cnt)
                 else
-                    grp[id] = true
+                    if grp[id] then
+                        grp[id] = grp[id] + cnt
+                    else
+                        grp[id] = cnt
+                    end
                 end
             end
         end
         local creaTable = {}
         for _, data in pairs(tempData) do
-            findCreature(data.creatures, creaTable)
+            findCreature(data.creatures, creaTable, data.count)
         end
         for _, crea in pairs(types.Creature.records) do
             local id = crea.id:lower()
