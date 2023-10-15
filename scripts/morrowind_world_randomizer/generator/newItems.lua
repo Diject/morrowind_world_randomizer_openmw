@@ -117,40 +117,37 @@ function this.new(oldId, itType)
     end
     if record.effects then
         newItemData.effects = {}
-        local initialEffectCount = #record.effects
-        local effects = {}
         for _, effect in pairs(record.effects) do
-            table.insert(effects, effect)
+            table.insert(newItemData.effects, effect)
         end
-        local removeCount = math.random(config.new.effects.remove.vregion.min, config.new.effects.remove.vregion.max)
-        prefixContributCount = prefixContributCount + removeCount
-        for i = 1, initialEffectCount - removeCount do
-            if #effects > 0 then
-                if config.new.effects.remove.chance * 0.01 > math.random() then
-                    local effectPos = math.random(1, #effects)
-                    table.insert(newItemData.effects, effects[effectPos])
-                    table.remove(effects, effectPos)
+        if config.new.effects.remove.chance * 0.01 > math.random() then
+            local removeCount = math.random(config.new.effects.remove.vregion.min, config.new.effects.remove.vregion.max)
+            for i = 1, removeCount do
+                if #newItemData.effects > 0 then
+                    prefixContributCount = prefixContributCount + 1
+                    local effectPos = math.random(1, #newItemData.effects)
+                    table.remove(newItemData.effects, effectPos)
+                else
+                    break
                 end
-            else
-                break
             end
         end
-        local addCount = math.random(config.new.effects.add.vregion.min, config.new.effects.add.vregion.max)
-        for i = 1, addCount do
-            if #newItemData.effects < 4 then
-                if config.new.effects.add.chance * 0.01 > math.random() then
+        if config.new.effects.add.chance * 0.01 > math.random() then
+            local addCount = math.random(config.new.effects.add.vregion.min, config.new.effects.add.vregion.max)
+            for i = 1, addCount do
+                if #newItemData.effects < 4 then
                     local newItPos = random.getRandom(data.pos, groupCount, config.new.stats.rregion.min, config.new.stats.rregion.max)
-                    prefixContribut = prefixContribut + (newItPos >= data.pos and 1 or 0)
-                    prefixContributCount = prefixContributCount + 1
                     local newItem = group[newItPos]
                     local rec = itType.record(newItem)
                     if rec and #rec.effects > 0 then
+                        prefixContribut = prefixContribut + (newItPos >= data.pos and 1 or 0)
+                        prefixContributCount = prefixContributCount + 1
                         local effect = rec.effects[math.random(1, #rec.effects)]
                         table.insert(newItemData.effects, effect)
                     end
+                else
+                    break
                 end
-            else
-                break
             end
         end
     end
