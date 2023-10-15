@@ -16,7 +16,7 @@ this.storageName = "Settings_MWR_By_Diject"
 this.default = {
     version = 3,
     enabled = false,
-    randomizeAfter = 72,
+    randomizeAfter = 720,
     randomizeOnce = false,
     cellLoadingTime = 0.5,
     doNot = {
@@ -262,7 +262,7 @@ this.default = {
         safeModeThreshold = 2,
         artifactsAsSeparate = true,
         new = {
-            chance = 100,
+            chance = 25,
             threshold = 5,
             change = {
                 name = false,
@@ -285,7 +285,7 @@ this.default = {
                 },
             },
             enchantment = {
-                chance = 100,
+                chance = 50,
                 rregion = {
                     min = 20,
                     max = 20,
@@ -295,15 +295,15 @@ this.default = {
                 add = {
                     chance = 50,
                     vregion = {
-                        min = 0,
+                        min = 1,
                         max = 2,
                     },
                 },
                 remove = {
-                    chance = 0,
+                    chance = 25,
                     vregion = {
-                        min = 0,
-                        max = 2,
+                        min = 1,
+                        max = 1,
                     },
                 },
             },
