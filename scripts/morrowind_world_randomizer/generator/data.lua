@@ -164,6 +164,7 @@ this.forbiddenIds = {
 
 this.forbiddenModels = { -- lowercase
     ["meshes\\pc\\f\\pc_help_deprec_01.nif"] = true,
+    ["meshes\\td\\td_help_deprec_01.nif"] = true,
 }
 
 this.forbiddenIcons = {
