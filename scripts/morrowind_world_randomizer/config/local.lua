@@ -136,7 +136,7 @@ this.default = {
     },
     creature = {
         randomize = true,
-        onlyLeveled = false,
+        onlyLeveled = true,
         byType = false,
         killParent = true,
         rregion = {
