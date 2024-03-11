@@ -5,10 +5,6 @@ local ui = require('openmw.ui')
 local core = require('openmw.core')
 local util = require('openmw.util')
 
-require("scripts.morrowind_world_randomizer.renderers.minmax")
-require("scripts.morrowind_world_randomizer.renderers.label")
-require("scripts.morrowind_world_randomizer.renderers.text")
-
 local config = require("scripts.morrowind_world_randomizer.config.local")
 
 I.Settings.registerPage({
@@ -146,7 +142,6 @@ end
 lableId = 0
 arguments = {}
 
-require("scripts.morrowind_world_randomizer.renderers.profileSelector")
 I.Settings.registerGroup({
     key = config.storageName.."_profiles",
     page = "MorrowindWorldRandomizer",
