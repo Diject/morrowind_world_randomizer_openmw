@@ -56,9 +56,11 @@ end
 
 function this.createItem(id, oldItemData)
     local new = world.createObject(id, oldItemData.count)
-    new.ownerFactionId = oldItemData.ownerFactionId
-    new.ownerFactionRank = oldItemData.ownerFactionRank
-    new.ownerRecordId = oldItemData.ownerRecordId
+    local newOwner = new.owner
+    local oldOwner = oldItemData.owner
+    newOwner.factionId = oldOwner.factionId
+    newOwner.factionRank = oldOwner.factionRank
+    newOwner.recordId = oldOwner.fecordId
     return new
 end
 
@@ -178,9 +180,9 @@ this.randomize = async:callback(function(cell)
                     local box2 = newObj:getBoundingBox()
                     local offset = (box1.vertices[1].z - box2.vertices[1].z)
                     local pos = util.vector3(light.position.x, light.position.y, light.position.z + offset)
-                    newObj.ownerRecordId = light.ownerRecordId
-                    newObj.ownerFactionId = light.ownerFactionId
-                    newObj.ownerFactionRank = light.ownerFactionRank
+                    newObj.owner.recordId = light.owner.recordId
+                    newObj.owner.factionId = light.owner.factionId
+                    newObj.owner.factionRank = light.owner.factionRank
                     light:remove()
                     newObj:teleport(light.cell, pos, {rotation = light.rotation})
                 end
@@ -219,9 +221,9 @@ this.randomize = async:callback(function(cell)
                 local pos = item.position
                 local rot = item.rotation
                 log("world", item, "new item", new, "count ", new.count)
-                new.ownerRecordId = item.ownerRecordId
-                new.ownerFactionId = item.ownerFactionId
-                new.ownerFactionRank = item.ownerFactionRank
+                new.owner.recordId = item.owner.recordId
+                new.owner.factionId = item.owner.factionId
+                new.owner.factionRank = item.owner.factionRank
                 item:remove()
                 new:teleport(cell, pos, {onGround = true, rotation = rot})
             end

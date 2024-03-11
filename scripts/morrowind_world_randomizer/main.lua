@@ -39,9 +39,11 @@ end
 local function createItem(id, oldItem, advData, skipOwner)
     local new = world.createObject(id, advData.count or oldItem.count)
     if not skipOwner then
-        new.ownerFactionId = oldItem.ownerFactionId
-        new.ownerFactionRank = oldItem.ownerFactionRank
-        new.ownerRecordId = oldItem.ownerRecordId
+        local newOwner = new.owner
+        local oldOwner = oldItem.owner
+        newOwner.factionId = oldOwner.factionId
+        newOwner.factionRank = oldOwner.factionRank
+        newOwner.recordId = oldOwner.fecordId
     end
     return new
 end
