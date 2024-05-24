@@ -22,7 +22,7 @@ function this.generateSpellData()
 
     local temp = {}
 
-    for  _, spell in pairs(core.magic.spells) do
+    for  _, spell in pairs(core.magic.spells.records) do
         local id = spell.id:lower()
         if not generatorData.forbiddenIds[id] then
             local cost = 0

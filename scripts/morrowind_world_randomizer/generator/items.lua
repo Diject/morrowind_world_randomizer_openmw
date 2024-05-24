@@ -68,7 +68,7 @@ function this.generateData(smart)
             enchWithCost[enchType] = {}
             enchantments[enchType] = {}
         end
-        for _, enchant in pairs(core.magic.enchantments) do
+        for _, enchant in pairs(core.magic.enchantments.records) do
             local id = enchant.id:lower()
             local isDangerous = false
             local cost = 0
