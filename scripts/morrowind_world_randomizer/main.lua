@@ -277,14 +277,7 @@ local function onActorActive(actor)
 end
 
 local cellsToRandomize = {}
-time.runRepeatedly(function()
-    for cell, tm in pairs(cellsToRandomize) do
-        if tm + localConfig.data.cellLoadingTime <= os.time() then
-            cellLib.randomize(cell)
-            cellsToRandomize[cell] = nil
-        end
-    end
-end, 1 * time.second, { initialDelay = math.random() * time.second })
+local cellListUpdated = false
 
 local function onObjectActive(object)
     local objectScale = localStorage.getObjectScale(object.id)
@@ -293,6 +286,7 @@ local function onObjectActive(object)
     end
     if not localConfig.data.enabled then return end
     cellsToRandomize[object.cell] = os.time()
+    cellListUpdated = true
 end
 
 local function onInit()
@@ -529,6 +523,15 @@ local function mwrbd_processDeathOfDisabled(data)
     reference:removeScript("scripts/morrowind_world_randomizer/local/killNewCreature.lua")
 end
 
+local function onUpdate()
+    if not localConfig.data.enabled or not cellListUpdated then return end
+    for cell, tm in pairs(cellsToRandomize) do
+        async:newUnsavableSimulationTimer(0, function()
+            cellLib.randomize(cell)
+        end)
+        cellsToRandomize[cell] = nil
+    end
+end
 
 return {
     engineHandlers = {
@@ -540,6 +543,7 @@ return {
         onNewGame = async:callback(onNewGame),
         onActivate = async:callback(onActivate),
         -- onPlayerAdded = async:callback(onPlayerAdded),
+        onUpdate = async:callback(onUpdate),
     },
     eventHandlers = {
         mwr_updateInventory = async:callback(mwr_updateInventory),

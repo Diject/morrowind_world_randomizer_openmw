@@ -18,7 +18,7 @@ this.default = {
     enabled = false,
     randomizeAfter = 720,
     randomizeOnce = false,
-    cellLoadingTime = 0.5,
+    cellLoadingTime = 0.5, -- deprecated
     doNot = {
         activatedContainers = true,
     },
