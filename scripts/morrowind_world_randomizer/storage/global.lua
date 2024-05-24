@@ -14,7 +14,7 @@ local this = {}
 
 this.storageName = "MWR_By_Diject"
 
-this.version = 4
+this.version = 5
 
 ---@class mwr.globalStorageData
 ---@field version number
@@ -58,7 +58,7 @@ function this.init()
 end
 
 function this.saveGameFilesDataToStorage()
-    this.data.gameFiles = tableLib.copy(core.contentFiles.list)
+    this.data.gameFiles = tableLib.copy(core.contentFiles.list) ---@diagnostic disable-line: inject-field
     this.storage:set("gameFiles", this.data.gameFiles)
 end
 
