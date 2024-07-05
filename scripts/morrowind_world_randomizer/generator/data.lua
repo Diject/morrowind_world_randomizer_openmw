@@ -25,6 +25,7 @@ this.forbiddenIds = {
     ["heart_of_fire"] = true,
     ["t_wereboarrobe"] = true,
     ["werewolfrobe"] = true,
+    ["robe_of_erur_dan"] = true,
 
 
     ["vivec_god"] = true,
