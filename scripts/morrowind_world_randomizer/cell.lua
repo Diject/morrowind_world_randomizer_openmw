@@ -135,11 +135,11 @@ local function lockTrap(object, config)
             types.Lockable.unlock(object)
         elseif config.lock.chance * 0.01 > math.random() then
             local lockLevel = types.Lockable.getLockLevel(object)
-            types.Lockable.lock(object, random.getRandom(lockLevel, config.lock.maxValue, config.lock.rregion.min, config.lock.rregion.max))
+            types.Lockable.lock(object, math.max(1, random.getRandom(lockLevel, config.lock.maxValue, config.lock.rregion.min, config.lock.rregion.max)))
         end
     elseif config.lock.add.chance * 0.01 > math.random() then
         local playerLevel = types.Actor.stats.level(world.players[1]).current
-        local val = math.floor(math.random() * config.lock.maxValue * playerLevel / config.lock.add.levelReference)
+        local val = math.floor(math.max(1, math.random() * config.lock.maxValue * math.min(1, playerLevel / config.lock.add.levelReference)))
         types.Lockable.lock(object, val)
     end
     local trap = types.Lockable.getTrapSpell(object)
@@ -149,13 +149,13 @@ local function lockTrap(object, config)
         elseif config.trap.chance * 0.01 > math.random() then
             local group = this.spellsData.groups[core.magic.SPELL_TYPE.Spell].trapHarm
             local playerLevel = types.Actor.stats.level(world.players[1]).current
-            local pos = random.getRandom(math.floor(#group * playerLevel / config.trap.levelReference), #group, 100, 0)
+            local pos = random.getRandom(math.floor(#group * math.min(1, playerLevel / config.trap.levelReference)), #group, 100, 0)
             types.Lockable.setTrapSpell(object, group[pos])
         end
     elseif config.trap.add.chance * 0.01 > math.random() then
         local group = this.spellsData.groups[core.magic.SPELL_TYPE.Spell].trapHarm
         local playerLevel = types.Actor.stats.level(world.players[1]).current
-        local pos = random.getRandom(math.floor(#group * playerLevel / config.trap.add.levelReference), #group, 100, 0)
+        local pos = random.getRandom(math.floor(#group * math.min(1, playerLevel / config.trap.add.levelReference)), #group, 100, 0)
         types.Lockable.setTrapSpell(object, group[pos])
     end
 end
