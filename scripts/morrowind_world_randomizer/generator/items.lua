@@ -23,8 +23,8 @@ local itemCountData = require("scripts.morrowind_world_randomizer.data.ItemCount
 
 local this = {}
 
-local function checkMajorRequirements(id, scriptId)
-    if (scriptId == "" or generatorData.scriptWhiteList[scriptId]) and not generatorData.forbiddenIds[id] and not id:find("generated:") then
+local function checkMajorRequirements(id, scriptId, unsafeMode)
+    if (unsafeMode or ((scriptId == "" or generatorData.scriptWhiteList[scriptId]) and not generatorData.forbiddenIds[id])) and not id:find("generated:") then
         return true
     end
     return false
@@ -40,9 +40,14 @@ local function checkMinorRequirements(item, objectType)
     return false
 end
 
----@param smart boolean|nil
+---@class mwr.generator.ItemGeneratorParams
+---@field smart boolean
+---@field unsafe boolean
+
+---@param params mwr.generator.ItemGeneratorParams|nil
 ---@return mwr.itemsData
-function this.generateData(smart)
+function this.generateData(params)
+    if not params then params = {} end
     ---@type mwr.itemsData
     local out = {groups = {}, items = {}} ---@diagnostic disable-line: missing-fields
 
@@ -99,7 +104,7 @@ function this.generateData(smart)
     local dangerousItems = {}
     local itemCount = {}
 
-    if smart then
+    if params.smart then
         local processItems = function(data)
             for _, item in pairs(data) do
                 local id = item.recordId:lower()
@@ -135,7 +140,7 @@ function this.generateData(smart)
             local scriptId = item.mwscript:lower()
             local itemId = item.id:lower()
             local itemCountExists = itemCount[itemId]
-            if checkMajorRequirements(itemId, scriptId) and checkMinorRequirements(item, groupId) and (not smart or itemCountExists) then
+            if checkMajorRequirements(itemId, scriptId, params.unsafe) and checkMinorRequirements(item, groupId) and (not params.smart or itemCountExists) then
                 local type = tostring(item.type or "0")
                 table.insert(itemData, {id = itemId, value = item[records[2]], type = type})
                 if item.enchant and item.enchant ~= "" and dangerousEnchantIds[item.enchant:lower()] then

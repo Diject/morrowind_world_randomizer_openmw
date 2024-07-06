@@ -168,6 +168,7 @@ I.Settings.registerGroup({
     order = order,
     settings = {
         boolSetting({key = "logging", name = "logging", default = false}),
+        boolSetting({key = "itemDangerMode", name = "itemDangerMode", default = false}),
         boolSetting({key = "itemSafeMode", name = "itemSafeMode", default = false}),
         boolSetting({key = "creatureSafeMode", name = "creatureSafeMode", default = false}),
     },
