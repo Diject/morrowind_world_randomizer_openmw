@@ -2,6 +2,9 @@ local async = require("openmw.async")
 local I = require("openmw.interfaces")
 local ui = require('openmw.ui')
 local util = require('openmw.util')
+local core = require("openmw.core")
+
+local advTable = require("scripts.morrowind_world_randomizer.utils.table")
 
 ---@class mwr.settings.minmaxSetting
 ---@field key string
@@ -64,6 +67,12 @@ local function validateNumber(text, argument)
     return number
 end
 
+local function customSet(key, val)
+    local data = {}
+    advTable.setValueByPath(data, key, val)
+    core.sendGlobalEvent("mwrbd_updateSettings", data)
+end
+
 local defaultArgument = {
     disabled = false,
     integer = false,
@@ -100,11 +109,13 @@ I.Settings.registerRenderer('mwrbd_minmax', function(value, set, argument)
                                 if not lastInput then return end
                                 local number = validateNumber(lastInput, argument)
                                 if not number then
-                                    set({min = value.min, max = value.max})
+                                    customSet(argument.key, {min = value.min, max = value.max})
+                                    -- set({min = value.min, max = value.max})
                                 end
                                 if number and number ~= value then
                                     if not argument.independent and number > value.max then number = value.max end
-                                    set({min = number, max = value.max})
+                                    customSet(argument.key, {min = number, max = value.max})
+                                    -- set({min = number, max = value.max})
                                 end
                             end),
                         },
@@ -129,11 +140,13 @@ I.Settings.registerRenderer('mwrbd_minmax', function(value, set, argument)
                                 if not lastInput then return end
                                 local number = validateNumber(lastInput, argument)
                                 if not number then
-                                    set({min = value.min, max = value.max})
+                                    -- set({min = value.min, max = value.max})
+                                    customSet(argument.key, {min = value.min, max = value.max})
                                 end
                                 if number and number ~= value then
                                     if not argument.independent and number < value.min then number = value.min end
-                                    set({min = value.min, max = number})
+                                    -- set({min = value.min, max = number})
+                                    customSet(argument.key, {min = value.min, max = number})
                                 end
                             end),
                         },

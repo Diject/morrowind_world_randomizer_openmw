@@ -66,4 +66,48 @@ function this.addTableValuesToTable(to, from)
     end
 end
 
+---@param table table
+---@param path string
+---@return any
+function this.getValueByPath(table, path)
+    local value = table
+    if value ~= nil and #path > 0 then
+        for valStr in (path.."."):gmatch("(.-)".."[.]") do
+            value = value[valStr]
+            if value == nil then
+                return nil
+            end
+        end
+    end
+    return value
+end
+
+---@param table table
+---@param path string
+---@param newValue any
+---@return boolean
+function this.setValueByPath(table, path, newValue)
+    local value = table
+    if value == nil and #path == 0 then
+        return false
+    end
+    local lastTable = value
+    local lastName = nil
+    for valStr in (path.."."):gmatch("(.-)".."[.]") do
+        lastName = valStr
+        lastTable = value
+        value = value[valStr]
+        if value == nil then
+            value = {}
+            lastTable[valStr] = value
+        end
+    end
+    if lastName then
+        lastTable[lastName] = newValue
+    else
+        lastTable = newValue
+    end
+    return true
+end
+
 return this

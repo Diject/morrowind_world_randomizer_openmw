@@ -534,6 +534,11 @@ local function onUpdate()
     end
 end
 
+local function mwrbd_updateSettings(data)
+    tableLib.applyChanges(localConfig.data, data)
+    world.players[1]:sendEvent("mwrbd_updateSettings", {configData = data})
+end
+
 return {
     engineHandlers = {
         onActorActive = async:callback(onActorActive),
@@ -556,5 +561,6 @@ return {
         mwrbd_deleteProfile = async:callback(mwrbd_deleteProfile),
         mwrbd_loadProfile = async:callback(mwrbd_loadProfile),
         mwrbd_processDeathOfDisabled = async:callback(mwrbd_processDeathOfDisabled),
+        mwrbd_updateSettings = async:callback(mwrbd_updateSettings),
     },
 }

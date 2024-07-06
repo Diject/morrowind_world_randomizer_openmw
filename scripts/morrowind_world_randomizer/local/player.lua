@@ -52,6 +52,8 @@ local function lowestInCircle(params)
     end
 end
 
+local firstInit = true
+
 local function mwrbd_updateSettings(data)
     local configData = data.configData
     if not configData then return end
@@ -72,7 +74,10 @@ local function mwrbd_updateSettings(data)
     filStorage(storage.playerSection(config.storageName.."_5"))
     filStorage(storage.playerSection(config.storageName.."_6"))
     filStorage(storage.playerSection(config.storageName.."_7"))
-    require("scripts.morrowind_world_randomizer.settings")
+    if firstInit then
+        require("scripts.morrowind_world_randomizer.settings")
+    end
+    firstInit = false
 end
 
 local function mwrbd_updateProfiles(data)
