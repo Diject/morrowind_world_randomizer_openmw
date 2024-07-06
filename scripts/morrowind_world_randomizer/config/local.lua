@@ -14,10 +14,10 @@ this.storageName = "Settings_MWR_By_Diject"
 
 ---@class mwr.configData
 this.default = {
-    version = 3,
+    version = 4,
     enabled = false,
     randomizeAfter = 720,
-    randomizeOnce = false,
+    randomizeOnce = true,
     cellLoadingTime = 0.5, -- deprecated
     doNot = {
         activatedContainers = true,
@@ -137,7 +137,7 @@ this.default = {
     creature = {
         randomize = true,
         onlyLeveled = true,
-        byType = false,
+        byType = true,
         killParent = true,
         rregion = {
             min = 20,
@@ -271,7 +271,7 @@ this.default = {
                 prefix = true,
                 enchantment = true,
             },
-            linkIconToModel = false,
+            linkIconToModel = true,
             model = {
                 rregion = {
                     min = 100,
