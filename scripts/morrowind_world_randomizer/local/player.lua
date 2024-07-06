@@ -6,6 +6,7 @@ local nearby = require("openmw.nearby")
 local I = require("openmw.interfaces")
 
 local config = require("scripts.morrowind_world_randomizer.config.local")
+local advTable = require("scripts.morrowind_world_randomizer.utils.table")
 
 ---@class mwr.lowestInCircle.attributes
 ---@field pos any
@@ -57,10 +58,10 @@ local firstInit = true
 local function mwrbd_updateSettings(data)
     local configData = data.configData
     if not configData then return end
-    config.data = configData
+
     local function filStorage(storageSection)
         for name, val in pairs(storageSection:asTable()) do
-            local confVal = config.getValueByString(name)
+            local confVal = advTable.getValueByPath(configData, name)
             if confVal ~= nil and confVal ~= val then
                 storageSection:set(name, confVal)
             end
