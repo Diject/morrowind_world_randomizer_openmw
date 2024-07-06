@@ -294,14 +294,14 @@ this.default = {
             effects = {
                 add = {
                     chance = 50,
-                    vregion = {
+                    iregion = {
                         min = 1,
                         max = 2,
                     },
                 },
                 remove = {
                     chance = 25,
-                    vregion = {
+                    iregion = {
                         min = 1,
                         max = 1,
                     },

@@ -448,11 +448,11 @@ I.Settings.registerGroup({
         textLabel{name = "empty", description = "newItemPotions"},
         numberSetting({key = "item.new.effects.add.chance", name = "newItemChanceToAddNewEffect", default = config.default.item.new.effects.add.chance,
             integer = false, min = 0, max = 100}),
-        minmaxSetting{key = "item.new.effects.add.vregion", name = "newItemNewEffectMinMax", default = config.default.item.new.effects.add.vregion, independent = false,
+        minmaxSetting{key = "item.new.effects.add.iregion", name = "newItemNewEffectMinMax", default = config.default.item.new.effects.add.iregion, independent = false,
             min = 0, max = 4},
         numberSetting({key = "item.new.effects.remove.chance", name = "newItemChanceToRemoveEffect", default = config.default.item.new.effects.remove.chance,
             integer = false, min = 0, max = 100}),
-        minmaxSetting{key = "item.new.effects.remove.vregion", name = "newItemRemoveEffectMinMax", default = config.default.item.new.effects.remove.vregion, independent = false, min = 0, max = 4},
+        minmaxSetting{key = "item.new.effects.remove.iregion", name = "newItemRemoveEffectMinMax", default = config.default.item.new.effects.remove.iregion, independent = false, min = 0, max = 4},
     },
 })
 

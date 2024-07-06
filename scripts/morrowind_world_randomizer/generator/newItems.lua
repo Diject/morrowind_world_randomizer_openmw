@@ -121,7 +121,7 @@ function this.new(oldId, itType)
             table.insert(newItemData.effects, effect)
         end
         if config.new.effects.remove.chance * 0.01 > math.random() then
-            local removeCount = math.random(config.new.effects.remove.vregion.min, config.new.effects.remove.vregion.max)
+            local removeCount = math.random(config.new.effects.remove.iregion.min, config.new.effects.remove.iregion.max)
             for i = 1, removeCount do
                 if #newItemData.effects > 0 then
                     prefixContributCount = prefixContributCount + 1
@@ -133,7 +133,7 @@ function this.new(oldId, itType)
             end
         end
         if config.new.effects.add.chance * 0.01 > math.random() then
-            local addCount = math.random(config.new.effects.add.vregion.min, config.new.effects.add.vregion.max)
+            local addCount = math.random(config.new.effects.add.iregion.min, config.new.effects.add.iregion.max)
             for i = 1, addCount do
                 if #newItemData.effects < 4 then
                     local newItPos = random.getRandom(data.pos, groupCount, config.new.stats.rregion.min, config.new.stats.rregion.max)
