@@ -97,14 +97,8 @@ local function createNewStatic(oldObj, group, nearestObjects)
     local box1 = oldObj:getBoundingBox()
     local box2 = newObj:getBoundingBox()
     local scale = math.huge
-    local radius1 = 0
-    local radius2 = 0
-    for i, vert in pairs(box1.vertices) do
-        radius1 = math.max(math.abs(vert.x), radius1)
-        radius1 = math.max(math.abs(vert.y), radius1)
-        radius2 = math.max(math.abs(box2.vertices[i].x), radius2)
-        radius2 = math.max(math.abs(box2.vertices[i].y), radius2)
-    end
+    local radius1 = math.max(math.abs(box1.vertices[1].x - box1.vertices[2].x), math.abs(box1.vertices[1].y - box1.vertices[3].y))
+    local radius2 = math.max(math.abs(box2.vertices[1].x - box2.vertices[2].x), math.abs(box2.vertices[1].y - box2.vertices[3].y))
     scale = radius1 / radius2
     if nearestObjects then
         local distanceToNearest = minDistanceBetweenVectors(oldObj.position, nearestObjects)
