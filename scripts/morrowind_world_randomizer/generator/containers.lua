@@ -20,7 +20,7 @@ function this.generateHerbData()
     for  _, object in pairs(types.Container.records) do
         local id = object.id:lower()
         local name = object.name:lower()
-        if object.mwscript == "" and object.weight == 0 and not generatorData.forbiddenIds[id] and
+        if object.mwscript == nil and object.weight == 0 and not generatorData.forbiddenIds[id] and
                 not generatorData.forbiddenModels[object.model:lower()] and not id:find("chest") and
                 not id:find("test") and not id:find("bag") and not id:find("rock") and not id:find("barrel") and not id:find("furn") and
                 not id:find("t_skycom_var_") then

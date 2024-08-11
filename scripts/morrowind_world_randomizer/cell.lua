@@ -228,7 +228,7 @@ this.randomize = async:callback(function(cell)
         config = this.config.getConfigTableByObjectType(objectType.container)
         for _, container in pairs(containers or {}) do
             local record = types.Container.record(container)
-            if record.mwscript ~= "" or not container.enabled or (not isReadyForRandomization(container) and this.config.data.doNot.activatedContainers) or
+            if record.mwscript ~= nil or not container.enabled or (not isReadyForRandomization(container) and this.config.data.doNot.activatedContainers) or
                     generatorData.forbiddenContainersDoors[container.recordId] then goto continue end
             if this.herbsData.objects[container.recordId] then -- for herbs
                 if this.config.data.world.herb.item.randomize then

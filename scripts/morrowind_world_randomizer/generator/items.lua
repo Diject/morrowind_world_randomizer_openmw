@@ -137,7 +137,7 @@ function this.generateData(params)
     for groupId, records in pairs(recordData) do
         local itemData = {}
         for _, item in pairs(records[1].records) do
-            local scriptId = item.mwscript:lower()
+            local scriptId = (item.mwscript or ""):lower()
             local itemId = item.id:lower()
             local itemCountExists = itemCount[itemId]
             if checkMajorRequirements(itemId, scriptId, params.unsafe) and checkMinorRequirements(item, groupId) and (not params.smart or itemCountExists) then

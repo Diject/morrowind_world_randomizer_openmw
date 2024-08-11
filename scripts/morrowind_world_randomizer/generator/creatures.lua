@@ -15,7 +15,7 @@ local this = {}
 
 local function checkRequirements(record)
     local id = record.id:lower()
-    if not generatorData.forbiddenIds[id] and (generatorData.scriptWhiteList[id] or record.mwscript == "") and
+    if not generatorData.forbiddenIds[id] and (generatorData.scriptWhiteList[id] or record.mwscript == nil) and
             not generatorData.forbiddenModels[record.model] and not id:find("summon") and not id:find("dead") then
         return true
     end
