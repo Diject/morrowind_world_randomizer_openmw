@@ -41,8 +41,8 @@ local function checkMinorRequirements(item, objectType)
 end
 
 ---@class mwr.generator.ItemGeneratorParams
----@field smart boolean
----@field unsafe boolean
+---@field smart boolean?
+---@field unsafe boolean?
 
 ---@param params mwr.generator.ItemGeneratorParams|nil
 ---@return mwr.itemsData
