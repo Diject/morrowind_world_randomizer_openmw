@@ -41,24 +41,28 @@ function this.generateCreatureData(safeMode)
     else
         local tempData = {}
         for _, cell in pairs(world.cells) do
-            local levLists = cell:getAll() or {}
-            for _, levList in pairs(levLists) do
-                if levList.type == types.LevelledCreature then
-                    local record = types.LevelledCreature.record(levList)
-                    local recordId = record.id:lower()
+            local objList = cell:getAll() or {}
+            for _, obj in pairs(objList) do
+                if obj.type == types.LevelledCreature then
+                    local recordId = obj.recordId
+                    local record = types.LevelledCreature.record(recordId)
+                    if not record then goto continue end
                     if not tempData[recordId] then
-                        tempData[recordId] = {creatures = record.creatures, count = 1}
+                        local creatures = record.creatures
+                        tempData[recordId] = {creatures = creatures, count = 1}
                     else
                         tempData[recordId].count = tempData[recordId].count + 1
                     end
-                elseif levList.type == types.Creature or levList.type == types.NPC or levList.type == types.Container then
-                    local recordId = levList.recordId:lower()
+                elseif obj.type == types.Creature or obj.type == types.NPC or obj.type == types.Container then
+                    local recordId = obj.recordId:lower()
                     if not tempData[recordId] then
                         tempData[recordId] = {creatures = {{id = recordId}}, count = 1}
                     else
                         tempData[recordId].count = tempData[recordId].count + 1
                     end
                 end
+
+                ::continue::
             end
         end
         local function findCreature(creaList, grp, cnt)
