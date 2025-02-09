@@ -149,7 +149,10 @@ I.Settings.registerRenderer('mwrbd_profileSelector', function(value, set, argume
             },
             events = {
                 mouseClick = async:callback(function()
-                    if argument.loadCallback then argument.loadCallback(value) end
+                    if argument.loadCallback then
+                        argument.loadCallback(value)
+                        ui.showMessage("The preset is loaded", {showInDialogue = false})
+                    end
                 end),
             },
         }
