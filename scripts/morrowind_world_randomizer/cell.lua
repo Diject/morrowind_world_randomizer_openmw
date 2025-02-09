@@ -93,7 +93,11 @@ local function minDistanceBetweenVectors(vector, vectorArray)
 end
 
 local function createNewStatic(oldObj, group, nearestObjects)
-    local newObj = world.createObject(group[math.random(1, #group)], 1)
+    local objId = group[math.random(1, #group)]
+
+    log("new static", objId, "old", oldObj)
+
+    local newObj = world.createObject(objId, 1)
     local box1 = oldObj:getBoundingBox()
     local box2 = newObj:getBoundingBox()
     local scale = math.huge
@@ -107,7 +111,7 @@ local function createNewStatic(oldObj, group, nearestObjects)
             scale = distanceToNearest / (safeRadius * radius2)
         end
     end
-    local offset = (box2.vertices[1].z + math.abs(box2.vertices[8].z - box2.vertices[1].z) * 0.15) * scale
+    local offset = (box2.vertices[1].z - newObj.position.z + math.abs(box2.vertices[8].z - box2.vertices[1].z) * 0.15) * scale
     world.players[1]:sendEvent("mwr_lowestPosInCircle", {
         object = newObj,
         cell = oldObj.cell.name,
@@ -163,7 +167,8 @@ this.randomize = async:callback(function(cell)
 
         this.randomizeStatics(cell, firstTime)
 
-        if this.config.data.world.light.randomize then
+        -- bugged on exteriors
+        if this.config.data.world.light.randomize and not cell.isExterior then
             local lightPos = {["0"] = math.random(), ["1"] = math.random(), ["2"] = math.random()}
             for _, light in pairs(cell:getAll(types.Light)) do
                 local advData = this.lightsData.objects[light.recordId]
@@ -172,13 +177,13 @@ this.randomize = async:callback(function(cell)
                     local newObj = world.createObject(group[random.getRandom(math.floor(lightPos[advData.group] * #group), #group, 10, 10)], 1)
                     local box1 = light:getBoundingBox()
                     local box2 = newObj:getBoundingBox()
-                    local offset = (box1.vertices[1].z - box2.vertices[1].z)
+                    local offset = (box1.vertices[1].z - light.position.z - (box2.vertices[1].z - newObj.position.z))
                     local pos = util.vector3(light.position.x, light.position.y, light.position.z + offset)
                     newObj.owner.recordId = light.owner.recordId
                     newObj.owner.factionId = light.owner.factionId
                     newObj.owner.factionRank = light.owner.factionRank
-                    light:remove()
                     newObj:teleport(light.cell, pos, {rotation = light.rotation})
+                    light:remove()
                 end
             end
         end
