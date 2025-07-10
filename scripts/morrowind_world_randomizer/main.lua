@@ -290,11 +290,6 @@ local function onObjectActive(object)
     cellListUpdated = true
 end
 
-local function onInit()
-    math.randomseed(os.time())
-    initData()
-end
-
 local function onSave()
     localConfig.data.version = localConfig.default.version ---@diagnostic disable-line: inject-field
     return {config = localConfig.data, storage = localStorage.data}
@@ -311,8 +306,13 @@ local function updateSettings()
     end)
 end
 
+local function onInit()
+    initData()
+    updateSettings()
+    cellLib.init(globalStorage.data, localConfig, localStorage)
+end
+
 local function onLoad(data)
-    math.randomseed(os.time())
     localConfig.loadData(data.config)
     updateSettings()
     localStorage.loadData(data.storage)
