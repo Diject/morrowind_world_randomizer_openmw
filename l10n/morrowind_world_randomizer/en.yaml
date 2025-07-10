@@ -1,31 +1,40 @@
 empty: ""
 modName: "Morrowind World Randomizer"
-modDescription: "A randomizer for many game elements.\nThe settings are individual for each character."
-principles: "Principle of the item randomizer:\nFirst, the position of the object (or value) to be randomized is found in the sorted list,\n
-then the boundary values of the region are calculated relative to it.\nLeft shift decrease(increase if negative) the minimum boundary value\n
-by the shift value multiplied by the list length.\nRight shift increase(decrease if negative) the maximum boundary value\n
-by the shift value multiplied by the list length.\n\n
-For example, in a list of 100 elements,\nyou need to randomize the 50th with the left shift of 20% and the right of 10%.\n
-The result will be a random object with a range of 30 to 60.\n
-If the left shift is 100% and the right is 100% the result will be between 1 and 100.\n
-If the left shift is -20% and the right is 40% the result will be between 70 and 90.\n
-If the left shift is 40% and the right is -20% the result will be between 10 and 30.\n
-If the left shift is 100% and the right is 0% the result will be between 1 and 50.\n
-If the left shift is 0% and the right is 100% the result will be between 50 and 100.\n\nThe minimum range is 5% or 3 items.\nMost of the lists are sorted by object level."
+modDescription: "Randomizer for many game elements.\nThe settings are individual for each character."
+principles: |
+  Principle of the item randomizer:
+  First, the position of the object (or value) to be randomized is found in the sorted list,
+  then the boundary values of the region are calculated relative to it.
+  Left shift decrease (increase if negative) the minimum boundary value
+  by the shift value multiplied by the list length.
+  Right shift increase (decrease if negative) the maximum boundary value
+  by the shift value multiplied by the list length.
+
+  For example, in a list of 100 elements,
+  you need to randomize the 50th with the left shift of 20% and the right of 10%.
+  The result will be a random object with a range of 30 to 60.
+  If the left shift is 100% and the right is 100% the result will be between 1 and 100.
+  If the left shift is -20% and the right is 40% the result will be between 70 and 90.
+  If the left shift is 40% and the right is -20% the result will be between 10 and 30.
+  If the left shift is 100% and the right is 0% the result will be between 1 and 50.
+  If the left shift is 0% and the right is 100% the result will be between 50 and 100.
+
+  The minimum range is 5% or 3 items.
+  Most of the lists are sorted by object level.
 mainSettings: "Main"
 enableRandomizer: "Enable the randomizer?"
-onlyOnce: "Randomize an object only once?"
-intervalBetweenRandomizations: "An object randomization interval in game hours"
+onlyOnce: "Randomize object only once?"
+intervalBetweenRandomizations: "Object randomization interval in game hours"
 items: "Items"
-randomizeItemsInNPC : "Randomize items in an NPC inventory"
+randomizeItemsInNPC : "Randomize items in NPC inventories"
 rregion: "Left/Right shift, [-100, 100]% each"
 minmax: "Min - max values"
 leftShift: "Left shift [-100, 100]%"
 rightShift: "Right shift [-100, 100]%"
-randomizeItemsInCreature : "Randomize items in a creature inventory"
-randomizeItemsInContainer : "Randomize items in a container inventory"
+randomizeItemsInCreature : "Randomize items in creature inventories"
+randomizeItemsInContainer : "Randomize items in container inventories"
 randomizeItemsWithoutContainer : "Randomize items without a container"
-randomizeItemsInHerb : "Randomize items in a herb inventory"
+randomizeItemsInHerb : "Randomize items in herb inventories"
 randomizeItemsInInventory: "Randomize items in the inventory"
 world: "World"
 randomizeTrees: "Randomize trees"
@@ -49,9 +58,9 @@ attributes: "Attributes"
 skills: "Skills"
 spells: "Spells"
 randomizeSpells: "Randomize spells"
-spellsBySchool: "A new spell will be from the same school"
-spellsBySkill: "A new spell will be from the schools with the highest skill value"
-levelReferenceSpells: "The level at which an object can have the most powerful spells"
+spellsBySchool: "New spell will be from the same school"
+spellsBySkill: "New spell will be from the schools with the highest skill value"
+levelReferenceSpells: "The level at which object can have the most powerful spells"
 bySkillMax: "Number of spell schools with the highest skills value"
 addSpell: "Add a new spell"
 count: "Count"
@@ -63,17 +72,17 @@ herbs: "Herbs"
 other: "Other"
 containers: "Containers"
 container: "A container"
-lock: "A Lock"
-trap: "A Trap"
+lock: "Lock"
+trap: "Trap"
 chanceToChangeExisting: "Chance to change an existing"
 chanceToChange: "Chance to change"
 chanceToLock: "Chance to lock %"
 existing: "An existing"
 addNew: "Add to an object without"
-levelReferenceLock: "Player level at which an object can be locked by the max value"
+levelReferenceLock: "Player level at which object can be locked by the max value"
 removeLock: "Unlocking"
 chanceToUnlock: "Chance to unlock"
-levelReferenceTrap: "Player level at which an object can be trapped by the most powerful spells"
+levelReferenceTrap: "Player level at which object can be trapped by the most powerful spells"
 chanceToAdd: "Chance to add"
 chanceToRemoveTrap: "Chance to remove a trap"
 untrapping: "Untrapping"
