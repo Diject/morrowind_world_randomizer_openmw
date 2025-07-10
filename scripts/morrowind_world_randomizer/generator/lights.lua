@@ -19,10 +19,10 @@ function this.generateData()
     for _, light in pairs(Light.records) do
         if not generatorData.forbiddenModels[light.model:lower()] then
             local id = light.id:lower()
-            table.insert(temp, {object = light, id = id, color = light.color, haveModel = light.model ~= "meshes\\", canCarry = light.isCarriable})
+            table.insert(temp, {object = light, id = id, color = light.color, colorStr = light.color:asHex(), haveModel = light.model ~= "meshes\\", canCarry = light.isCarriable})
         end
     end
-    table.sort(temp, function(a, b) return a.color < b.color end)
+    table.sort(temp, function(a, b) return a.colorStr < b.colorStr end)
     out.groups["0"] = {}
     out.groups["1"] = {}
     out.groups["2"] = {}
